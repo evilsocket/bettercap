@@ -9,14 +9,23 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require 'logger'
+module Logger
+  class << self
+    def error(message)
+      puts formatted_message(message, "ERROR")
+    end
 
-class LogFactory
-  @@instance = nil
+    def info(message)
+      puts << formatted_message(message, "INFO")
+    end
 
-  def LogFactory.get()
-    return @@instance unless @@instance.nil?
+    def write(filename,message)
+      File.open(filename, "a") { |f| f << message }
+    end
 
-    @@instance = Logger.new(STDOUT)
+    private
+    def formatted_message(message, message_type)
+      "#{message_type}: #{message}\n"
+    end
   end
 end
