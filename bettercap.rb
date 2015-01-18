@@ -56,13 +56,12 @@ begin
   iface    = PacketFu::Utils.whoami? :iface => options[:iface]
   firewall = FirewallFactory.get_firewall
   gateway  = Network.get_gateway
-  log      = LogFactory.get()
 
   raise "Invalid target '#{options[:target]}'" unless Network.is_ip? options[:target]
 
-  log.info "[-] Local Address : #{iface[:ip_saddr]}"
-  log.info "[-] Local MAC     : #{iface[:eth_saddr]}"
-  log.info "[-] Gateway       : #{gateway}"
+  Logger.info "[-] Local Address : #{iface[:ip_saddr]}"
+  Logger.info "[-] Local MAC     : #{iface[:eth_saddr]}"
+  Logger.info "[-] Gateway       : #{gateway}"
 
   spoofer = SpooferFactory.get_by_name( options[:spoofer], iface, gateway, options[:target] )
 
@@ -74,11 +73,11 @@ begin
 
 rescue Interrupt
 
-  log.info "Exiting ...".yellow
+  Logger.info "Exiting ...".yellow
 
 rescue Exception => e
 
-  log.error "#{e}".red
+  Logger.error "#{e}".red
 
 ensure
   if not spoofer.nil?
