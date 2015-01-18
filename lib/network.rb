@@ -25,6 +25,32 @@ class Network
     gw
   end
 
+  # FIXME: This should be done with PacketFu
+  def Network.get_alive_targets( iface, gw_ip, local_ip, timeout = 5 )
+    Logger.info( "Searching for alive targets ..." )
+
+    if RUBY_PLATFORM =~ /darwin/
+      ping = `ping -i #{timeout} -c 2 255.255.255.255`
+    elsif RUBY_PLATFORM =~ /linux/
+      ping = `ping -i #{timeout} -c 2 -b 255.255.255.255`
+    else
+      raise "Unsupported operating system"
+    end
+
+    arp   = `arp -a`
+    addrs = {}
+
+    arp.split("\n").each do |line|
+      if line =~ /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{iface}.*/i
+        if $1 != gw_ip and $1 != local_ip and $2 != "ff:ff:ff:ff:ff:ff"
+          addrs[$1] = $2
+          Logger.info "  #{$1} : #{$2}"
+        end
+      end
+    end
+
+    addrs
+  end
 
 =begin
   FIXME:

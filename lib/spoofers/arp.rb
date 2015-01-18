@@ -36,10 +36,10 @@ class ArpSpoofer < ISpoofer
 
     Logger.info "[-] Gateway MAC   : #{@gw_hw}"
 
-    targets.each do |target|
-      Logger.info "Getting target #{target} MAC address ..."
+    if targets.is_a?(String)
+      Logger.info "Getting target #{targets} MAC address ..."
 
-      hw = Network.get_hw_address( @iface, target.to_s, 1 )
+      hw = Network.get_hw_address( @iface, targets, 1 )
       if hw.nil? then
         raise "Couldn't determine target MAC"
       end
@@ -47,6 +47,10 @@ class ArpSpoofer < ISpoofer
       Logger.info "[-] Target MAC    : #{hw}"
 
       @targets[ target ] = hw
+    elsif targets.is_a?(Hash)
+      @targets = targets
+    else
+      raise "Invalid targets argument type."
     end
   end
 

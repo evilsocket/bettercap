@@ -60,27 +60,18 @@ begin
   network  = ifconfig[:ip4_obj]
   firewall = FirewallFactory.get_firewall
   gateway  = Network.get_gateway
-  targets  = []
+  targets  = nil
 
   if options[:target].nil?
     Logger.info "Targeting the whole subnet #{network.to_range} ..."
 
-    # get the first ip of the subnet
-    ip = network.succ
-    # loop until we get an ip which is not in our network
-    while network === ip do
-      # exclude the gateway, the broadcast address and ourselves
-      if ip != gateway and ip != iface[:ip_saddr] and not ip.to_s.end_with?('.255')
-        targets << ip
-      end
+    targets = Network.get_alive_targets options[:iface], gateway, iface[:ip_saddr]
 
-      ip = ip.succ
-    end
-    Logger.info "Collected #{targets.size} total possible targets."
+    Logger.info "Collected #{targets.size} total targets."
   else
     raise "Invalid target '#{options[:target]}'" unless Network.is_ip? options[:target]
 
-    targets << options[:target]
+    targets = options[:target]
   end
 
   Logger.info "[-] Local Address : #{iface[:ip_saddr]}"

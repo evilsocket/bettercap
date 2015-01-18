@@ -14,7 +14,7 @@ TODO
 ===
 
 - **FIXES**
-  - [ ] Whole subnet will take a lot of time due to arp packets needed to get hardware addresses.
+  - [x] Whole subnet will take a lot of time due to arp packets needed to get hardware addresses.
 
 - **General**
   - [x] Implement abstraction interfaces.
