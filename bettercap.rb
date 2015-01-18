@@ -19,7 +19,7 @@ require 'ipaddr'
 require_relative 'lib/monkey/packetfu/utils'
 require_relative 'lib/factories/firewall_factory'
 require_relative 'lib/factories/spoofer_factory'
-require_relative 'lib/factories/log_factory'
+require_relative 'lib/logger'
 require_relative 'lib/network'
 require_relative 'lib/version'
 
@@ -53,8 +53,6 @@ end.parse!
 
 begin
 
-  log = LogFactory.get()
-
   raise 'This software must run as root.' unless Process.uid == 0
 
   iface    = PacketFu::Utils.whoami? :iface => options[:iface]
@@ -65,7 +63,7 @@ begin
   targets  = []
 
   if options[:target].nil?
-    log.info "Targeting the whole subnet #{network.to_range} ..."
+    Logger.info "Targeting the whole subnet #{network.to_range} ..."
 
     # get the first ip of the subnet
     ip = network.succ
@@ -78,16 +76,16 @@ begin
 
       ip = ip.succ
     end
-    log.info "Collected #{targets.size} total possible targets."
+    Logger.info "Collected #{targets.size} total possible targets."
   else
     raise "Invalid target '#{options[:target]}'" unless Network.is_ip? options[:target]
 
     targets << options[:target]
   end
 
-  log.info "[-] Local Address : #{iface[:ip_saddr]}"
-  log.info "[-] Local MAC     : #{iface[:eth_saddr]}"
-  log.info "[-] Gateway       : #{gateway}"
+  Logger.info "[-] Local Address : #{iface[:ip_saddr]}"
+  Logger.info "[-] Local MAC     : #{iface[:eth_saddr]}"
+  Logger.info "[-] Gateway       : #{gateway}"
 
   spoofer = SpooferFactory.get_by_name( options[:spoofer], iface, gateway, targets )
 
@@ -99,11 +97,12 @@ begin
 
 rescue Interrupt
 
-  log.info "Exiting ...".yellow
+  Logger.info "Exiting ...".yellow
 
 rescue Exception => e
 
-  log.error "#{e}".red
+  Logger.error "#{e}".red
+  raise e
 
 ensure
   if not spoofer.nil?

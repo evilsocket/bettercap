@@ -31,3 +31,10 @@ TODO
   - [x] ARP spoofer.
   - [ ] ICMP spoofer.
   - [ ] ICMP6 spoofer.
+
+
+DEPENDS
+===
+  - colorize (**gem install colorize**)
+  - packetfu (**gem install packetfu**)
+  - pcaprub  (**gem install pcaprub**) [sudo apt-get install ruby-dev libpcap-dev]

@@ -9,7 +9,7 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require_relative 'factories/log_factory'
+require_relative 'logger'
 
 class Network
 
@@ -41,7 +41,6 @@ class Network
 =end
   def Network.get_hw_address( iface, ip_address, attempts = 2 )
     hw_address = nil
-    log = LogFactory.get
 
     attempts.times do
       arp_pkt = PacketFu::ARPPacket.new
@@ -73,7 +72,7 @@ class Network
 
           timeout += 0.1
 
-          log.debug "Retrying ..."
+          Logger.debug "Retrying ..."
           sleep 0.1
         end
         target_mac
