@@ -15,6 +15,7 @@ TODO
 
 - **General**
   - [x] Implement abstraction interfaces.
+  - [ ] Support multiple targets at once. 
   - [ ] Auto host discovery/scanning and auto add.
   - [ ] HTTP modular transparent proxy with plugins.
 
