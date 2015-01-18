@@ -67,6 +67,8 @@ begin
 
     targets = Network.get_alive_targets options[:iface], gateway, iface[:ip_saddr]
 
+    raise "No alive targets found." unless targets.size > 0
+
     Logger.info "Collected #{targets.size} total targets."
   else
     raise "Invalid target '#{options[:target]}'" unless Network.is_ip? options[:target]
@@ -93,7 +95,6 @@ rescue Interrupt
 rescue Exception => e
 
   Logger.error "#{e}".red
-  raise e
 
 ensure
   if not spoofer.nil?
