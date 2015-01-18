@@ -64,11 +64,6 @@ begin
   log.info "[-] Local MAC     : #{iface[:eth_saddr]}"
   log.info "[-] Gateway       : #{gateway}"
 
-  firewall.add_port_redirection options[:iface], 'tcp', 80, '127.0.0.1', 8080
-  firewall.del_port_redirection options[:iface], 'tcp', 80, '127.0.0.1', 8080
-
-  exit
-
   spoofer = SpooferFactory.get_by_name( options[:spoofer], iface, gateway, options[:target] )
 
   spoofer.start
