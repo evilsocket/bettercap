@@ -15,14 +15,14 @@ TODO
 
 - **General**
   - [x] Implement abstraction interfaces.
-  - [ ] Support multiple targets at once. 
+  - [ ] Support multiple targets at once.
   - [ ] Auto host discovery/scanning and auto add.
   - [ ] HTTP modular transparent proxy with plugins.
 
 - **Firewalling**
   - [x] Implement Firewall class for OS X.
   - [x] Implement Firewall class for GNU/Linux.
-  - [ ] Traffic redirection feature.
+  - [x] Traffic redirection feature.
 
 - **Spoofers**  
   - [x] ARP spoofer.

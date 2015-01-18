@@ -23,4 +23,28 @@ class OSXFirewall < IFirewall
   def forwarding_enabled?()
     `sysctl net.inet.ip.forwarding`.strip.split(' ')[1] == "1"
   end
+
+  def add_port_redirection( iface, proto, from, addr, to )
+    # create the pf config file
+    config_file = "/tmp/bettercap_pf_#{Process.pid}.conf"
+
+    File.open( config_file, 'a+t' ) do |f|
+      f.write "rdr on #{iface} inet proto #{proto} to any port #{from} -> #{addr} port #{to}\n"
+    end
+
+    # load the rule
+    `pfctl -f #{config_file} >/dev/null 2>&1`
+    # enable pf
+    `pfctl -e >/dev/null 2>&1`
+  end
+
+  def del_port_redirection( iface, proto, from, addr, to )
+    # FIXME: This should search for multiple rules inside the
+    # file and remove only this one.
+
+    # disable pf
+    `pfctl -d >/dev/null 2>&1`
+    # remove the pf config file
+    File.delete( "/tmp/bettercap_pf_#{Process.pid}.conf" )
+  end
 end

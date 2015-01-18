@@ -17,4 +17,12 @@ class IFirewall
   def forwarding_enabled?()
     raise "IFirewall: Unimplemented method!"
   end
+
+  def add_port_redirection( iface, proto, from, addr, to )
+    raise "IFirewall: Unimplemented method!"
+  end
+
+  def del_port_redirection( iface, proto, from, addr, to )
+    raise "IFirewall: Unimplemented method!"
+  end
 end
