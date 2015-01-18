@@ -22,7 +22,7 @@ require_relative 'lib/network'
 require_relative 'lib/version'
 
 options = {
-  :iface => nil,
+  :iface => Pcap.lookupdev,
   :spoofer => 'ARP',
   :target => nil
 }
@@ -36,7 +36,7 @@ puts "---------------------------------------------------------\n\n".yellow
 OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [options]"
 
-  opts.on( "-I", "--interface IFACE", "Network interface name." ) do |v|
+  opts.on( "-I", "--interface IFACE", "Network interface name - default: " + options[:iface] ) do |v|
     options[:iface] = v
   end
 
