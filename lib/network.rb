@@ -64,7 +64,6 @@ class Network
         timeout = 0
 
         while target_mac.nil? && timeout <= 5
-
           cap.stream.each do |p|
             arp_response = PacketFu::Packet.parse(p)
             target_mac = arp_response.arp_saddr_mac if arp_response.arp_saddr_ip == ip_address

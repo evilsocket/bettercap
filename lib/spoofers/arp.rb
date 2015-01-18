@@ -16,12 +16,11 @@ require_relative '../factories/log_factory'
 require 'colorize'
 
 class ArpSpoofer < ISpoofer
-  def initialize( iface, router_ip, target_ip )
+  def initialize( iface, router_ip, targets )
     @iface        = iface
     @gw_ip        = router_ip
     @gw_hw        = nil
-    @target_ip    = target_ip
-    @target_hw    = nil
+    @targets      = {}
     @log          = LogFactory.get()
     @firewall     = FirewallFactory.get_firewall
     @forwarding   = @firewall.forwarding_enabled?
@@ -38,14 +37,18 @@ class ArpSpoofer < ISpoofer
 
     @log.info "[-] Gateway MAC   : #{@gw_hw}"
 
-    @log.info "Getting target #{@target_ip} MAC address ..."
-    @target_hw = Network.get_hw_address( @iface, @target_ip )
-    if @target_hw.nil? then
-      raise "Couldn't determine target MAC"
+    targets.each do |target|
+      @log.info "Getting target #{target} MAC address ..."
+
+      hw = Network.get_hw_address( @iface, target.to_s, 1 )
+      if hw.nil? then
+        raise "Couldn't determine target MAC"
+      end
+
+      @log.info "[-] Target MAC    : #{hw}"
+
+      @targets[ target ] = hw
     end
-
-    @log.info "[-] Target MAC    : #{@target_hw}"
-
   end
 
   def send_spoofed_packed( saddr, smac, daddr, dmac )
@@ -81,10 +84,12 @@ class ArpSpoofer < ISpoofer
             break
         end
 
-        @log.debug "Spoofing ..."
+        @log.debug "Spoofing #{@targets.size} targets ..."
 
-        send_spoofed_packed @gw_ip,     @iface[:eth_saddr], @target_ip, @target_hw
-        send_spoofed_packed @target_ip, @iface[:eth_saddr], @gw_ip,     @gw_hw
+        @targets.each do |target_ip,target_hw|
+          send_spoofed_packed @gw_ip,    @iface[:eth_saddr], target_ip, target_hw
+          send_spoofed_packed target_ip, @iface[:eth_saddr], @gw_ip,    @gw_hw
+        end
 
         sleep(1)
       end
@@ -102,12 +107,12 @@ class ArpSpoofer < ISpoofer
     @running = false
     @spoof_thread.join
 
-    @log.info "Restoring ARP table ..."
+    @log.info "Restoring ARP table of #{@targets.size} targets ..."
 
-    3.times do
-      send_spoofed_packed @gw_ip,     @gw_hw, @target_ip, @target_hw
-      send_spoofed_packed @target_ip, @target_hw, @gw_ip,     @gw_hw
-      sleep 1
+    @targets.each do |target_ip,target_hw|
+      send_spoofed_packed @gw_ip,    @gw_hw,    target_ip, target_hw
+      send_spoofed_packed target_ip, target_hw, @gw_ip,    @gw_hw
     end
+    sleep 1
   end
 end
