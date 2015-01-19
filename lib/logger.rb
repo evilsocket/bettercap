@@ -11,20 +11,31 @@ This project is released under the GPL 3 license.
 =end
 module Logger
   class << self
+    attr_accessor :logfile
+
     def error(message)
-      puts formatted_message(message, "E").red
+      write(formatted_message(message, "E").red)
     end
 
     def info(message)
-      puts formatted_message(message, "I")
+      write(formatted_message(message, "I").yellow)
     end
 
     def debug(message)
-      puts formatted_message(message, "D").light_black
+      write(formatted_message(message, "D").light_black)
     end
 
-    def write(filename,message)
-      File.open(filename, "a") { |f| f << message }
+    def write(message)
+      puts message
+      if @logfile != nil
+        if !File.readable?(@logfile) and !File.directory?(@logfile)
+          f = File.open(@logfile,"a");
+          f.puts(message + "\n")
+          f.close
+        else
+          puts "Error writing file log.".red
+        end
+      end
     end
 
     private

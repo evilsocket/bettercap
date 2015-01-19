@@ -11,6 +11,7 @@
   This project is released under the GPL 3 license.
 
 =end
+
 require 'optparse'
 require 'colorize'
 require 'packetfu'
@@ -23,38 +24,44 @@ require_relative 'lib/logger'
 require_relative 'lib/network'
 require_relative 'lib/version'
 
-options = {
-  :iface => Pcap.lookupdev,
-  :spoofer => 'ARP',
-  :target => nil
-}
-
-puts "---------------------------------------------------------".yellow
-puts "                   BETTERCAP v#{BetterCap::VERSION}\n\n".green
-puts "          by Simone 'evilsocket' Margaritelli".green
-puts "                  evilsocket@gmail.com    ".green
-puts "---------------------------------------------------------\n\n".yellow
-
-OptionParser.new do |opts|
-  opts.banner = "Usage: #{$0} [options]"
-
-  opts.on( "-I", "--interface IFACE", "Network interface name - default: " + options[:iface] ) do |v|
-    options[:iface] = v
-  end
-
-  opts.on( "-S", "--spoofer NAME", "Spoofer module to use, available: " + SpooferFactory.available.join(', ') + " - default: " + options[:spoofer] ) do |v|
-    options[:spoofer] = v
-  end
-
-  opts.on( "-T", "--target ADDRESS", "Target ip address, if not specified the whole subnet will be targeted." ) do |v|
-    options[:target] = v
-  end
-end.parse!
-
 begin
 
   raise 'This software must run as root.' unless Process.uid == 0
 
+  options = {
+    :iface => Pcap.lookupdev,
+    :spoofer => 'ARP',
+    :target => nil,
+    :logfile => nil
+  }
+
+  puts "---------------------------------------------------------".yellow
+  puts "                   BETTERCAP v#{BetterCap::VERSION}\n\n".green
+  puts "          by Simone 'evilsocket' Margaritelli".green
+  puts "                  evilsocket@gmail.com    ".green
+  puts "---------------------------------------------------------\n\n".yellow
+
+  OptionParser.new do |opts|
+    opts.banner = "Usage: #{$0} [options]"
+
+    opts.on( "-I", "--interface IFACE", "Network interface name - default: " + options[:iface] ) do |v|
+      options[:iface] = v
+    end
+
+    opts.on( "-S", "--spoofer NAME", "Spoofer module to use, available: " + SpooferFactory.available.join(', ') + " - default: " + options[:spoofer] ) do |v|
+      options[:spoofer] = v
+    end
+
+    opts.on( "-T", "--target ADDRESS", "Target ip address, if not specified the whole subnet will be targeted." ) do |v|
+      options[:target] = v
+    end
+
+    opts.on( "-L", "--log LOG_FILE", "Log all messagges into a file, if not specified the log messages will be only print into the shell." ) do |v|
+      options[:logfile] = v
+    end
+  end.parse!
+
+  Logger.logfile = options[:logfile]
   iface    = PacketFu::Utils.whoami? :iface => options[:iface]
   ifconfig = PacketFu::Utils.ifconfig options[:iface]
   network  = ifconfig[:ip4_obj]
@@ -89,12 +96,10 @@ begin
   end
 
 rescue Interrupt
-
-  Logger.info "Exiting ...".yellow
+  Logger.info "Exiting ..."
 
 rescue Exception => e
-
-  Logger.error "#{e}".red
+  Logger.error "#{e}"
 
 ensure
   if not spoofer.nil?
