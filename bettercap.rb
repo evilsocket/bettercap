@@ -14,10 +14,12 @@
 require 'optparse'
 require 'colorize'
 require 'packetfu'
+require 'ipaddr'
 
+require_relative 'lib/monkey/packetfu/utils'
 require_relative 'lib/factories/firewall_factory'
 require_relative 'lib/factories/spoofer_factory'
-require_relative 'lib/factories/log_factory'
+require_relative 'lib/logger'
 require_relative 'lib/network'
 require_relative 'lib/version'
 
@@ -44,7 +46,7 @@ OptionParser.new do |opts|
     options[:spoofer] = v
   end
 
-  opts.on( "-T", "--target ADDRESS", "Target ip address." ) do |v|
+  opts.on( "-T", "--target ADDRESS", "Target ip address, if not specified the whole subnet will be targeted." ) do |v|
     options[:target] = v
   end
 end.parse!
@@ -54,16 +56,31 @@ begin
   raise 'This software must run as root.' unless Process.uid == 0
 
   iface    = PacketFu::Utils.whoami? :iface => options[:iface]
+  ifconfig = PacketFu::Utils.ifconfig options[:iface]
+  network  = ifconfig[:ip4_obj]
   firewall = FirewallFactory.get_firewall
   gateway  = Network.get_gateway
+  targets  = nil
 
-  raise "Invalid target '#{options[:target]}'" unless Network.is_ip? options[:target]
+  if options[:target].nil?
+    Logger.info "Targeting the whole subnet #{network.to_range} ..."
+
+    targets = Network.get_alive_targets options[:iface], gateway, iface[:ip_saddr]
+
+    raise "No alive targets found." unless targets.size > 0
+
+    Logger.info "Collected #{targets.size} total targets."
+  else
+    raise "Invalid target '#{options[:target]}'" unless Network.is_ip? options[:target]
+
+    targets = options[:target]
+  end
 
   Logger.info "[-] Local Address : #{iface[:ip_saddr]}"
   Logger.info "[-] Local MAC     : #{iface[:eth_saddr]}"
   Logger.info "[-] Gateway       : #{gateway}"
 
-  spoofer = SpooferFactory.get_by_name( options[:spoofer], iface, gateway, options[:target] )
+  spoofer = SpooferFactory.get_by_name( options[:spoofer], iface, gateway, targets )
 
   spoofer.start
 

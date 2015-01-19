@@ -13,9 +13,12 @@ BetterCap is an attempt to create a complete, modular, portable and easily exten
 TODO
 ===
 
+- **FIXES**
+  - [x] Whole subnet will take a lot of time due to arp packets needed to get hardware addresses.
+
 - **General**
   - [x] Implement abstraction interfaces.
-  - [ ] Support multiple targets at once.
+  - [x] Support multiple targets at once.
   - [ ] Auto host discovery/scanning and auto add.
   - [ ] HTTP modular transparent proxy with plugins.
 

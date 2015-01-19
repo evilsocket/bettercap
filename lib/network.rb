@@ -9,7 +9,7 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require_relative 'factories/log_factory'
+require_relative 'logger'
 
 class Network
 
@@ -25,6 +25,32 @@ class Network
     gw
   end
 
+  # FIXME: This should be done with PacketFu
+  def Network.get_alive_targets( iface, gw_ip, local_ip, timeout = 5 )
+    Logger.info( "Searching for alive targets ..." )
+
+    if RUBY_PLATFORM =~ /darwin/
+      ping = `ping -i #{timeout} -c 2 255.255.255.255`
+    elsif RUBY_PLATFORM =~ /linux/
+      ping = `ping -i #{timeout} -c 2 -b 255.255.255.255`
+    else
+      raise "Unsupported operating system"
+    end
+
+    arp   = `arp -a`
+    addrs = {}
+
+    arp.split("\n").each do |line|
+      if line =~ /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{iface}.*/i
+        if $1 != gw_ip and $1 != local_ip and $2 != "ff:ff:ff:ff:ff:ff"
+          addrs[$1] = $2
+          Logger.info "  #{$1} : #{$2}"
+        end
+      end
+    end
+
+    addrs
+  end
 
 =begin
   FIXME:
@@ -41,7 +67,6 @@ class Network
 =end
   def Network.get_hw_address( iface, ip_address, attempts = 2 )
     hw_address = nil
-    log = LogFactory.get
 
     attempts.times do
       arp_pkt = PacketFu::ARPPacket.new
@@ -64,7 +89,6 @@ class Network
         timeout = 0
 
         while target_mac.nil? && timeout <= 5
-
           cap.stream.each do |p|
             arp_response = PacketFu::Packet.parse(p)
             target_mac = arp_response.arp_saddr_mac if arp_response.arp_saddr_ip == ip_address
@@ -74,7 +98,7 @@ class Network
 
           timeout += 0.1
 
-          log.debug "Retrying ..."
+          Logger.debug "Retrying ..."
           sleep 0.1
         end
         target_mac
