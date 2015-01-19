@@ -102,7 +102,7 @@ class ArpSpoofer < ISpoofer
   def stop
     raise "ARP spoofer is not running" unless @running
 
-    Logger.info "Stopping ARP spoofer ...".yellow
+    Logger.info "Stopping ARP spoofer ..."
 
     Logger.debug "Resetting packet forwarding to #{@forwarding} ..."
     @firewall.enable_forwarding( @forwarding )
