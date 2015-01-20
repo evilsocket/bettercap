@@ -10,18 +10,19 @@ This project is released under the GPL 3 license.
 
 =end
 require_relative '../base/ifirewall'
+require_relative '../shell'
 
 class OSXFirewall < IFirewall
   def enable_forwarding(enabled)
     if enabled then
-      `sysctl -w net.inet.ip.forwarding=1`
+      Shell.execute("sysctl -w net.inet.ip.forwarding=1")
     else
-      `sysctl -w net.inet.ip.forwarding=0`
+      Shell.execute("sysctl -w net.inet.ip.forwarding=0")
     end
   end
 
   def forwarding_enabled?()
-    `sysctl net.inet.ip.forwarding`.strip.split(' ')[1] == "1"
+    Shell.execute("sysctl net.inet.ip.forwarding").strip.split(' ')[1] == "1"
   end
 
   def add_port_redirection( iface, proto, from, addr, to )
@@ -33,9 +34,9 @@ class OSXFirewall < IFirewall
     end
 
     # load the rule
-    `pfctl -f #{config_file} >/dev/null 2>&1`
+    Shell.execute("pfctl -f #{config_file} >/dev/null 2>&1")
     # enable pf
-    `pfctl -e >/dev/null 2>&1`
+    Shell.execute("pfctl -e >/dev/null 2>&1")
   end
 
   def del_port_redirection( iface, proto, from, addr, to )
@@ -43,7 +44,7 @@ class OSXFirewall < IFirewall
     # file and remove only this one.
 
     # disable pf
-    `pfctl -d >/dev/null 2>&1`
+    Shell.execute("pfctl -d >/dev/null 2>&1")
     # remove the pf config file
     File.delete( "/tmp/bettercap_pf_#{Process.pid}.conf" )
   end

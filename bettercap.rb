@@ -21,6 +21,7 @@ require_relative 'lib/monkey/packetfu/utils'
 require_relative 'lib/factories/firewall_factory'
 require_relative 'lib/factories/spoofer_factory'
 require_relative 'lib/logger'
+require_relative 'lib/shell'
 require_relative 'lib/network'
 require_relative 'lib/version'
 
@@ -87,6 +88,7 @@ begin
   Logger.info "[-] Local MAC     : #{iface[:eth_saddr]}"
   Logger.info "[-] Gateway       : #{gateway}"
 
+  Logger.info "Module: " + options[:spoofer]
   spoofer = SpooferFactory.get_by_name( options[:spoofer], iface, gateway, targets )
 
   spoofer.start
