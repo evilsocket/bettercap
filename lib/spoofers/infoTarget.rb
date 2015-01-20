@@ -10,9 +10,7 @@ This project is released under the GPL 3 license.
 
 =end
 require_relative '../base/ispoofer'
-require_relative '../network'
 require_relative '../logger'
-require 'colorize'
 require 'nokogiri'
 
 class InfotargetSpoofer < ISpoofer
