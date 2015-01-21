@@ -10,7 +10,6 @@ This project is released under the GPL 3 license.
 
 =end
 require_relative 'logger'
-require_relative 'shell'
 
 class Network
 
@@ -19,7 +18,7 @@ class Network
   end
 
   def Network.get_gateway
-    out = Shell.execute("netstat -nr").split(/\n/).select {|n| n =~ /UG/ }
+    out = `netstat -nr`.split(/\n/).select {|n| n =~ /UG/ }
     gw = out.first.split[1]
 
     raise "Could not detect gateway address" unless is_ip?(gw)
@@ -31,14 +30,14 @@ class Network
     Logger.info( "Searching for alive targets ..." )
 
     if RUBY_PLATFORM =~ /darwin/
-      ping = Shell.execute("ping -i #{timeout} -c 2 255.255.255.255")
+      ping = `ping -i #{timeout} -c 2 255.255.255.255`
     elsif RUBY_PLATFORM =~ /linux/
-      ping = Shell.execute("ping -i #{timeout} -c 2 -b 255.255.255.255")
+      ping = `ping -i #{timeout} -c 2 -b 255.255.255.255`
     else
       raise "Unsupported operating system"
     end
 
-    arp   = Shell.execute("arp -a")
+    arp   = `arp -a`
     addrs = {}
 
     arp.split("\n").each do |line|

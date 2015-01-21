@@ -42,4 +42,3 @@ DEPENDS
   - colorize (**gem install colorize**)
   - packetfu (**gem install packetfu**)
   - pcaprub  (**gem install pcaprub**) [sudo apt-get install ruby-dev libpcap-dev]
-  - nokogiri (**gem install nokogiri**)

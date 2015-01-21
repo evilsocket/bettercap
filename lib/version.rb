@@ -10,5 +10,5 @@ This project is released under the GPL 3 license.
 
 =end
 module BetterCap
-  VERSION = '1.0.2'
+  VERSION = '1.0.1'
 end
