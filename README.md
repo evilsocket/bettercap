@@ -32,6 +32,10 @@ TODO
   - [ ] ICMP spoofer.
   - [ ] ICMP6 spoofer.
 
+MODULES
+===
+- ARP:        module for arp poisoning (**default**)
+- INFOTARGET: module for get info from targets like vendor,os and open ports using nmap.
 
 DEPENDS
 ===

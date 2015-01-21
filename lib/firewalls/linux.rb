@@ -10,41 +10,42 @@ This project is released under the GPL 3 license.
 
 =end
 require_relative '../base/ifirewall'
+require_relative '../shell'
 
 class LinuxFirewall < IFirewall
   def enable_forwarding(enabled)
     if enabled then
-      `echo 1 > /proc/sys/net/ipv4/ip_forward`
+      Shell.execute("echo 1 > /proc/sys/net/ipv4/ip_forward")
     else
-      `echo 0 > /proc/sys/net/ipv4/ip_forward`
+      Shell.execute("echo 0 > /proc/sys/net/ipv4/ip_forward")
     end
   end
 
   def forwarding_enabled?()
-    `cat /proc/sys/net/ipv4/ip_forward`.strip == "1"
+    Shell.execute("cat /proc/sys/net/ipv4/ip_forward").strip == "1"
   end
 
   def add_port_redirection( iface, proto, from, addr, to )
     # clear nat
-    `iptables -t nat -F`
+    Shell.execute("iptables -t nat -F")
     # clear
-    `iptables -F`
+    Shell.execute("iptables -F")
     # post route
-    `iptables -t nat -I POSTROUTING -s 0/0 -j MASQUERADE`
+    Shell.execute("iptables -t nat -I POSTROUTING -s 0/0 -j MASQUERADE")
     # accept all
-    `iptables -P FORWARD ACCEPT`
+    Shell.execute("ptables -P FORWARD ACCEPT")
     # add redirection
-    `iptables -t nat -A PREROUTING -i #{iface} -p #{proto} --dport #{from} -j REDIRECT --to #{addr}:#{to}`
+    Shell.execute("iptables -t nat -A PREROUTING -i #{iface} -p #{proto} --dport #{from} -j REDIRECT --to #{addr}:#{to}")
   end
 
   def del_port_redirection( iface, proto, from, addr, to )
     # clear nat
-    `iptables -t nat -F`
+    Shell.execute("iptables -t nat -F")
     # clear
-    `iptables -F`
+    Shell.execute("iptables -F")
     # remove post route
-    `iptables -t nat -D POSTROUTING -s 0/0 -j MASQUERADE`
+    Shell.execute("iptables -t nat -D POSTROUTING -s 0/0 -j MASQUERADE")
     # remove redirection
-    `iptables -t nat -D PREROUTING -i #{iface} -p #{proto} --dport #{from} -j REDIRECT --to #{addr}:#{to}`
+    Shell.execute("iptables -t nat -D PREROUTING -i #{iface} -p #{proto} --dport #{from} -j REDIRECT --to #{addr}:#{to}")
   end
 end
