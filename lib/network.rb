@@ -11,6 +11,7 @@ This project is released under the GPL 3 license.
 =end
 require_relative 'logger'
 require_relative 'shell'
+require_relative 'target'
 
 class Network
 
@@ -38,19 +39,20 @@ class Network
       raise "Unsupported operating system"
     end
 
-    arp   = Shell.execute("arp -a")
-    addrs = {}
+    arp     = Shell.execute("arp -a")
+    targets = []
 
     arp.split("\n").each do |line|
       if line =~ /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{iface}.*/i
         if $1 != gw_ip and $1 != local_ip and $2 != "ff:ff:ff:ff:ff:ff"
-          addrs[$1] = $2
-          Logger.info "  #{$1} : #{$2}"
+          target = Target.new( $1, $2 )
+          targets << target
+          Logger.info "  #{target}"
         end
       end
     end
 
-    addrs
+    targets
   end
 
 =begin

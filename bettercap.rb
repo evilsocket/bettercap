@@ -24,6 +24,7 @@ require_relative 'lib/logger'
 require_relative 'lib/shell'
 require_relative 'lib/network'
 require_relative 'lib/version'
+require_relative 'lib/target'
 
 begin
 
@@ -81,7 +82,7 @@ begin
   else
     raise "Invalid target '#{options[:target]}'" unless Network.is_ip? options[:target]
 
-    targets = options[:target]
+    targets = [ Target.new( options[:target], nil ) ]
   end
 
   Logger.info "[-] Local Address : #{iface[:ip_saddr]}"
