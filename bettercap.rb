@@ -25,6 +25,7 @@ require_relative 'lib/shell'
 require_relative 'lib/network'
 require_relative 'lib/version'
 require_relative 'lib/target'
+require_relative 'lib/sniffer'
 
 begin
 
@@ -34,7 +35,8 @@ begin
     :iface => Pcap.lookupdev,
     :spoofer => 'ARP',
     :target => nil,
-    :logfile => nil
+    :logfile => nil,
+    :sniffer => false
   }
 
   puts "---------------------------------------------------------".yellow
@@ -60,6 +62,10 @@ begin
 
     opts.on( "-L", "--log LOG_FILE", "Log all messagges into a file, if not specified the log messages will be only print into the shell." ) do |v|
       options[:logfile] = v
+    end
+
+    opts.on( "-X", "--sniffer", "Enable sniffer." ) do
+      options[:sniffer] = true
     end
   end.parse!
 
@@ -95,8 +101,12 @@ begin
 
   spoofer.start
 
-  loop do
-    sleep 1
+  if options[:sniffer]
+      Sniffer.start( options[:iface], iface[:ip_saddr] )
+  else
+      loop do
+        sleep 1
+      end
   end
 
 rescue Interrupt
