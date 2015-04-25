@@ -12,10 +12,6 @@ This project is released under the GPL 3 license.
 require_relative '../logger'
 require 'colorize'
 
-irc_user_re = r'NICK (.+?)((\r)?\n|\s)'
-irc_pw_re = r'NS IDENTIFY (.+)'
-irc_pw_re2 = 'nickserv :identify (.+)'
-
 class IrcParser
     def on_packet( pkt )
         if pkt.to_s =~ /NICK\s+.+/ or pkt.to_s =~ /NS IDENTIFY\s+.+/ or pkt.to_s =~ /nickserv :identify\s+.+/
