@@ -22,7 +22,7 @@ module Logger
     end
 
     def debug(message)
-      write(formatted_message(message, "D").light_black)
+      # write(formatted_message(message, "D").light_black)
     end
 
     def write(message)
