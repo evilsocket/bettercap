@@ -9,14 +9,10 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require_relative '../logger'
-require 'colorize'
+require_relative 'base'
 
-class FtpParser
-    def on_packet( pkt )
-        if pkt.to_s =~ /(USER|PASS)\s+.+/
-            Logger.write "[#{pkt.ip_saddr} -> #{pkt.ip_daddr} #{pkt.proto.last}]\n\n" +
-                         pkt.payload.strip + "\n\n"
-        end
+class FtpParser < BaseParser
+    def initialize
+        @filters = [ /(USER|PASS)\s+.+/ ]
     end
 end

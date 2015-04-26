@@ -36,7 +36,8 @@ begin
     :spoofer => 'ARP',
     :target => nil,
     :logfile => nil,
-    :sniffer => false
+    :sniffer => false,
+    :local => false
   }
 
   puts "---------------------------------------------------------".yellow
@@ -60,8 +61,12 @@ begin
       options[:target] = v
     end
 
-    opts.on( "-L", "--log LOG_FILE", "Log all messagges into a file, if not specified the log messages will be only print into the shell." ) do |v|
+    opts.on( "-O", "--log LOG_FILE", "Log all messagges into a file, if not specified the log messages will be only print into the shell." ) do |v|
       options[:logfile] = v
+    end
+
+    opts.on( '-L', "--local", "Parse packets coming from/to the address of this computer, default to False." ) do
+      options[:local] = true
     end
 
     opts.on( "-X", "--sniffer", "Enable sniffer." ) do
@@ -101,8 +106,10 @@ begin
 
   spoofer.start
 
+  Logger.write "\n"
+  
   if options[:sniffer]
-      Sniffer.start( options[:iface], iface[:ip_saddr] )
+      Sniffer.start( options[:iface], iface[:ip_saddr], options[:local] )
   else
       loop do
         sleep 1

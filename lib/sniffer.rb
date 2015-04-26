@@ -18,7 +18,7 @@ class Sniffer
 
     @@parsers = nil
 
-    def self.start( iface, my_addr )
+    def self.start( iface, my_addr, local )
         if @@parsers.nil?
             @@parsers = []
 
@@ -39,8 +39,8 @@ class Sniffer
         cap.stream.each do |p|
             pkt = Packet.parse p
             if pkt.is_ip?
-                next if pkt.ip_saddr == my_addr or pkt.ip_daddr == my_addr
-                
+                next if ( pkt.ip_saddr == my_addr or pkt.ip_daddr == my_addr ) and local == false
+
                 @@parsers.each do |parser|
                     parser.on_packet pkt
                 end
