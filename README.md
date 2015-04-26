@@ -17,6 +17,10 @@ It's currently able to sniff and print from the network the following informatio
 - POP, IMAP and SMTP credentials.
 - NTLMv1/v2 ( HTTP, SMB, LDAP, etc ) credentials.
 
+| Screenshots |
+|:-----:|
+| ![Screen1](https://raw.githubusercontent.com/evilsocket/bettercap/master/screenshot.png) |
+
 DEPENDS
 ===
 - colorize (**gem install colorize**)
