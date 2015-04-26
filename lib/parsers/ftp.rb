@@ -14,5 +14,6 @@ require_relative 'base'
 class FtpParser < BaseParser
     def initialize
         @filters = [ /(USER|PASS)\s+.+/ ]
+        @name = 'FTP'
     end
 end

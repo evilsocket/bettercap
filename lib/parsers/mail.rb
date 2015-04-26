@@ -14,5 +14,6 @@ require_relative 'base'
 class MailParser < BaseParser
     def initialize
         @filters = [ /(\d+ )?(auth|authenticate) (login|plain)/i, /(\d+ )?login/i ]
+        @name = 'MAIL'
     end
 end

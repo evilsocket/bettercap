@@ -15,6 +15,7 @@ require 'colorize'
 class BaseParser
     def initialize
         @filters = []
+        @name = 'BASE'
     end
 
     def on_packet( pkt )
@@ -22,6 +23,7 @@ class BaseParser
         @filters.each do |filter|
             if s =~ filter
                 Logger.write "[#{pkt.ip_saddr}:#{pkt.tcp_src} > #{pkt.ip_daddr}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
+                             "[#{@name}] ".green +
                              pkt.payload.strip.yellow
             end
         end

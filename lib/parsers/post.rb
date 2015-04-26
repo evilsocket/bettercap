@@ -16,7 +16,8 @@ class PostParser < BaseParser
     def on_packet( pkt )
         s = pkt.to_s
         if s =~ /POST\s+[^\s]+\s+HTTP.+/
-            Logger.write "[#{pkt.ip_saddr}:#{pkt.tcp_src} > #{pkt.ip_daddr}:#{pkt.tcp_dst} #{pkt.proto.last}]\n" +
+            Logger.write "[#{pkt.ip_saddr}:#{pkt.tcp_src} > #{pkt.ip_daddr}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
+                         "[POST]\n".green +
                          pkt.payload.strip.yellow
         end
     end

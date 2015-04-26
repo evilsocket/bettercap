@@ -14,5 +14,6 @@ require_relative 'base'
 class IrcParser < BaseParser
     def initialize
         @filters = [ /NICK\s+.+/, /NS IDENTIFY\s+.+/, /nickserv :identify\s+.+/ ]
+        @name = 'IRC'
     end
 end
