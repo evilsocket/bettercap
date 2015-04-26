@@ -11,6 +11,7 @@ BetterCap is an attempt to create a complete, modular, portable and easily exten
 It's currently able to sniff and print from the network the following informations:
 
 - URLs being visited.
+- HTTPS host being visited.
 - HTTP POSTed data.
 - FTP credentials.
 - IRC credentials.
