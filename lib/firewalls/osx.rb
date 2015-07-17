@@ -21,6 +21,14 @@ class OSXFirewall < IFirewall
     end
   end
 
+  def enable_icmp_bcast(enabled)
+    if enabled then
+      Shell.execute("sysctl -w net.inet.icmp.bmcastecho=1") 
+    else
+      Shell.execute("sysctl -w net.inet.icmp.bmcastecho=0")       
+    end
+  end
+
   def forwarding_enabled?()
     Shell.execute("sysctl net.inet.ip.forwarding").strip.split(' ')[1] == "1"
   end

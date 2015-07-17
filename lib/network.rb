@@ -12,6 +12,7 @@ This project is released under the GPL 3 license.
 require_relative 'logger'
 require_relative 'shell'
 require_relative 'target'
+require_relative 'factories/firewall_factory'
 
 class Network
 
@@ -30,11 +31,12 @@ class Network
   # FIXME: This should be done with PacketFu
   def Network.get_alive_targets( iface, gw_ip, local_ip, timeout = 5 )
     Logger.info( "Searching for alive targets ..." )
-
+    
+    FirewallFactory.get_firewall.enable_icmp_bcast(true)
+      
     if RUBY_PLATFORM =~ /darwin/
       ping = Shell.execute("ping -i #{timeout} -c 2 255.255.255.255")
-    elsif RUBY_PLATFORM =~ /linux/
-      Shell.execute("echo 0 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts")
+    elsif RUBY_PLATFORM =~ /linux/      
       ping = Shell.execute("ping -i #{timeout} -c 2 -b 255.255.255.255")
     else
       raise "Unsupported operating system"

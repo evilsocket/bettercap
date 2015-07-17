@@ -24,6 +24,14 @@ class LinuxFirewall < IFirewall
   def forwarding_enabled?()
     Shell.execute("cat /proc/sys/net/ipv4/ip_forward").strip == "1"
   end
+  
+  def enable_icmp_bcast(enabled)
+    if enabled then
+      Shell.execute("echo 0 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts")       
+    else
+      Shell.execute("echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts")
+    end
+  end
 
   def add_port_redirection( iface, proto, from, addr, to )
     # clear nat
