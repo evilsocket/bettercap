@@ -89,6 +89,8 @@ begin
   gateway  = Network.get_gateway
   targets  = nil
 
+  raise "Could not determine IPv4 address of '#{options[:iface]}' interface." unless !network.nil?
+
   if options[:target].nil?
     Logger.info "Targeting the whole subnet #{network.to_range} ..."
 
