@@ -34,6 +34,7 @@ class Network
     if RUBY_PLATFORM =~ /darwin/
       ping = Shell.execute("ping -i #{timeout} -c 2 255.255.255.255")
     elsif RUBY_PLATFORM =~ /linux/
+      Shell.execute("echo 0 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts")
       ping = Shell.execute("ping -i #{timeout} -c 2 -b 255.255.255.255")
     else
       raise "Unsupported operating system"
