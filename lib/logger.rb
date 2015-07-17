@@ -28,12 +28,12 @@ module Logger
     def write(message)
       puts message
       if @logfile != nil
-        if !File.readable?(@logfile) and !File.directory?(@logfile)
+        if File.readable?(@logfile) and !File.directory?(@logfile)
           f = File.open(@logfile,"a");
           f.puts(message + "\n")
           f.close
         else
-          puts "Error writing file log.".red
+          puts "Error writing log file.".red
         end
       end
     end
