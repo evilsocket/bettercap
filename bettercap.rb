@@ -129,7 +129,8 @@ rescue Interrupt
   Logger.info "Exiting ..."
 
 rescue Exception => e
-  Logger.error "#{e}"
+  Logger.error e.message
+  Logger.error e.backtrace.join("\n")
 
 ensure
   if not spoofer.nil?
