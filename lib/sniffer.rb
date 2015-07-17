@@ -10,6 +10,7 @@ This project is released under the GPL 3 license.
 
 =end
 require_relative 'logger'
+require_relative 'factories/parser_factory'
 require 'colorize'
 require 'packetfu'
 
@@ -18,22 +19,8 @@ class Sniffer
 
     @@parsers = nil
 
-    def self.start( iface, my_addr, local )
-        if @@parsers.nil?
-            @@parsers = []
-
-            path = File.dirname(__FILE__) + '/parsers/'
-
-            Dir.foreach(path) do |file|
-              if file =~ /.rb/
-                  cname = file.gsub('.rb','').upcase
-
-                  require_relative "#{path}#{file}"
-
-                  @@parsers << Kernel.const_get("#{cname.capitalize}Parser").new
-              end
-            end
-        end
+    def self.start( parsers, iface, my_addr, local )
+        @@parsers = ParserFactory.load_by_names(parsers)
 
         cap = Capture.new(:iface => iface, :start => true)
         cap.stream.each do |p|

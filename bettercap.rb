@@ -20,6 +20,7 @@ require 'ipaddr'
 require_relative 'lib/monkey/packetfu/utils'
 require_relative 'lib/factories/firewall_factory'
 require_relative 'lib/factories/spoofer_factory'
+require_relative 'lib/factories/parser_factory'
 require_relative 'lib/logger'
 require_relative 'lib/shell'
 require_relative 'lib/network'
@@ -37,6 +38,7 @@ begin
     :target => nil,
     :logfile => nil,
     :sniffer => false,
+    :parsers => ['*'],
     :local => false
   }
 
@@ -71,6 +73,11 @@ begin
 
     opts.on( "-X", "--sniffer", "Enable sniffer." ) do
       options[:sniffer] = true
+    end
+
+    opts.on( "-P", "--parsers PARSERS", "Comma separated list of packet parsers to enable, '*' for all ( NOTE: Will set -X to true ), available: " + ParserFactory.available.join(', ') + " - default: *" ) do |v|
+      options[:sniffer] = true      
+      options[:parsers] = ParserFactory.from_cmdline(v)
     end
   end.parse!
 
@@ -109,7 +116,7 @@ begin
   Logger.write "\n"
   
   if options[:sniffer]
-      Sniffer.start( options[:iface], iface[:ip_saddr], options[:local] )
+      Sniffer.start( options[:parsers], options[:iface], iface[:ip_saddr], options[:local] )
   else
       loop do
         sleep 1
