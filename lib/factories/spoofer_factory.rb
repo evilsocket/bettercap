@@ -25,6 +25,8 @@ class SpooferFactory
 
     raise "Invalid spoofer name '#{name}'!" unless avail.include? name
 
+    name.downcase!
+
     require_relative "../spoofers/#{name}"
 
     Kernel.const_get("#{name.capitalize}Spoofer").new(iface, router_ip, targets)
