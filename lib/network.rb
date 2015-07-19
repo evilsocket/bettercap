@@ -103,11 +103,12 @@ class Network
     Logger.debug "ARP:\n#{arp}"
     
     arp.split("\n").each do |line|
-      m = /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{iface}.*/i.match(line)
+      Logger.debug "ARP LINE: '#{line}'"
+      m = /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{iface}.*/i.match(line)      
       if !m.nil?
-        Logger.debug "'#{line}' matched regexp - m1=#{m[1]} m2=#{m[2]}"        
+        Logger.debug " line matched regexp - m1=#{m[1]} m2=#{m[2]}"        
         if m[1] != gw_ip and m[1] != local_ip and m[2] != "ff:ff:ff:ff:ff:ff"
-          Logger.debug "Adding to targets."
+          Logger.debug " adding to targets."
         
           target = Target.new( m[1], m[2] )
           targets << target
