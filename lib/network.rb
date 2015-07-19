@@ -31,20 +31,42 @@ class Network
     gw
   end
 
-  # FIXME: This should be done with PacketFu
-  def Network.get_alive_targets( iface, gw_ip, local_ip, timeout = 5 )
+  def Network.get_alive_targets( ifconfig, gw_ip, local_ip, timeout = 5 )
     Logger.info( "Searching for alive targets ..." )
-    
-    FirewallFactory.get_firewall.enable_icmp_bcast(true)
-      
-    if RUBY_PLATFORM =~ /darwin/
-      ping = Shell.execute("ping -i #{timeout} -c 2 255.255.255.255")
-    elsif RUBY_PLATFORM =~ /linux/      
-      ping = Shell.execute("ping -i #{timeout} -c 2 -b 255.255.255.255")
-    else
-      raise "Unsupported operating system"
-    end
 
+    iface = ifconfig[:iface]
+    net = ip = ifconfig[:ip4_obj]
+    
+    netbios_port = 137
+    netbios_message =
+      "\x82\x28\x00\x00\x00" +
+      "\x01\x00\x00\x00\x00" +
+      "\x00\x00\x20\x43\x4B" +
+      "\x41\x41\x41\x41\x41" +
+      "\x41\x41\x41\x41\x41" +
+      "\x41\x41\x41\x41\x41" +
+      "\x41\x41\x41\x41\x41" +
+      "\x41\x41\x41\x41\x41" +
+      "\x41\x41\x41\x41\x41" +
+      "\x00\x00\x21\x00\x01"
+
+    # loop each ip in our subnet
+    while net.include?ip
+      # send netbios udp packet, just to fill ARP table
+      begin
+        sd = UDPSocket.new
+        sd.send( netbios_message, 0, ip.to_s, netbios_port )
+        sd = nil
+      rescue      
+      end
+
+      ip = ip.succ
+    end
+    
+    # just to be sure :P
+    sleep 5
+
+    # finally parse the ARP table
     arp     = Shell.execute("arp -a")
     targets = []
 

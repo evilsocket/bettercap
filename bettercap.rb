@@ -94,7 +94,7 @@ begin
   if options[:target].nil?
     Logger.info "Targeting the whole subnet #{network.to_range} ..."
 
-    targets = Network.get_alive_targets options[:iface], gateway, iface[:ip_saddr]
+    targets = Network.get_alive_targets ifconfig, gateway, iface[:ip_saddr]
 
     raise "No alive targets found." unless targets.size > 0
 
