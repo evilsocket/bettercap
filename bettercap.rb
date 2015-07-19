@@ -99,6 +99,8 @@ begin
   raise "Could not determine IPv4 address of '#{options[:iface]}' interface." unless !network.nil?
 
   Logger.debug "network=#{network} gateway=#{gateway} local_ip=#{iface[:ip_saddr]}"
+  Logger.debug "IFCONFIG: #{ifconfig.inspect}"
+  Logger.debug "IFACE: #{iface.inspect}"
 
   if options[:target].nil?
     Logger.info "Targeting the whole subnet #{network.to_range} ..."
