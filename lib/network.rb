@@ -78,7 +78,7 @@ class Network
     workers = (0...4).map do
       Thread.new do
         begin
-          while ip = queue.pop()
+          while ip = queue.pop(true)
             Logger.debug "Probing #{ip} ..."
 
             # send netbios udp packet, just to fill ARP table            
@@ -93,15 +93,8 @@ class Network
       end
     end
 
-    begin
-      workers.map(&:join) 
-    rescue
-    end
-
-    begin
-      icmp_thread.join
-    rescue
-    end
+    workers.map(&:join) 
+    icmp_thread.join
 
     # finally parse the ARP table
     arp     = Shell.execute("arp -a")
