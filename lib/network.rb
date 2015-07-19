@@ -17,7 +17,10 @@ require_relative 'factories/firewall_factory'
 class Network
 
   def Network.is_ip?(ip)
-    true if ip =~ /^(192|10|172)((\.)(25[0-5]|2[0-4][0-9]|[1][0-9][0-9]|[1-9][0-9]|[0-9])){3}$/
+    if /\A(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\Z/ =~ ip
+      return $~.captures.all? {|i| i.to_i < 256}
+    end
+    false
   end
 
   def Network.get_gateway
