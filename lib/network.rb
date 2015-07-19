@@ -9,6 +9,8 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
+require 'thread'
+
 require_relative 'logger'
 require_relative 'shell'
 require_relative 'target'
@@ -33,6 +35,16 @@ class Network
 
   def Network.get_alive_targets( ifconfig, gw_ip, local_ip, timeout = 5 )
     Logger.info( "Searching for alive targets ..." )
+    
+    FirewallFactory.get_firewall.enable_icmp_bcast(true)
+    
+    icmp_thread = Thread.new do
+      if RUBY_PLATFORM =~ /darwin/
+        ping = Shell.execute("ping -i #{timeout} -c 2 255.255.255.255")
+      elsif RUBY_PLATFORM =~ /linux/      
+        ping = Shell.execute("ping -i #{timeout} -c 2 -b 255.255.255.255")
+      end
+    end
 
     iface = ifconfig[:iface]
     net = ip = ifconfig[:ip4_obj]
@@ -50,21 +62,30 @@ class Network
       "\x41\x41\x41\x41\x41" +
       "\x00\x00\x21\x00\x01"
 
-    # loop each ip in our subnet
+    queue = Queue.new
+    
+    # loop each ip in our subnet and push it to the queue    
     while net.include?ip
-      # send netbios udp packet, just to fill ARP table
-      begin
-        sd = UDPSocket.new
-        sd.send( netbios_message, 0, ip.to_s, netbios_port )
-        sd = nil
-      rescue      
-      end
-
+      queue.push ip
       ip = ip.succ
     end
-    
-    # just to be sure :P
-    sleep 5
+    # spawn the workers! ( tnx to https://blog.engineyard.com/2014/ruby-thread-pool )
+    workers = (0...4).map do
+      Thread.new do
+        begin
+          while ip = queue.pop(true)
+            # send netbios udp packet, just to fill ARP table            
+            sd = UDPSocket.new
+            sd.send( netbios_message, 0, ip.to_s, netbios_port )
+            sd = nil
+            # TODO: Parse response for hostname?
+          end
+        rescue
+        end
+      end
+    end
+    workers.map(&:join)
+    icmp_thread.join
 
     # finally parse the ARP table
     arp     = Shell.execute("arp -a")
