@@ -25,7 +25,7 @@ class Sniffer
         cap = Capture.new(:iface => iface, :start => true)
         cap.stream.each do |p|
             pkt = Packet.parse p
-            if pkt.is_ip?
+            if not pkt.nil? and pkt.is_ip?
                 next if ( pkt.ip_saddr == my_addr or pkt.ip_daddr == my_addr ) and local == false
 
                 @@parsers.each do |parser|
