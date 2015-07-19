@@ -29,7 +29,7 @@ module PacketFu
           raise ArgumentError, "Cannot ifconfig #{iface}"
         end
         real_iface = ifconfig_data.first
-        ret[:iface] = real_iface.split.first.downcase
+        ret[:iface] = real_iface.split.first.downcase.gsub(':','')
         if real_iface =~ /[\s]HWaddr[\s]+([0-9a-fA-F:]{17})/i
           ret[:eth_saddr] = $1.downcase
           ret[:eth_src] = EthHeader.mac2str(ret[:eth_saddr])
