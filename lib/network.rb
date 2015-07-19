@@ -26,7 +26,11 @@ class Network
   end
 
   def Network.get_gateway
-    out = Shell.execute("netstat -nr").split(/\n/).select {|n| n =~ /UG/ }
+    nstat = Shell.execute("netstat -nr")
+
+    Logger.debug "NETSTAT:\n#{nstat}"
+      
+    out = nstat.split(/\n/).select {|n| n =~ /UG/ }
     gw = out.first.split[1]
 
     raise "Could not detect gateway address" unless is_ip?(gw)
@@ -69,28 +73,42 @@ class Network
       queue.push ip
       ip = ip.succ
     end
+
     # spawn the workers! ( tnx to https://blog.engineyard.com/2014/ruby-thread-pool )
     workers = (0...4).map do
       Thread.new do
         begin
-          while ip = queue.pop(true)
+          while ip = queue.pop()
+            Logger.debug "Probing #{ip} ..."
+
             # send netbios udp packet, just to fill ARP table            
             sd = UDPSocket.new
             sd.send( netbios_message, 0, ip.to_s, netbios_port )
             sd = nil
             # TODO: Parse response for hostname?
           end
-        rescue
+        rescue Exception => e
+          Logger.debug "#{ip} -> #{e.message}"
         end
       end
     end
-    workers.map(&:join)
-    icmp_thread.join
+
+    begin
+      workers.map(&:join) 
+    rescue
+    end
+
+    begin
+      icmp_thread.join
+    rescue
+    end
 
     # finally parse the ARP table
     arp     = Shell.execute("arp -a")
     targets = []
-
+    
+    Logger.debug "ARP:\n#{arp}"
+    
     arp.split("\n").each do |line|
       if line =~ /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{iface}.*/i
         if $1 != gw_ip and $1 != local_ip and $2 != "ff:ff:ff:ff:ff:ff"

@@ -39,7 +39,8 @@ begin
     :logfile => nil,
     :sniffer => false,
     :parsers => ['*'],
-    :local => false
+    :local => false,
+    :debug => false
   }
 
   puts "---------------------------------------------------------".yellow
@@ -67,6 +68,10 @@ begin
       options[:logfile] = v
     end
 
+    opts.on( "-D", "--debug", "Enable debug logging." ) do
+      options[:debug] = true
+    end
+
     opts.on( '-L', "--local", "Parse packets coming from/to the address of this computer, default to False." ) do
       options[:local] = true
     end
@@ -81,6 +86,8 @@ begin
     end
   end.parse!
 
+  Logger.debug_enabled = true unless !options[:debug]
+
   Logger.logfile = options[:logfile]
   iface    = PacketFu::Utils.whoami? :iface => options[:iface]
   ifconfig = PacketFu::Utils.ifconfig options[:iface]
@@ -90,6 +97,8 @@ begin
   targets  = nil
 
   raise "Could not determine IPv4 address of '#{options[:iface]}' interface." unless !network.nil?
+
+  Logger.debug "network=#{network} gateway=#{gateway} local_ip=#{iface[:ip_saddr]}"
 
   if options[:target].nil?
     Logger.info "Targeting the whole subnet #{network.to_range} ..."

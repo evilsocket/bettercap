@@ -11,7 +11,7 @@ This project is released under the GPL 3 license.
 =end
 module Logger
   class << self
-    attr_accessor :logfile
+    attr_accessor :logfile, :debug_enabled
 
     def error(message)
       write(formatted_message(message, "E").red)
@@ -22,7 +22,9 @@ module Logger
     end
 
     def debug(message)
-      # write(formatted_message(message, "D").light_black)
+      if @debug_enabled
+        write(formatted_message(message, "D").light_black)
+      end
     end
 
     def write(message)
