@@ -29,7 +29,7 @@ module Logger
       puts message
       if @logfile != nil
         f = File.open(@logfile,"a+t");
-        f.puts(message + "\n")
+        f.puts( message.gsub( /\e\[(\d+)(;\d+)*m/, '') + "\n")
         f.close
       end
     end
