@@ -39,10 +39,10 @@ class Network
 
   def Network.get_alive_targets( ifconfig, gw_ip, local_ip, timeout = 5 )
     Logger.info( "Searching for alive targets ..." )
-    
-    FirewallFactory.get_firewall.enable_icmp_bcast(true)
-    
+     
     icmp_thread = Thread.new do
+      FirewallFactory.get_firewall.enable_icmp_bcast(true)
+      
       if RUBY_PLATFORM =~ /darwin/
         ping = Shell.execute("ping -i #{timeout} -c 2 255.255.255.255")
       elsif RUBY_PLATFORM =~ /linux/      
