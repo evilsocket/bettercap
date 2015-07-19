@@ -70,7 +70,12 @@ class Network
     
     # loop each ip in our subnet and push it to the queue    
     while net.include?ip
-      queue.push ip
+      # rescanning the gateway could cause an issue when the 
+      # gateway itself has multiple interfaces ( LAN, WAN ... )
+      if ip != gw_ip and ip != local_ip
+        queue.push ip
+      end
+
       ip = ip.succ
     end
 
