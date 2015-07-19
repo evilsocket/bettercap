@@ -41,6 +41,11 @@ module PacketFu
             ret[:ip_src] = [IPAddr.new($1).to_i].pack("N")
             ret[:ip4_obj] = IPAddr.new($1)
             ret[:ip4_obj] = ret[:ip4_obj].mask($3) if $3
+          when /inet[\s]+([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)(.*Mask[\s]+([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+))?/i
+            ret[:ip_saddr] = $1
+            ret[:ip_src] = [IPAddr.new($1).to_i].pack("N")
+            ret[:ip4_obj] = IPAddr.new($1)
+            ret[:ip4_obj] = ret[:ip4_obj].mask($3) if $3
           when /inet6 addr:[\s]*([0-9a-fA-F:\x2f]+)/
             ret[:ip6_saddr] = $1
             ret[:ip6_obj] = IPAddr.new($1)
