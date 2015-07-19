@@ -125,8 +125,7 @@ begin
       end
   end
 
-rescue Interrupt
-  Logger.info "Exiting ..."
+rescue SystemExit, Interrupt
 
 rescue Exception => e
   Logger.error e.message
