@@ -15,14 +15,21 @@ This project is released under the GPL 3 license.
 # regular expression.
 #
 # ORIGINAL: https://github.com/packetfu/packetfu/blob/master/lib/packetfu/utils.rb#L204
+require_relative '../../logger'
+
 module PacketFu
   class Utils
     def self.ifconfig(iface='eth0')
       ret = {}
       iface = iface.to_s.scan(/[0-9A-Za-z]/).join
+
+      Logger.debug "ifconfig #{iface}"
+      
       case RUBY_PLATFORM
       when /linux/i
         ifconfig_data = %x[ifconfig #{iface}]
+        Logger.debug "Linux ifconfig #{iface}:\n#{ifconfig_data}"
+        
         if ifconfig_data =~ /#{iface}/i
           ifconfig_data = ifconfig_data.split(/[\s]*\n[\s]*/)
         else
@@ -53,6 +60,8 @@ module PacketFu
         end # linux
       when /darwin/i
         ifconfig_data = %x[ifconfig #{iface}]
+        Logger.debug "OSX ifconfig #{iface}:\n#{ifconfig_data}"
+        
         if ifconfig_data =~ /#{iface}/i
           ifconfig_data = ifconfig_data.split(/[\s]*\n[\s]*/)
         else
