@@ -72,8 +72,9 @@ begin
       options[:debug] = true
     end
 
-    opts.on( '-L', "--local", "Parse packets coming from/to the address of this computer, default to False." ) do
+    opts.on( '-L', "--local", "Parse packets coming from/to the address of this computer ( NOTE: Will set -X to true ), default to False." ) do
       options[:local] = true
+      options[:sniffer] = true      
     end
 
     opts.on( "-X", "--sniffer", "Enable sniffer." ) do
