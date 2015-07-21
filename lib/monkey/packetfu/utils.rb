@@ -25,9 +25,10 @@ module PacketFu
 
       Logger.debug "ifconfig #{iface}"
       
+      ifconfig_data = Shell.ifconfig(iface)
+      
       case RUBY_PLATFORM
       when /linux/i
-        ifconfig_data = %x[ifconfig #{iface}]
         Logger.debug "Linux ifconfig #{iface}:\n#{ifconfig_data}"
         
         if ifconfig_data =~ /#{iface}/i
@@ -59,7 +60,6 @@ module PacketFu
           end
         end # linux
       when /darwin/i
-        ifconfig_data = %x[ifconfig #{iface}]
         Logger.debug "OSX ifconfig #{iface}:\n#{ifconfig_data}"
         
         if ifconfig_data =~ /#{iface}/i
