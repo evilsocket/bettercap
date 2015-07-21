@@ -17,6 +17,9 @@ require 'colorize'
 require 'packetfu'
 require 'ipaddr'
 
+Object.send :remove_const, :Config
+Config = RbConfig
+
 require_relative 'lib/monkey/packetfu/utils'
 require_relative 'lib/factories/firewall_factory'
 require_relative 'lib/factories/spoofer_factory'
@@ -30,6 +33,7 @@ require_relative 'lib/sniffer'
 require_relative 'lib/proxy/request'
 require_relative 'lib/proxy/response'
 require_relative 'lib/proxy/proxy'
+require_relative 'lib/proxy/module'
 
 begin
 
@@ -46,7 +50,8 @@ begin
     :debug => false,
     :arpcache => false,
     :proxy => false,
-    :proxy_port => 8080
+    :proxy_port => 8080,
+    :proxy_module => nil
   }
 
   puts "---------------------------------------------------------".yellow
@@ -103,6 +108,10 @@ begin
     opts.on( "--proxy-port PORT", "Set HTTP proxy port, default to " + options[:proxy_port].to_s + " ." ) do |v|
       options[:proxy_port] = v.to_i
     end
+
+    opts.on( "--proxy-module MODULE", "Ruby proxy module to load." ) do |v|
+      options[:proxy_module] = v
+    end
   end.parse!
 
   Logger.debug_enabled = true unless !options[:debug]
@@ -149,8 +158,25 @@ begin
   if options[:proxy]
     firewall.add_port_redirection( options[:iface], 'TCP', 80, iface[:ip_saddr], options[:proxy_port] )
 
+    if not options[:proxy_module].nil?
+      require_relative options[:proxy_module] 
+    
+      Proxy::Module.register_modules 
+      
+      raise "#{options[:proxy_module]} is not a valid bettercap proxy module." unless !Proxy::Module.modules.empty?
+    end
+    
     proxy = Proxy::Proxy.new( iface[:ip_saddr], options[:proxy_port] ) do |request,response|
-      puts "YO"
+      if Proxy::Module.modules.empty?
+        Logger.info "WARNING: No proxy module loaded, skipping request."
+      else
+        # loop each loaded module and execute if enabled
+        Proxy::Module.modules.each do |mod|
+          if mod.is_enabled?
+            mod.on_request request, response
+          end
+        end
+      end
     end
 
     proxy.start  
