@@ -38,7 +38,7 @@ class ParserFactory
     Dir.foreach(path) do |file|
       cname = file.gsub('.rb','').upcase        
       if file =~ /.rb/ and file != 'base.rb' and ( parsers.include?(cname) or parsers == ['*'] )
-        Logger.info "Loading parser #{cname} ..."
+        Logger.debug "Loading parser #{cname} ..."
           
         require_relative "#{path}#{file}" 
         

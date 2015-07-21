@@ -26,7 +26,7 @@ class ArpSpoofer < ISpoofer
     @spoof_thread = nil
     @running      = false
 
-    Logger.info "ARP SPOOFER SELECTED".yellow
+    Logger.debug "ARP SPOOFER SELECTED".yellow
 
     Logger.info "Getting gateway #{@gw_ip} MAC address ..."
     @gw_hw = Network.get_hw_address( @iface, @gw_ip )
@@ -34,7 +34,7 @@ class ArpSpoofer < ISpoofer
       raise "Couldn't determine router MAC"
     end
 
-    Logger.info "[-] Gateway MAC   : #{@gw_hw}"
+    Logger.info "  Gateway MAC   : #{@gw_hw}"
 
     @targets.each do |target|
         if target.mac.nil?
@@ -45,7 +45,7 @@ class ArpSpoofer < ISpoofer
               raise "Couldn't determine target MAC"
             end
 
-            Logger.info "[-] Target MAC    : #{hw}"
+            Logger.info "  Target MAC    : #{hw}"
 
             target.mac = hw
         end

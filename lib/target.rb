@@ -36,7 +36,7 @@ private
 
     def self.lookup_vendor( mac )
         if @@prefixes == nil
-            Logger.info "Preloading hardware vendor prefixes ..."
+            Logger.debug "Preloading hardware vendor prefixes ..."
 
             @@prefixes = {}
             filename = File.dirname(__FILE__) + '/hw-prefixes'

@@ -117,11 +117,11 @@ begin
     targets = [ Target.new( options[:target], nil ) ]
   end
 
-  Logger.info "[-] Local Address : #{iface[:ip_saddr]}"
-  Logger.info "[-] Local MAC     : #{iface[:eth_saddr]}"
-  Logger.info "[-] Gateway       : #{gateway}"
+  Logger.info "  Local Address : #{iface[:ip_saddr]}"
+  Logger.info "  Local MAC     : #{iface[:eth_saddr]}"
+  Logger.info "  Gateway       : #{gateway}"
 
-  Logger.info "Module: " + options[:spoofer]
+  Logger.debug "Module: " + options[:spoofer]
 
   spoofer = SpooferFactory.get_by_name( options[:spoofer], iface, gateway, targets )
 
