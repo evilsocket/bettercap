@@ -36,7 +36,7 @@ Enable sniffer + all parsers and parse local traffic as well:
     
     sudo ruby bettercap.rb -X -L
     
-PROXY
+TRANSPARENT PROXY
 ===
 
 A modular transparent proxy can be started with the --proxy argument, by default it won't do anything 
