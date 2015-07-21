@@ -13,6 +13,7 @@ It's currently able to sniff and print from the network the following informatio
 - URLs being visited.
 - HTTPS host being visited.
 - HTTP POSTed data.
+- HTTP Basic and Digest authentications.
 - FTP credentials.
 - IRC credentials.
 - POP, IMAP and SMTP credentials.
