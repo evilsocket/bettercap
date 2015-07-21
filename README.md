@@ -36,10 +36,6 @@ Enable sniffer + all parsers and parse local traffic as well:
     
     sudo ruby bettercap.rb -X -L
     
-| Screenshots |
-|:-----:|
-| ![Screen1](https://raw.githubusercontent.com/evilsocket/bettercap/master/screenshot.png) |
-
 PROXY
 ===
 
