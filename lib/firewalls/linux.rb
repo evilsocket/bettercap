@@ -47,10 +47,6 @@ class LinuxFirewall < IFirewall
   end
 
   def del_port_redirection( iface, proto, from, addr, to )
-    # clear nat
-    Shell.execute("iptables -t nat -F")
-    # clear
-    Shell.execute("iptables -F")
     # remove post route
     Shell.execute("iptables -t nat -D POSTROUTING -s 0/0 -j MASQUERADE")
     # remove redirection
