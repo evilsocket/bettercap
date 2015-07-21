@@ -40,7 +40,8 @@ begin
     :sniffer => false,
     :parsers => ['*'],
     :local => false,
-    :debug => false
+    :debug => false,
+    :arpcache => false
   }
 
   puts "---------------------------------------------------------".yellow
@@ -85,6 +86,10 @@ begin
       options[:sniffer] = true      
       options[:parsers] = ParserFactory.from_cmdline(v)
     end
+
+    opts.on( "-A", "--arp-cache", "Do not actively search for hosts, just use the current ARP cache, default to False." ) do
+      options[:arpcache] = true
+    end
   end.parse!
 
   Logger.debug_enabled = true unless !options[:debug]
@@ -106,7 +111,7 @@ begin
   if options[:target].nil?
     Logger.info "Targeting the whole subnet #{network.to_range} ..."
 
-    targets = Network.get_alive_targets ifconfig, gateway, iface[:ip_saddr]
+    targets = Network.get_alive_targets options[:arpcache], ifconfig, gateway, iface[:ip_saddr]
 
     raise "No alive targets found." unless targets.size > 0
 

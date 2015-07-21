@@ -37,69 +37,73 @@ class Network
     gw
   end
 
-  def Network.get_alive_targets( ifconfig, gw_ip, local_ip, timeout = 5 )
-    Logger.info( "Searching for alive targets ..." )
-     
-    icmp_thread = Thread.new do
-      FirewallFactory.get_firewall.enable_icmp_bcast(true)
-      
-      if RUBY_PLATFORM =~ /darwin/
-        ping = Shell.execute("ping -i #{timeout} -c 2 255.255.255.255")
-      elsif RUBY_PLATFORM =~ /linux/      
-        ping = Shell.execute("ping -i #{timeout} -c 2 -b 255.255.255.255")
-      end
-    end
+  def Network.get_alive_targets( arpcache, ifconfig, gw_ip, local_ip, timeout = 5 )
+    if arpcache == false
+      Logger.info( "Searching for alive targets ..." )
 
-    iface = ifconfig[:iface]
-    net = ip = ifconfig[:ip4_obj]
-    
-    netbios_port = 137
-    netbios_message =
-      "\x82\x28\x00\x00\x00" +
-      "\x01\x00\x00\x00\x00" +
-      "\x00\x00\x20\x43\x4B" +
-      "\x41\x41\x41\x41\x41" +
-      "\x41\x41\x41\x41\x41" +
-      "\x41\x41\x41\x41\x41" +
-      "\x41\x41\x41\x41\x41" +
-      "\x41\x41\x41\x41\x41" +
-      "\x41\x41\x41\x41\x41" +
-      "\x00\x00\x21\x00\x01"
+      icmp_thread = Thread.new do
+        FirewallFactory.get_firewall.enable_icmp_bcast(true)
 
-    queue = Queue.new
-    
-    # loop each ip in our subnet and push it to the queue    
-    while net.include?ip
-      # rescanning the gateway could cause an issue when the 
-      # gateway itself has multiple interfaces ( LAN, WAN ... )
-      if ip != gw_ip and ip != local_ip
-        queue.push ip
-      end
-
-      ip = ip.succ
-    end
-
-    # spawn the workers! ( tnx to https://blog.engineyard.com/2014/ruby-thread-pool )
-    workers = (0...4).map do
-      Thread.new do
-        begin
-          while ip = queue.pop(true)
-            Logger.debug "Probing #{ip} ..."
-
-            # send netbios udp packet, just to fill ARP table            
-            sd = UDPSocket.new
-            sd.send( netbios_message, 0, ip.to_s, netbios_port )
-            sd = nil
-            # TODO: Parse response for hostname?
-          end
-        rescue Exception => e
-          Logger.debug "#{ip} -> #{e.message}"
+        if RUBY_PLATFORM =~ /darwin/
+          ping = Shell.execute("ping -i #{timeout} -c 2 255.255.255.255")
+        elsif RUBY_PLATFORM =~ /linux/      
+          ping = Shell.execute("ping -i #{timeout} -c 2 -b 255.255.255.255")
         end
       end
-    end
 
-    workers.map(&:join) 
-    icmp_thread.join
+      iface = ifconfig[:iface]
+      net = ip = ifconfig[:ip4_obj]
+
+      netbios_port = 137
+      netbios_message =
+        "\x82\x28\x00\x00\x00" +
+        "\x01\x00\x00\x00\x00" +
+        "\x00\x00\x20\x43\x4B" +
+        "\x41\x41\x41\x41\x41" +
+        "\x41\x41\x41\x41\x41" +
+        "\x41\x41\x41\x41\x41" +
+        "\x41\x41\x41\x41\x41" +
+        "\x41\x41\x41\x41\x41" +
+        "\x41\x41\x41\x41\x41" +
+        "\x00\x00\x21\x00\x01"
+
+      queue = Queue.new
+
+      # loop each ip in our subnet and push it to the queue    
+      while net.include?ip
+        # rescanning the gateway could cause an issue when the 
+        # gateway itself has multiple interfaces ( LAN, WAN ... )
+        if ip != gw_ip and ip != local_ip
+          queue.push ip
+        end
+
+        ip = ip.succ
+      end
+
+      # spawn the workers! ( tnx to https://blog.engineyard.com/2014/ruby-thread-pool )
+      workers = (0...4).map do
+        Thread.new do
+          begin
+            while ip = queue.pop(true)
+              Logger.debug "Probing #{ip} ..."
+
+              # send netbios udp packet, just to fill ARP table            
+              sd = UDPSocket.new
+              sd.send( netbios_message, 0, ip.to_s, netbios_port )
+              sd = nil
+              # TODO: Parse response for hostname?
+            end
+          rescue Exception => e
+            Logger.debug "#{ip} -> #{e.message}"
+          end
+        end
+      end
+
+      workers.map(&:join) 
+      icmp_thread.join
+    else
+      Logger.info "Using current ARP cache."
+    end
 
     # finally parse the ARP table
     arp     = Shell.arp()
