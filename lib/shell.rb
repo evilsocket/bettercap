@@ -18,8 +18,7 @@ module Shell
     end
     
     def ifconfig(iface)
-      # ensure default en language, see https://github.com/evilsocket/bettercap/issues/6
-      self.execute( "LANG=en ifconfig #{iface}" )
+      self.execute( "ifconfig #{iface}" )
     end
 
   end
