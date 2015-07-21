@@ -131,6 +131,8 @@ begin
   if options[:sniffer]
       Sniffer.start( options[:parsers], options[:iface], iface[:ip_saddr], options[:local] )
   else
+      Logger.info "WARNING: Sniffer module was NOT enabled ( -X argument ), this will cause the MITM to run but no data to be collected."
+
       loop do
         sleep 1
       end
