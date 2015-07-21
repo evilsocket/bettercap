@@ -33,7 +33,7 @@ class LinuxFirewall < IFirewall
     end
   end
 
-  def add_port_redirection( iface, proto, from, addr, to )
+  def add_port_redirection( iface, proto, from, to )
     # clear nat
     Shell.execute("iptables -t nat -F")
     # clear
@@ -41,12 +41,12 @@ class LinuxFirewall < IFirewall
     # post route
     Shell.execute("iptables -t nat -I POSTROUTING -s 0/0 -j MASQUERADE")
     # accept all
-    Shell.execute("ptables -P FORWARD ACCEPT")
+    Shell.execute("iptables -P FORWARD ACCEPT")
     # add redirection
-    Shell.execute("iptables -t nat -A PREROUTING -i #{iface} -p #{proto} --dport #{from} -j REDIRECT --to #{addr}:#{to}")
+    Shell.execute("iptables -t nat -A PREROUTING -i #{iface} -p #{proto} --dport #{from} -j REDIRECT --to #{to}")
   end
 
-  def del_port_redirection( iface, proto, from, addr, to )
+  def del_port_redirection( iface, proto, from, to )
     # clear nat
     Shell.execute("iptables -t nat -F")
     # clear
@@ -54,6 +54,6 @@ class LinuxFirewall < IFirewall
     # remove post route
     Shell.execute("iptables -t nat -D POSTROUTING -s 0/0 -j MASQUERADE")
     # remove redirection
-    Shell.execute("iptables -t nat -D PREROUTING -i #{iface} -p #{proto} --dport #{from} -j REDIRECT --to #{addr}:#{to}")
+    Shell.execute("iptables -t nat -D PREROUTING -i #{iface} -p #{proto} --dport #{from} -j REDIRECT --to #{to}")
   end
 end
