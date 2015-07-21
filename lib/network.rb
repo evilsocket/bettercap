@@ -102,7 +102,7 @@ class Network
     icmp_thread.join
 
     # finally parse the ARP table
-    arp     = Shell.execute("arp -a")
+    arp     = Shell.arp()
     targets = []
     
     Logger.debug "ARP:\n#{arp}"

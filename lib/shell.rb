@@ -18,7 +18,11 @@ module Shell
     end
     
     def ifconfig(iface)
-      self.execute( "ifconfig #{iface}" )
+      self.execute( "LANG=en && ifconfig #{iface}" )
+    end
+
+    def arp()
+      self.execute( "LANG=en && arp -a" )
     end
 
   end
