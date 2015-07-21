@@ -57,6 +57,10 @@ Enable proxy and load the module **example_proxy_module.rb**:
     
     sudo ruby bettercap.rb --proxy --proxy-module=example_proxy_module.rb
 
+Disable spoofer and enable proxy ( stand alone proxy mode ):
+
+    sudo ruby bettercap.rb -S NONE --proxy
+
 **Modules**
 
 You can easily implement a module to inject data into pages or just inspect the
