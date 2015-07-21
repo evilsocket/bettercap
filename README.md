@@ -1,4 +1,4 @@
-BetterCap
+BETTERCAP
 ==
 
 Copyleft of **Simone 'evilsocket' Margaritelli**.  
