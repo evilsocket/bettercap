@@ -132,8 +132,6 @@ begin
 
   spoofer.start
 
-  Logger.write "\n"
-  
   if options[:sniffer]
       Sniffer.start( options[:parsers], options[:iface], iface[:ip_saddr], options[:local] )
   else
@@ -145,6 +143,8 @@ begin
   end
 
 rescue SystemExit, Interrupt
+
+  Logger.write "\n"
 
 rescue Exception => e
   Logger.error e.message

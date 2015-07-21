@@ -68,7 +68,7 @@ class ArpSpoofer < ISpoofer
   def start
     stop() unless @running == false
 
-    Logger.info "Starting ARP spoofer ...".yellow
+    Logger.info "Starting ARP spoofer ..."
 
     if @forwarding == false
       Logger.debug "Enabling packet forwarding."

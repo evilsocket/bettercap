@@ -15,23 +15,25 @@ require 'colorize'
 require 'packetfu'
 
 class Sniffer
-    include PacketFu
+  include PacketFu
 
-    @@parsers = nil
+  @@parsers = nil
 
-    def self.start( parsers, iface, my_addr, local )
-        @@parsers = ParserFactory.load_by_names(parsers)
+  def self.start( parsers, iface, my_addr, local )
+    Logger.info "Starting sniffer ..."
 
-        cap = Capture.new(:iface => iface, :start => true)
-        cap.stream.each do |p|
-            pkt = Packet.parse p
-            if not pkt.nil? and pkt.is_ip?
-                next if ( pkt.ip_saddr == my_addr or pkt.ip_daddr == my_addr ) and local == false
+    @@parsers = ParserFactory.load_by_names(parsers)
 
-                @@parsers.each do |parser|
-                    parser.on_packet pkt
-                end
-            end
+    cap = Capture.new(:iface => iface, :start => true)
+    cap.stream.each do |p|
+      pkt = Packet.parse p
+      if not pkt.nil? and pkt.is_ip?
+        next if ( pkt.ip_saddr == my_addr or pkt.ip_daddr == my_addr ) and local == false
+
+        @@parsers.each do |parser|
+          parser.on_packet pkt
         end
+      end
     end
+  end
 end
