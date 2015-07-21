@@ -27,6 +27,9 @@ require_relative 'lib/network'
 require_relative 'lib/version'
 require_relative 'lib/target'
 require_relative 'lib/sniffer'
+require_relative 'lib/proxy/request'
+require_relative 'lib/proxy/response'
+require_relative 'lib/proxy/proxy'
 
 begin
 
@@ -41,7 +44,9 @@ begin
     :parsers => ['*'],
     :local => false,
     :debug => false,
-    :arpcache => false
+    :arpcache => false,
+    :proxy => false,
+    :proxy_port => 8080
   }
 
   puts "---------------------------------------------------------".yellow
@@ -73,7 +78,7 @@ begin
       options[:debug] = true
     end
 
-    opts.on( '-L', "--local", "Parse packets coming from/to the address of this computer ( NOTE: Will set -X to true ), default to False." ) do
+    opts.on( '-L', "--local", "Parse packets coming from/to the address of this computer ( NOTE: Will set -X to true ), default to false." ) do
       options[:local] = true
       options[:sniffer] = true      
     end
@@ -87,8 +92,16 @@ begin
       options[:parsers] = ParserFactory.from_cmdline(v)
     end
 
-    opts.on( "-A", "--arp-cache", "Do not actively search for hosts, just use the current ARP cache, default to False." ) do
+    opts.on( "--arp-cache", "Do not actively search for hosts, just use the current ARP cache, default to false." ) do
       options[:arpcache] = true
+    end
+
+    opts.on( "--proxy", "Enable HTTP proxy and redirects all HTTP requests to it, default to false." ) do
+      options[:proxy] = true
+    end
+
+    opts.on( "--proxy-port PORT", "Set HTTP proxy port, default to " + options[:proxy_port].to_s + " ." ) do |v|
+      options[:proxy_port] = v.to_i
     end
   end.parse!
 
@@ -101,7 +114,8 @@ begin
   firewall = FirewallFactory.get_firewall
   gateway  = Network.get_gateway
   targets  = nil
-
+  proxy    = nil
+  
   raise "Could not determine IPv4 address of '#{options[:iface]}' interface." unless !network.nil?
 
   Logger.debug "network=#{network} gateway=#{gateway} local_ip=#{iface[:ip_saddr]}"
@@ -132,6 +146,16 @@ begin
 
   spoofer.start
 
+  if options[:proxy]
+    firewall.add_port_redirection( options[:iface], 'TCP', 80, iface[:ip_saddr], options[:proxy_port] )
+
+    proxy = Proxy::Proxy.new( iface[:ip_saddr], options[:proxy_port] ) do |request,response|
+      puts "YO"
+    end
+
+    proxy.start  
+  end
+
   if options[:sniffer]
       Sniffer.start( options[:parsers], options[:iface], iface[:ip_saddr], options[:local] )
   else
@@ -153,6 +177,11 @@ rescue Exception => e
 ensure
   if not spoofer.nil?
     spoofer.stop
+  end
+  
+  if not proxy.nil?
+    proxy.stop
+    firewall.del_port_redirection( options[:iface], 'TCP', 80, iface[:ip_saddr], options[:proxy_port] )     
   end
 
   if not firewall.nil?

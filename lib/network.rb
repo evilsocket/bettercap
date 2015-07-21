@@ -37,6 +37,18 @@ class Network
     gw
   end
 
+  def Network.get_local_ips
+    ips = []
+    
+    Shell.ifconfig("").split("\n").each do |line|
+      if line =~ /inet [adr:]*([\d\.]+)/
+        ips << $1
+      end
+    end
+
+    ips
+  end
+
   def Network.get_alive_targets( arpcache, ifconfig, gw_ip, local_ip, timeout = 5 )
     if arpcache == false
       Logger.info( "Searching for alive targets ..." )
