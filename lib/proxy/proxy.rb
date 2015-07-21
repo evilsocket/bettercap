@@ -62,7 +62,7 @@ class Proxy
   private
 
   def server_thread
-    Logger.info "Proxy started on #{@address}:#{@port} ..."
+    Logger.info "Proxy started on #{@address}:#{@port} ...\n"
 
     @running = true
 
@@ -148,25 +148,21 @@ class Proxy
     response_s = "( #{response.content_type} )"
     request_s  = request_s.slice(0..50) + "..." unless request_s.length <= 50
 
-    if Logger.colorize?
-      verb_s = verb_s.light_blue
+    verb_s = verb_s.light_blue
 
-      if response.code[0] == '2'
-        response_s += " [#{response.code}]".green
-      elsif response.code[0] == '3'
-        response_s += " [#{response.code}]".light_black
-      elsif response.code[0] == '4'
-        response_s += " [#{response.code}]".yellow
-      elsif response.code[0] == '5'
-        response_s += " [#{response.code}]".red
-      else
-        response_s += " [#{response.code}]"
-      end
+    if response.code[0] == '2'
+      response_s += " [#{response.code}]".green
+    elsif response.code[0] == '3'
+      response_s += " [#{response.code}]".light_black
+    elsif response.code[0] == '4'
+      response_s += " [#{response.code}]".yellow
+    elsif response.code[0] == '5'
+      response_s += " [#{response.code}]".red
     else
       response_s += " [#{response.code}]"
     end
 
-    Logger.info "#{client_s} #{verb_s} #{request_s} #{response_s}"
+    Logger.write "#{client_s} #{verb_s} #{request_s} #{response_s}"
   end
 
   def is_self_request? request
