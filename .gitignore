@@ -1,5 +1,5 @@
 *.swp
 *.swo
 *.gem
-refresh.sh
+*.sh
 .idea
