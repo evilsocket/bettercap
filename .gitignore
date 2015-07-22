@@ -1,2 +1,5 @@
 *.swp
 *.swo
+*.gem
+refresh.sh
+.idea

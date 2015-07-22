@@ -6,7 +6,8 @@ http://www.evilsocket.net/
 
 ---
 
-BetterCap is an attempt to create a complete, modular, portable and easily extensible **MITM** framework with every kind of features could be needed while performing a man in the middle attack.  
+BetterCap is a complete, modular, portable and easily extensible **MITM** framework with every kind of features could
+be needed while performing a man in the middle attack.
 
 CREDENTIALS SNIFFER
 ===
@@ -80,8 +81,15 @@ class HackTitle < Proxy::Module
 end
 ```
 
+HOW TO INSTALL
+===
+
+    gem build bettercap.gemspec
+    sudo gem install bettercap*.gem
+
 DEPENDS
 ===
+
 - colorize (**gem install colorize**)
 - packetfu (**gem install packetfu**)
 - pcaprub  (**gem install pcaprub**) [sudo apt-get install ruby-dev libpcap-dev]
