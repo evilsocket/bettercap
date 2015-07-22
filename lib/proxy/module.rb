@@ -20,6 +20,11 @@ class Module
     @@modules
   end
 
+  # we're enabled by default, yo!
+  def is_enabled?
+    true
+  end
+
   def self.register_modules
     Object.constants.each do |klass|
       const = Kernel.const_get(klass)

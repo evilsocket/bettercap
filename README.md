@@ -69,24 +69,14 @@ the following is a sample module that injects some contents into the title tag o
 
 ```ruby
 class HackTitle < Proxy::Module
-    def initialize
-        # do your initialization stuff here
+  def on_request( request, response )
+    # is it a html page?
+    if response.content_type == 'text/html'
+      Logger.info "Hacking http://#{request.host}#{request.url} title tag"
+      # make sure to use sub! or gsub! to update the instance
+      response.body.sub!( '<title>', '<title> !!! HACKED !!! ' )
     end
-
-    # self explainatory
-    def is_enabled?
-        return true
-    end
-
-    def on_request request, response
-        # is an html page?
-        if response.content_type == "text/html"
-            Logger.info "Hacking #{http://#{request.host}#{request.url}} title tag"
-
-            # make sure to use sub! or gsub! to update the instance
-            response.body.sub!( "<title>", "<title> !!! HACKED !!! " )
-        end
-    end
+  end
 end
 ```
 
