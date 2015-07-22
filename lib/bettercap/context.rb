@@ -45,7 +45,7 @@ class Context
     @iface = nil
     @ifconfig = nil
     @network = nil
-    @firewall = FirewallFactory.get_firewall
+    @firewall = nil
     @gateway = nil
     @targets = []
     @proxy = nil
@@ -56,6 +56,7 @@ class Context
   end
 
   def update_network
+    @firewall = FirewallFactory.get_firewall
     @iface    = PacketFu::Utils.whoami? :iface => @options[:iface]
     @ifconfig = PacketFu::Utils.ifconfig @options[:iface]
     @network  = @ifconfig[:ip4_obj]

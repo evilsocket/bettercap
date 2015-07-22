@@ -39,8 +39,6 @@ require 'bettercap/proxy/module'
 
 begin
 
-  raise BetterCap::Error, 'This software must run as root.' unless Process.uid == 0
-
   puts '---------------------------------------------------------'.yellow
   puts "                   BETTERCAP v#{BetterCap::VERSION}\n\n".green
   puts '          by Simone "evilsocket" Margaritelli'.green
@@ -107,6 +105,8 @@ begin
       exit
     end
   end.parse!
+
+  raise BetterCap::Error, 'This software must run as root.' unless Process.uid == 0
 
   Logger.debug_enabled = true unless !ctx.options[:debug]
 
