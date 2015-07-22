@@ -17,7 +17,7 @@ require 'colorize'
 require 'packetfu'
 require 'ipaddr'
 
-Object.send :remove_const, :Config
+Object.send :remove_const, :Config rescue nil
 Config = RbConfig
 
 require 'bettercap/error'
