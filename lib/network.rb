@@ -16,6 +16,10 @@ require_relative 'shell'
 require_relative 'target'
 require_relative 'factories/firewall_factory'
 
+require_relative 'discovery/icmp'
+require_relative 'discovery/udp'
+require_relative 'discovery/arp'
+
 class Network
 
   def Network.is_ip?(ip)
@@ -53,88 +57,16 @@ class Network
     if arpcache == false
       Logger.info( "Searching for alive targets ..." )
 
-      icmp_thread = Thread.new do
-        FirewallFactory.get_firewall.enable_icmp_bcast(true)
+      icmp = IcmpAgent.new
+      udp = UdpAgent.new ifconfig, gw_ip, local_ip
 
-        if RUBY_PLATFORM =~ /darwin/
-          ping = Shell.execute("ping -i #{timeout} -c 2 255.255.255.255")
-        elsif RUBY_PLATFORM =~ /linux/      
-          ping = Shell.execute("ping -i #{timeout} -c 2 -b 255.255.255.255")
-        end
-      end
-
-      iface = ifconfig[:iface]
-      net = ip = ifconfig[:ip4_obj]
-
-      netbios_port = 137
-      netbios_message =
-        "\x82\x28\x00\x00\x00" +
-        "\x01\x00\x00\x00\x00" +
-        "\x00\x00\x20\x43\x4B" +
-        "\x41\x41\x41\x41\x41" +
-        "\x41\x41\x41\x41\x41" +
-        "\x41\x41\x41\x41\x41" +
-        "\x41\x41\x41\x41\x41" +
-        "\x41\x41\x41\x41\x41" +
-        "\x41\x41\x41\x41\x41" +
-        "\x00\x00\x21\x00\x01"
-
-      queue = Queue.new
-
-      # loop each ip in our subnet and push it to the queue    
-      while net.include?ip
-        # rescanning the gateway could cause an issue when the 
-        # gateway itself has multiple interfaces ( LAN, WAN ... )
-        if ip != gw_ip and ip != local_ip
-          queue.push ip
-        end
-
-        ip = ip.succ
-      end
-
-      # spawn the workers! ( tnx to https://blog.engineyard.com/2014/ruby-thread-pool )
-      workers = (0...4).map do
-        Thread.new do
-          begin
-            while ip = queue.pop(true)
-              Logger.debug "Probing #{ip} ..."
-
-              # send netbios udp packet, just to fill ARP table            
-              sd = UDPSocket.new
-              sd.send( netbios_message, 0, ip.to_s, netbios_port )
-              sd = nil
-              # TODO: Parse response for hostname?
-            end
-          rescue Exception => e
-            Logger.debug "#{ip} -> #{e.message}"
-          end
-        end
-      end
-
-      workers.map(&:join) 
-      icmp_thread.join
+      icmp.wait
+      udp.wait
     else
       Logger.info "Using current ARP cache."
     end
 
-    # finally parse the ARP table
-    arp     = Shell.arp()
-    targets = []
-    
-    Logger.debug "ARP:\n#{arp}"
-    
-    arp.split("\n").each do |line|
-      m = /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{iface}.*/i.match(line)      
-      if !m.nil?
-        if m[1] != gw_ip and m[1] != local_ip and m[2] != "ff:ff:ff:ff:ff:ff"
-          target = Target.new( m[1], m[2] )
-          targets << target
-          Logger.info "  #{target}"
-        end
-      end
-    end
-
-    targets
+    ArpAgent.parse ifconfig[:iface], gw_ip, local_ip
   end
 
 =begin
