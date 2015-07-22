@@ -18,6 +18,7 @@ require_relative 'factories/firewall_factory'
 
 require_relative 'discovery/icmp'
 require_relative 'discovery/udp'
+require_relative 'discovery/syn'
 require_relative 'discovery/arp'
 
 class Network
@@ -57,7 +58,9 @@ class Network
     if ctx.options[:arpcache] == false
       icmp = IcmpAgent.new timeout
       udp = UdpAgent.new ctx.ifconfig, ctx.gateway, ctx.iface[:ip_saddr]
+      syn = SynAgent.new ctx.ifconfig, ctx.gateway, ctx.iface[:ip_saddr]
 
+      syn.wait
       icmp.wait
       udp.wait
     else
