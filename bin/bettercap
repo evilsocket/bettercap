@@ -60,11 +60,11 @@ begin
       ctx.options[:spoofer] = v
     end
 
-    opts.on( '-T', '--target ADDRESS', 'Target ip address, if not specified the whole subnet will be targeted.' ) do |v|
+    opts.on( '-T', '--target ADDRESS', 'Target IP address, if not specified the whole subnet will be targeted.' ) do |v|
       ctx.options[:target] = v
     end
 
-    opts.on( '-O', '--log LOG_FILE', 'Log all messagges into a file, if not specified the log messages will be only print into the shell.' ) do |v|
+    opts.on( '-O', '--log LOG_FILE', 'Log all messages into a file, if not specified the log messages will be only print into the shell.' ) do |v|
       ctx.options[:logfile] = v
     end
 
@@ -100,6 +100,11 @@ begin
 
     opts.on( '--proxy-module MODULE', 'Ruby proxy module to load.' ) do |v|
       ctx.options[:proxy_module] = File.expand_path v
+    end
+
+    opts.on('-h', '--help', 'Display the available options.') do
+      puts opts
+      exit
     end
   end.parse!
 
