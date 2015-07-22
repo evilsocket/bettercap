@@ -13,7 +13,7 @@ require_relative '../base/ispoofer'
 require_relative '../logger'
 
 class NoneSpoofer < ISpoofer
-  def initialize( iface, router_ip, targets )
+  def initialize
     Logger.warn 'Spoofing disabled.'
   end
 

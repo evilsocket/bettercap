@@ -53,20 +53,18 @@ class Network
     ips
   end
 
-  def Network.get_alive_targets( arpcache, ifconfig, gw_ip, local_ip, timeout = 5 )
-    if arpcache == false
-      Logger.info 'Searching for alive targets ...'
-
-      icmp = IcmpAgent.new
-      udp = UdpAgent.new ifconfig, gw_ip, local_ip
+  def Network.get_alive_targets( ctx, timeout = 5 )
+    if ctx.options[:arpcache] == false
+      icmp = IcmpAgent.new timeout
+      udp = UdpAgent.new ctx.ifconfig, ctx.gateway, ctx.iface[:ip_saddr]
 
       icmp.wait
       udp.wait
     else
-      Logger.info 'Using current ARP cache.'
+      Logger.debug 'Using current ARP cache.'
     end
 
-    ArpAgent.parse ifconfig[:iface], gw_ip, local_ip
+    ArpAgent.parse ctx
   end
 
 =begin

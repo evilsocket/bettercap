@@ -10,15 +10,15 @@ This project is released under the GPL 3 license.
 
 =end
 class ISpoofer
-  def initialize( iface, router_ip, target_ip )
+  def initialize
     raise 'ISpoofer: Unimplemented method!'
   end
 
-  def start()
+  def start
     raise 'ISpoofer: Unimplemented method!'
   end
 
-  def stop()
+  def stop
     raise 'ISpoofer: Unimplemented method!'
   end
 end

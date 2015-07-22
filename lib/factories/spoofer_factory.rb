@@ -20,7 +20,7 @@ class SpooferFactory
     avail
   end
 
-  def SpooferFactory.get_by_name(name, iface, router_ip, targets)
+  def SpooferFactory.get_by_name(name)
     avail = SpooferFactory.available
 
     raise "Invalid spoofer name '#{name}'!" unless avail.include? name
@@ -29,6 +29,6 @@ class SpooferFactory
 
     require_relative "../spoofers/#{name}"
 
-    Kernel.const_get("#{name.capitalize}Spoofer").new(iface, router_ip, targets)
+    Kernel.const_get("#{name.capitalize}Spoofer").new
   end
 end

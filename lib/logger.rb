@@ -13,6 +13,8 @@ module Logger
   class << self
     attr_accessor :logfile, :debug_enabled
 
+    @@semaphore = Mutex.new
+
     def error(message)
       write(formatted_message(message, 'E').red)
     end
@@ -32,12 +34,15 @@ module Logger
     end
 
     def write(message)
-      puts message
-      if !@logfile.nil?
-        f = File.open( @logfile, 'a+t' )
-        f.puts( message.gsub( /\e\[(\d+)(;\d+)*m/, '') + "\n")
-        f.close
-      end
+      # make sure that logging is thread safe
+      @@semaphore.synchronize {
+        puts message
+        if !@logfile.nil?
+          f = File.open( @logfile, 'a+t' )
+          f.puts( message.gsub( /\e\[(\d+)(;\d+)*m/, '') + "\n")
+          f.close
+        end
+      }
     end
 
     private
