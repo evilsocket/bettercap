@@ -97,7 +97,7 @@ begin
       options[:parsers] = ParserFactory.from_cmdline(v)
     end
 
-    opts.on( "--arp-cache", "Do not actively search for hosts, just use the current ARP cache, default to false." ) do
+    opts.on( "--no-discovery", "Do not actively search for hosts, just use the current ARP cache, default to false." ) do
       options[:arpcache] = true
     end
 
