@@ -26,7 +26,7 @@ class ArpSpoofer < ISpoofer
     @spoof_thread = nil
     @running      = false
 
-    Logger.debug "ARP SPOOFER SELECTED".yellow
+    Logger.debug 'ARP SPOOFER SELECTED'
 
     Logger.info "Getting gateway #{@gw_ip} MAC address ..."
     @gw_hw = Network.get_hw_address( @iface, @gw_ip )
@@ -68,10 +68,10 @@ class ArpSpoofer < ISpoofer
   def start
     stop() unless @running == false
 
-    Logger.info "Starting ARP spoofer ..."
+    Logger.info 'Starting ARP spoofer ...'
 
     if @forwarding == false
-      Logger.debug "Enabling packet forwarding."
+      Logger.debug 'Enabling packet forwarding.'
 
       @firewall.enable_forwarding(true)
     end
@@ -80,7 +80,7 @@ class ArpSpoofer < ISpoofer
     @spoof_thread = Thread.new do
       loop do
         if not @running
-            Logger.debug "Stopping spoofing thread ..."
+            Logger.debug 'Stopping spoofing thread ...'
             Thread.exit
             break
         end
@@ -98,9 +98,9 @@ class ArpSpoofer < ISpoofer
   end
 
   def stop
-    raise "ARP spoofer is not running" unless @running
+    raise 'ARP spoofer is not running' unless @running
 
-    Logger.info "Stopping ARP spoofer ..."
+    Logger.info 'Stopping ARP spoofer ...'
 
     Logger.debug "Resetting packet forwarding to #{@forwarding} ..."
     @firewall.enable_forwarding( @forwarding )

@@ -20,7 +20,7 @@ class Sniffer
   @@parsers = nil
 
   def self.start( parsers, iface, my_addr, local )
-    Logger.info "Starting sniffer ..."
+    Logger.info 'Starting sniffer ...'
 
     @@parsers = ParserFactory.load_by_names(parsers)
 

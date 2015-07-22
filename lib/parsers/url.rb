@@ -20,7 +20,7 @@ class UrlParser < BaseParser
             url = $1
             if not url =~ /.+\.(png|jpg|jpeg|bmp|gif|img|ttf|woff|css|js).*/i
                 Logger.write "[#{pkt.ip_saddr}:#{pkt.tcp_src} > #{pkt.ip_daddr}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
-                             "[GET] ".green +
+                             '[GET] '.green +
                              "http://#{host}#{url}".yellow
             end
         end

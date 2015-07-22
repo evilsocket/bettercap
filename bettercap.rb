@@ -54,62 +54,62 @@ begin
     :proxy_module => nil
   }
 
-  puts "---------------------------------------------------------".yellow
+  puts '---------------------------------------------------------'.yellow
   puts "                   BETTERCAP v#{BetterCap::VERSION}\n\n".green
-  puts "          by Simone 'evilsocket' Margaritelli".green
-  puts "                  evilsocket@gmail.com    ".green
+  puts '          by Simone "evilsocket" Margaritelli'.green
+  puts '                  evilsocket@gmail.com    '.green
   puts "---------------------------------------------------------\n\n".yellow
 
   OptionParser.new do |opts|
     opts.banner = "Usage: #{$0} [options]"
 
-    opts.on( "-I", "--interface IFACE", "Network interface name - default: " + options[:iface] ) do |v|
+    opts.on( '-I', '--interface IFACE', 'Network interface name - default: ' + options[:iface] ) do |v|
       options[:iface] = v
     end
 
-    opts.on( "-S", "--spoofer NAME", "Spoofer module to use, available: " + SpooferFactory.available.join(', ') + " - default: " + options[:spoofer] ) do |v|
+    opts.on( '-S', '--spoofer NAME', 'Spoofer module to use, available: ' + SpooferFactory.available.join(', ') + ' - default: ' + options[:spoofer] ) do |v|
       options[:spoofer] = v
     end
 
-    opts.on( "-T", "--target ADDRESS", "Target ip address, if not specified the whole subnet will be targeted." ) do |v|
+    opts.on( '-T', '--target ADDRESS', 'Target ip address, if not specified the whole subnet will be targeted.' ) do |v|
       options[:target] = v
     end
 
-    opts.on( "-O", "--log LOG_FILE", "Log all messagges into a file, if not specified the log messages will be only print into the shell." ) do |v|
+    opts.on( '-O', '--log LOG_FILE', 'Log all messagges into a file, if not specified the log messages will be only print into the shell.' ) do |v|
       options[:logfile] = v
     end
 
-    opts.on( "-D", "--debug", "Enable debug logging." ) do
+    opts.on( '-D', '--debug', 'Enable debug logging.' ) do
       options[:debug] = true
     end
 
-    opts.on( '-L', "--local", "Parse packets coming from/to the address of this computer ( NOTE: Will set -X to true ), default to false." ) do
+    opts.on( '-L', '--local', 'Parse packets coming from/to the address of this computer ( NOTE: Will set -X to true ), default to false.' ) do
       options[:local] = true
       options[:sniffer] = true      
     end
 
-    opts.on( "-X", "--sniffer", "Enable sniffer." ) do
+    opts.on( '-X', '--sniffer', 'Enable sniffer.' ) do
       options[:sniffer] = true
     end
 
-    opts.on( "-P", "--parsers PARSERS", "Comma separated list of packet parsers to enable, '*' for all ( NOTE: Will set -X to true ), available: " + ParserFactory.available.join(', ') + " - default: *" ) do |v|
+    opts.on( '-P', '--parsers PARSERS', 'Comma separated list of packet parsers to enable, "*" for all ( NOTE: Will set -X to true ), available: ' + ParserFactory.available.join(', ') + ' - default: *' ) do |v|
       options[:sniffer] = true      
       options[:parsers] = ParserFactory.from_cmdline(v)
     end
 
-    opts.on( "--no-discovery", "Do not actively search for hosts, just use the current ARP cache, default to false." ) do
+    opts.on( '--no-discovery', 'Do not actively search for hosts, just use the current ARP cache, default to false.' ) do
       options[:arpcache] = true
     end
 
-    opts.on( "--proxy", "Enable HTTP proxy and redirects all HTTP requests to it, default to false." ) do
+    opts.on( '--proxy', 'Enable HTTP proxy and redirects all HTTP requests to it, default to false.' ) do
       options[:proxy] = true
     end
 
-    opts.on( "--proxy-port PORT", "Set HTTP proxy port, default to " + options[:proxy_port].to_s + " ." ) do |v|
+    opts.on( '--proxy-port PORT', 'Set HTTP proxy port, default to ' + options[:proxy_port].to_s + ' .' ) do |v|
       options[:proxy_port] = v.to_i
     end
 
-    opts.on( "--proxy-module MODULE", "Ruby proxy module to load." ) do |v|
+    opts.on( '--proxy-module MODULE', 'Ruby proxy module to load.' ) do |v|
       options[:proxy_module] = v
     end
   end.parse!
@@ -136,7 +136,7 @@ begin
 
     targets = Network.get_alive_targets options[:arpcache], ifconfig, gateway, iface[:ip_saddr]
 
-    raise "No alive targets found." unless targets.size > 0
+    raise 'No alive targets found.' unless targets.size > 0
 
     Logger.info "Collected #{targets.size} total targets."
   else
@@ -149,7 +149,7 @@ begin
   Logger.info "  Local MAC     : #{iface[:eth_saddr]}"
   Logger.info "  Gateway       : #{gateway}"
 
-  Logger.debug "Module: " + options[:spoofer]
+  Logger.debug "Module: #{options[:spoofer]}"
 
   spoofer = SpooferFactory.get_by_name( options[:spoofer], iface, gateway, targets )
 
@@ -168,7 +168,7 @@ begin
     
     proxy = Proxy::Proxy.new( iface[:ip_saddr], options[:proxy_port] ) do |request,response|
       if Proxy::Module.modules.empty?
-        Logger.info "WARNING: No proxy module loaded, skipping request."
+        Logger.warn 'WARNING: No proxy module loaded, skipping request.'
       else
         # loop each loaded module and execute if enabled
         Proxy::Module.modules.each do |mod|
@@ -185,7 +185,7 @@ begin
   if options[:sniffer]
       Sniffer.start( options[:parsers], options[:iface], iface[:ip_saddr], options[:local] )
   else
-      Logger.info "WARNING: Sniffer module was NOT enabled ( -X argument ), this will cause the MITM to run but no data to be collected."
+      Logger.warn 'WARNING: Sniffer module was NOT enabled ( -X argument ), this will cause the MITM to run but no data to be collected.'
 
       loop do
         sleep 1

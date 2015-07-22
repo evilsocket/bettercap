@@ -30,21 +30,21 @@ class Network
   end
 
   def Network.get_gateway
-    nstat = Shell.execute("netstat -nr")
+    nstat = Shell.execute('netstat -nr')
 
     Logger.debug "NETSTAT:\n#{nstat}"
       
     out = nstat.split(/\n/).select {|n| n =~ /UG/ }
     gw = out.first.split[1]
 
-    raise "Could not detect gateway address" unless is_ip?(gw)
+    raise 'Could not detect gateway address' unless is_ip?(gw)
     gw
   end
 
   def Network.get_local_ips
     ips = []
     
-    Shell.ifconfig("").split("\n").each do |line|
+    Shell.ifconfig.split("\n").each do |line|
       if line =~ /inet [adr:]*([\d\.]+)/
         ips << $1
       end
@@ -55,7 +55,7 @@ class Network
 
   def Network.get_alive_targets( arpcache, ifconfig, gw_ip, local_ip, timeout = 5 )
     if arpcache == false
-      Logger.info( "Searching for alive targets ..." )
+      Logger.info 'Searching for alive targets ...'
 
       icmp = IcmpAgent.new
       udp = UdpAgent.new ifconfig, gw_ip, local_ip
@@ -63,7 +63,7 @@ class Network
       icmp.wait
       udp.wait
     else
-      Logger.info "Using current ARP cache."
+      Logger.info 'Using current ARP cache.'
     end
 
     ArpAgent.parse ifconfig[:iface], gw_ip, local_ip
@@ -89,8 +89,8 @@ class Network
       arp_pkt = PacketFu::ARPPacket.new
 
       arp_pkt.eth_saddr     = arp_pkt.arp_saddr_mac = iface[:eth_saddr]
-      arp_pkt.eth_daddr     = "ff:ff:ff:ff:ff:ff"
-      arp_pkt.arp_daddr_mac = "00:00:00:00:00:00"
+      arp_pkt.eth_daddr     = 'ff:ff:ff:ff:ff:ff'
+      arp_pkt.arp_daddr_mac = '00:00:00:00:00:00'
       arp_pkt.arp_saddr_ip  = iface[:ip_saddr]
       arp_pkt.arp_daddr_ip  = ip_address
 
@@ -115,7 +115,7 @@ class Network
 
           timeout += 0.1
 
-          Logger.debug "Retrying ..."
+          Logger.debug 'Retrying ...'
           sleep 0.1
         end
         target_mac

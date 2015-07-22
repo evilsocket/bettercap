@@ -19,7 +19,7 @@ class HttpsParser < BaseParser
             if pkt.tcp_dst == 443
                 hostname = Resolv.getname pkt.ip_daddr
                 Logger.write "[#{pkt.ip_saddr}:#{pkt.tcp_src} > #{pkt.ip_daddr}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
-                             "[HTTPS] ".green +
+                             '[HTTPS] '.green +
                              "https://#{hostname}".yellow
             end
         rescue

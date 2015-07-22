@@ -31,7 +31,7 @@ class Proxy
     begin
       @local_ips = Socket.ip_address_list.collect { |x| x.ip_address }
     rescue
-      Logget.debug "Could not get local ips using Socket module, using Network.get_local_ips method."
+      Logget.warn 'Could not get local ips using Socket module, using Network.get_local_ips method.'
 
       @local_ips = Network.get_local_ips
     end
@@ -49,7 +49,7 @@ class Proxy
 
   def stop
     begin
-      Logger.info "Stopping proxy ..."
+      Logger.info 'Stopping proxy ...'
 
       if @socket and @running
         @running = false        
@@ -72,7 +72,7 @@ class Proxy
       end
     rescue Exception => e
       if @running
-        Logger.error "Error while accepting connection: #{e.inspect}"
+        Logger.warn "Error while accepting connection: #{e.inspect}"
       end
     ensure
       @socket.close unless @socket.nil?
@@ -199,7 +199,7 @@ class Proxy
       # someone is having fun with us =)
       if is_self_request? request
 
-        Logger.error "#{client_ip} is connecting to us directly."
+        Logger.warn "#{client_ip} is connecting to us directly."
 
         rickroll_lamer client
 
@@ -216,7 +216,7 @@ class Proxy
           binary_streaming client, server, :request => request
         end
 
-        Logger.debug "Reading response ..."
+        Logger.debug 'Reading response ...'
 
         response = Response.new
 
@@ -232,13 +232,13 @@ class Proxy
         if response.is_textual?
           log_stream client_ip, request, response
 
-          Logger.debug "Detected textual response"
+          Logger.debug 'Detected textual response'
 
           html_streaming request, response, server, client
         else
           Logger.debug "[#{client_ip}] -> #{request.host}#{request.url} [#{response.code}]"
 
-          Logger.debug "Binary streaming"
+          Logger.debug 'Binary streaming'
 
           binary_streaming server, client, :response => response
         end

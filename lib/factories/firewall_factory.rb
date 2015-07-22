@@ -23,7 +23,7 @@ class FirewallFactory
     elsif RUBY_PLATFORM =~ /linux/
       @@instance = LinuxFirewall.new
     else
-      raise "Unsupported operating system"
+      raise 'Unsupported operating system'
     end
 
     @@instance

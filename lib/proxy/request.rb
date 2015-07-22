@@ -33,7 +33,7 @@ class Request
       @url     = $2
 
       # fix url
-      if @url.include? "://"
+      if @url.include? '://'
         uri = URI::parse @url
         @url = "#{uri.path}" + ( uri.query ? "?#{uri.query}" : "" )
       end
@@ -54,11 +54,11 @@ class Request
 
         # we don't want to have hundreds of threads running
       elsif line =~ /Connection: keep-alive/i
-        line = "Connection: close"
+        line = 'Connection: close'
 
         # disable gzip, chunked, etc encodings
       elsif line =~ /^Accept-Encoding:.*/i
-        line = "Accept-Encoding: identity"
+        line = 'Accept-Encoding: identity'
 
       end
 

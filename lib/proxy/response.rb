@@ -19,7 +19,7 @@ class Response
   def initialize
     @content_type = nil
     @content_length = nil
-    @body = ""
+    @body = ''
     @code = nil
     @headers = []
     @headers_done = false

@@ -14,23 +14,27 @@ module Logger
     attr_accessor :logfile, :debug_enabled
 
     def error(message)
-      write(formatted_message(message, "E").red)
+      write(formatted_message(message, 'E').red)
     end
 
     def info(message)
-      write(formatted_message(message, "I").yellow)
+      write(formatted_message(message, 'I'))
+    end
+
+    def warn(message)
+      write(formatted_message(message, 'W').yellow)
     end
 
     def debug(message)
       if @debug_enabled
-        write(formatted_message(message, "D").light_black)
+        write(formatted_message(message, 'D').light_black)
       end
     end
 
     def write(message)
       puts message
-      if @logfile != nil
-        f = File.open(@logfile,"a+t");
+      if !@logfile.nil?
+        f = File.open( @logfile, 'a+t' )
         f.puts( message.gsub( /\e\[(\d+)(;\d+)*m/, '') + "\n")
         f.close
       end
