@@ -13,9 +13,11 @@ This project is released under the GPL 3 license.
 require_relative '../logger'
 
 class ParserFactory
+  @@path = File.dirname(__FILE__) + '/../sniffer/parsers/'
+
   def ParserFactory.available
     avail = []
-    Dir.foreach( File.dirname(__FILE__) + '/../parsers/') do |file|
+    Dir.foreach( @@path ) do |file|
       if file =~ /.rb/ and file != 'base.rb'
         avail << file.gsub('.rb','').upcase
       end
@@ -34,13 +36,12 @@ class ParserFactory
 
   def ParserFactory.load_by_names(parsers)
     loaded = []
-    path = File.dirname(__FILE__) + '/../parsers/'
-    Dir.foreach(path) do |file|
+    Dir.foreach( @@path ) do |file|
       cname = file.gsub('.rb','').upcase        
       if file =~ /.rb/ and file != 'base.rb' and ( parsers.include?(cname) or parsers == ['*'] )
         Logger.debug "Loading parser #{cname} ..."
           
-        require_relative "#{path}#{file}" 
+        require_relative "#{@@path}#{file}"
         
         loaded << Kernel.const_get("#{cname.capitalize}Parser").new
       end

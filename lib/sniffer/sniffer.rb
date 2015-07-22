@@ -9,8 +9,8 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require_relative 'logger'
-require_relative 'factories/parser_factory'
+require_relative '../logger'
+require_relative '../factories/parser_factory'
 require 'colorize'
 require 'packetfu'
 
