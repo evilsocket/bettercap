@@ -74,14 +74,14 @@ class Context
       while @discovery_running
         empty_list = false
 
-        if @targets.size == 0
+        if @targets.size == 0 and !@options[:arpcache]
           empty_list = true
           Logger.info 'Searching for alive targets ...'
         end
 
         @targets = Network.get_alive_targets self
 
-        if empty_list
+        if empty_list and !@options[:arpcache]
           Logger.info "Collected #{@targets.size} total targets."
           @targets.each do |target|
             Logger.info "  #{target}"
