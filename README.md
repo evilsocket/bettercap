@@ -6,8 +6,36 @@ http://www.evilsocket.net/
 
 ---
 
-BetterCap is a complete, modular, portable and easily extensible **MITM** framework with every kind of features could
-be needed while performing a man in the middle attack.
+**bettercap** is a complete, modular, portable and easily extensible **MITM** tool and framework with every kind of diagnostic
+and offensive feature you could need in order to perform a man in the middle attack.
+
+MOTIVATIONS
+===
+
+> Yet another MITM tool? C'mon, really?!!?
+
+This is exactly what you are thinking right now, isn't it? :D
+But allow yourself to think about it for 5 more minutes ... what you should be really asking is:
+
+> Does a complete, modular, portable and easy to extend MITM tool actually exist?
+
+If your answer is "ettercap", let me tell you something:
+
+* ettercap **was** a great tool, but it made its time.
+* ettercap filters **do not** work most of the times, are outdated and hard to implement due to the specific language they're implemented in.
+* ettercap is freaking **unstable** on big networks ... try to launch the host discovery on a bigger network rather than the usual /24 ;)
+* yeah you can see connections and raw pcap stuff, **nice toy**, but **as a professional researcher I want to see only relevant stuff**.
+* unless you're a C/C++ developer, you can't easily extend ettercap or make your own module.
+
+Indeed you could use more than just one tool ... maybe [arpspoof](http://linux.die.net/man/8/arpspoof) to perform the actual poisoning, [mitmproxy](http://mitmproxy.org) to intercept HTTP stuff and inject your payloads and so forth ... I don't know about you, but I **hate** when I need to use a dozen of tools just to perform one single attack, especially when I need to do some black magic in order to make all of them work on my distro or on OSX ... what about the [KISS](https://en.wikipedia.org/wiki/KISS_principle) principle?
+
+So **bettercap** was born ( isn't the name pure genius? XD ) ...
+
+HOST DISCOVERY + ARP MAN IN THE MIDDLE
+=== 
+
+You can target the whole network or a single known address, it doesn't really matter, bettercap arp spoofing capabilities and its multiple hosts discovery agents will do the dirty work for you.  
+Just launch the tool and wait for it to do its job ... again, [KISS!](https://en.wikipedia.org/wiki/KISS_principle)
 
 CREDENTIALS SNIFFER
 ===
@@ -37,7 +65,7 @@ Enable sniffer + all parsers and parse local traffic as well:
     
     sudo bettercap -X -L
     
-TRANSPARENT PROXY
+MODULAR TRANSPARENT PROXY
 ===
 
 A modular transparent proxy can be started with the --proxy argument, by default it won't do anything 
@@ -84,19 +112,22 @@ end
 HOW TO INSTALL
 ===
 
-**Stable Release**
+**Stable Release ( GEM )**
     
     gem install bettercap
     
 **From Source**
-
+    
+    git clone https://github.com/evilsocket/bettercap
+    cd bettercap
     gem build bettercap.gemspec
     sudo gem install bettercap*.gem
 
 DEPENDS
 ===
 
+All dependencies will be automatically installed through the GEM system.
+
 - colorize (**gem install colorize**)
 - packetfu (**gem install packetfu**)
 - pcaprub  (**gem install pcaprub**) [sudo apt-get install ruby-dev libpcap-dev]
-
