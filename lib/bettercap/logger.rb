@@ -36,6 +36,8 @@ module Logger
     def write(message)
       # make sure that logging is thread safe
       @@semaphore.synchronize {
+        puts message
+
         if !@logfile.nil?
           f = File.open( @logfile, 'a+t' )
           f.puts( message.gsub( /\e\[(\d+)(;\d+)*m/, '') + "\n")
