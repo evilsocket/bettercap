@@ -24,7 +24,7 @@ require 'bettercap/discovery/arp'
 class Network
 
   def Network.is_ip?(ip)
-    if /\A(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\Z/ =~ ip
+    if /\A(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\Z/ =~ ip.to_s
       return $~.captures.all? {|i| i.to_i < 256}
     end
     false
