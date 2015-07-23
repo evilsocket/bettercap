@@ -39,11 +39,8 @@ require 'bettercap/proxy/module'
 
 begin
 
-  puts '---------------------------------------------------------'.yellow
-  puts "                   BETTERCAP v#{BetterCap::VERSION}\n\n".green
-  puts '          by Simone "evilsocket" Margaritelli'.green
-  puts '                  evilsocket@gmail.com    '.green
-  puts "---------------------------------------------------------\n\n".yellow
+  puts BetterCap::BANNER.green.bold
+  puts "\n\n\n"
 
   ctx = Context.get
 
