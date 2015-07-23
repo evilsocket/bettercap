@@ -29,4 +29,8 @@ class FirewallFactory
 
     @@instance
   end
+
+  def FirewallFactory.clear_firewall
+    @@instance = nil
+  end
 end
