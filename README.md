@@ -27,15 +27,15 @@ The built in sniffer is currently able to dissect and print from the network the
 
 Default sniffer mode, all parsers enabled:
     
-    sudo ruby bettercap.rb -X
+    sudo bettercap -X
     
 Enable sniffer and load only specified parsers:
     
-    sudo ruby bettercap.rb -X -P "FTP,HTTPAUTH,MAIL,NTLMSS"
+    sudo bettercap -X -P "FTP,HTTPAUTH,MAIL,NTLMSS"
 
 Enable sniffer + all parsers and parse local traffic as well:
     
-    sudo ruby bettercap.rb -X -L
+    sudo bettercap -X -L
     
 TRANSPARENT PROXY
 ===
@@ -48,19 +48,19 @@ your own modules and manipulate HTTP traffic as you like.
 
 Enable proxy on default ( 8080 ) port with no modules ( quite useless ): 
     
-    sudo ruby bettercap.rb --proxy
+    sudo bettercap --proxy
 
 Enable proxy and use a custom port:
     
-    sudo ruby bettercap.rb --proxy --proxy-port=8081
+    sudo bettercap --proxy --proxy-port=8081
     
 Enable proxy and load the module **example_proxy_module.rb**:
     
-    sudo ruby bettercap.rb --proxy --proxy-module=example_proxy_module.rb
+    sudo bettercap --proxy --proxy-module=example_proxy_module.rb
 
 Disable spoofer and enable proxy ( stand alone proxy mode ):
 
-    sudo ruby bettercap.rb -S NONE --proxy
+    sudo bettercap -S NONE --proxy
 
 **Modules**
 
@@ -83,6 +83,12 @@ end
 
 HOW TO INSTALL
 ===
+
+**Stable Release**
+    
+    gem install bettercap
+    
+**From Source**
 
     gem build bettercap.gemspec
     sudo gem install bettercap*.gem
