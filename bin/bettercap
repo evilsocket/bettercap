@@ -150,6 +150,10 @@ begin
   ctx.spoofer.start
 
   if ctx.options[:proxy]
+    if ctx.options[:parsers].include?'*' or ctx.options[:parsers].include?'URL'
+      Logger.warn "WARNING: Both HTTP transparent proxy and URL parser are enabled, you're gonna see duplicated logs."
+    end
+
     ctx.firewall.add_port_redirection( ctx.options[:iface], 'TCP', 80, ctx.iface[:ip_saddr], ctx.options[:proxy_port] )
 
     if not ctx.options[:proxy_module].nil?
