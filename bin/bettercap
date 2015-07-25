@@ -141,16 +141,14 @@ begin
 
   ctx.spoofer = SpooferFactory.get_by_name( ctx.options[:spoofer] )
 
-  Logger.info "  Local Address : #{ctx.iface[:ip_saddr]}"
-  Logger.info "  Local MAC     : #{ctx.iface[:eth_saddr]}"
-  Logger.info "  Gateway       : #{ctx.gateway}"
+  Logger.info "  Local : #{ctx.iface[:ip_saddr]} ( #{ctx.iface[:eth_saddr]} )"
 
   Logger.debug "Module: #{ctx.options[:spoofer]}"
 
   ctx.spoofer.start
 
   if ctx.options[:proxy]
-    if ctx.options[:parsers].include?'*' or ctx.options[:parsers].include?'URL'
+    if ctx.options[:sniffer] and ( ctx.options[:parsers].include?'*' or ctx.options[:parsers].include?'URL' )
       Logger.warn "WARNING: Both HTTP transparent proxy and URL parser are enabled, you're gonna see duplicated logs."
     end
 
