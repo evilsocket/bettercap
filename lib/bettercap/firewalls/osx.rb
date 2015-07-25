@@ -15,30 +15,30 @@ require 'bettercap/shell'
 class OSXFirewall < IFirewall
   def enable_forwarding(enabled)
     if enabled then
-      Shell.execute('sysctl -w net.inet.ip.forwarding=1')
+      shell.execute('sysctl -w net.inet.ip.forwarding=1')
     else
-      Shell.execute('sysctl -w net.inet.ip.forwarding=0')
+      shell.execute('sysctl -w net.inet.ip.forwarding=0')
     end
   end
 
   def enable_icmp_bcast(enabled)
     if enabled then
-      Shell.execute('sysctl -w net.inet.icmp.bmcastecho=1') 
+      shell.execute('sysctl -w net.inet.icmp.bmcastecho=1') 
     else
-      Shell.execute('sysctl -w net.inet.icmp.bmcastecho=0')       
+      shell.execute('sysctl -w net.inet.icmp.bmcastecho=0')       
     end
   end
 
   def forwarding_enabled?()
-    Shell.execute('sysctl net.inet.ip.forwarding').strip.split(' ')[1] == '1'
+    shell.execute('sysctl net.inet.ip.forwarding').strip.split(' ')[1] == '1'
   end
 
   def enable(enabled)
     begin
       if enabled
-        Shell.execute('pfctl -e >/dev/null 2>&1')
+        shell.execute('pfctl -e >/dev/null 2>&1')
       else
-        Shell.execute('pfctl -d >/dev/null 2>&1')
+        shell.execute('pfctl -d >/dev/null 2>&1')
       end
     rescue
     end
@@ -53,7 +53,7 @@ class OSXFirewall < IFirewall
     end
 
     # load the rule
-    Shell.execute("pfctl -f #{config_file} >/dev/null 2>&1")
+    shell.execute("pfctl -f #{config_file} >/dev/null 2>&1")
     # enable pf
     enable true
   end
@@ -66,5 +66,11 @@ class OSXFirewall < IFirewall
     enable false
     # remove the pf config file
     File.delete( "/tmp/bettercap_pf_#{Process.pid}.conf" )
+  end
+
+  private
+
+  def shell
+    Shell
   end
 end
