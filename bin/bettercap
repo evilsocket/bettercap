@@ -36,14 +36,12 @@ require 'bettercap/proxy/request'
 require 'bettercap/proxy/response'
 require 'bettercap/proxy/proxy'
 require 'bettercap/proxy/module'
+require 'bettercap/httpd/server'
 
 begin
 
-  puts '---------------------------------------------------------'.yellow
-  puts "                   BETTERCAP v#{BetterCap::VERSION}\n\n".green
-  puts '          by Simone "evilsocket" Margaritelli'.green
-  puts '                  evilsocket@gmail.com    '.green
-  puts "---------------------------------------------------------\n\n".yellow
+  puts BetterCap::BANNER.green.bold
+  puts "\n\n\n"
 
   ctx = Context.get
 
@@ -93,15 +91,48 @@ begin
     end
 
     opts.on( '--proxy-port PORT', 'Set HTTP proxy port, default to ' + ctx.options[:proxy_port].to_s + ' .' ) do |v|
+      ctx.options[:proxy] = true
       ctx.options[:proxy_port] = v.to_i
     end
 
     opts.on( '--proxy-module MODULE', 'Ruby proxy module to load.' ) do |v|
+      ctx.options[:proxy] = true
       ctx.options[:proxy_module] = File.expand_path v
+    end
+
+    opts.on( '--httpd', 'Enable HTTP server, default to false.' ) do
+      ctx.options[:httpd] = true
+    end
+
+    opts.on( '--httpd-port PORT', 'Set HTTP server port, default to ' + ctx.options[:httpd_port].to_s +  '.' ) do |v|
+      ctx.options[:httpd] = true
+      ctx.options[:httpd_port] = v.to_i
+    end
+
+    opts.on( '--httpd-path PATH', 'Set HTTP server path, default to ' + ctx.options[:httpd_path] +  '.' ) do |v|
+      ctx.options[:httpd] = true
+      ctx.options[:httpd_path] = v
     end
 
     opts.on('-h', '--help', 'Display the available options.') do
       puts opts
+      puts "\nExamples:\n".bold
+      puts " - Sniffer / Credentials Harvester\n".bold
+      puts "  Default sniffer mode, all parsers enabled:\n\n"
+      puts "    sudo bettercap -X\n".bold
+      puts "  Enable sniffer and load only specified parsers:\n\n"
+      puts "    sudo bettercap -X -P \"FTP,HTTPAUTH,MAIL,NTLMSS\"\n".bold
+      puts "  Enable sniffer + all parsers and parse local traffic as well:\n\n"
+      puts "    sudo bettercap -X -L\n".bold
+      puts " - Transparent Proxy\n".bold
+      puts "  Enable proxy on default ( 8080 ) port with no modules ( quite useless ):\n\n"
+      puts "    sudo bettercap --proxy\n".bold
+      puts "  Enable proxy and use a custom port:\n\n"
+      puts "    sudo bettercap --proxy --proxy-port=8081\n".bold
+      puts "  Enable proxy and load the module example_proxy_module.rb:\n\n"
+      puts "    sudo bettercap --proxy --proxy-module=example_proxy_module.rb\n".bold
+      puts "  Disable spoofer and enable proxy ( stand alone proxy mode ):\n\n"
+      puts "    sudo bettercap -S NONE --proxy".bold
       exit
     end
   end.parse!
@@ -127,15 +158,17 @@ begin
 
   ctx.spoofer = SpooferFactory.get_by_name( ctx.options[:spoofer] )
 
-  Logger.info "  Local Address : #{ctx.iface[:ip_saddr]}"
-  Logger.info "  Local MAC     : #{ctx.iface[:eth_saddr]}"
-  Logger.info "  Gateway       : #{ctx.gateway}"
+  Logger.info "  Local : #{ctx.iface[:ip_saddr]} ( #{ctx.iface[:eth_saddr]} )"
 
   Logger.debug "Module: #{ctx.options[:spoofer]}"
 
   ctx.spoofer.start
 
   if ctx.options[:proxy]
+    if ctx.options[:sniffer] and ( ctx.options[:parsers].include?'*' or ctx.options[:parsers].include?'URL' )
+      Logger.warn "WARNING: Both HTTP transparent proxy and URL parser are enabled, you're gonna see duplicated logs."
+    end
+
     ctx.firewall.add_port_redirection( ctx.options[:iface], 'TCP', 80, ctx.iface[:ip_saddr], ctx.options[:proxy_port] )
 
     if not ctx.options[:proxy_module].nil?
@@ -160,6 +193,11 @@ begin
     end
 
     ctx.proxy.start
+  end
+
+  if ctx.options[:httpd]
+    ctx.httpd = HTTPD::Server.new( ctx.options[:httpd_port], ctx.options[:httpd_path] )
+    ctx.httpd.start
   end
 
   if ctx.options[:sniffer]

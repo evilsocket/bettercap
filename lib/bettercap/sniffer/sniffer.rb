@@ -31,7 +31,11 @@ class Sniffer
         next if ( pkt.ip_saddr == ctx.iface[:ip_saddr] or pkt.ip_daddr == ctx.iface[:ip_saddr] ) and !ctx.options[:local]
 
         @@parsers.each do |parser|
-          parser.on_packet pkt
+          begin
+            parser.on_packet pkt
+          rescue Exception => e
+            Logger.warn e.message
+          end
         end
       end
     end

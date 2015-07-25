@@ -13,7 +13,7 @@ require 'bettercap/sniffer/parsers/base'
 
 class MailParser < BaseParser
     def initialize
-        @filters = [ /(\d+ )?(auth|authenticate) (login|plain)/i, /(\d+ )?login/i ]
+        @filters = [ /(\d+ )?(auth|authenticate) ([a-z\-_0-9]+)/i ]
         @name = 'MAIL'
     end
 end
