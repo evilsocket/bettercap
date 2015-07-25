@@ -12,6 +12,7 @@ This project is released under the GPL 3 license.
 require 'bettercap/logger'
 require 'colorize'
 
+# Weren't you using 2 space for indentation?
 class BaseParser
     def initialize
         @filters = []

@@ -16,7 +16,7 @@ require 'bettercap/firewalls/linux'
 class FirewallFactory
   @@instance = nil
 
-  def FirewallFactory.get_firewall
+  def self.get_firewall
     return @@instance unless @@instance.nil?
 
     if RUBY_PLATFORM =~ /darwin/
@@ -24,7 +24,7 @@ class FirewallFactory
     elsif RUBY_PLATFORM =~ /linux/
       @@instance = LinuxFirewall.new
     else
-      raise BetterCap::Error, 'Unsupported operating system'
+      raise BetterCap::Error, 'Unsupported operating system' # I'd suggest NotImplementedError here btw
     end
 
     @@instance

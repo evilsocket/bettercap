@@ -14,34 +14,22 @@ require 'bettercap/shell'
 
 class OSXFirewall < IFirewall
   def enable_forwarding(enabled)
-    if enabled then
-      Shell.execute('sysctl -w net.inet.ip.forwarding=1')
-    else
-      Shell.execute('sysctl -w net.inet.ip.forwarding=0')
-    end
+    Shell.execute("sysctl -w net.inet.ip.forwarding=#{enabled ? 1 : 0}")
   end
 
   def enable_icmp_bcast(enabled)
-    if enabled then
-      Shell.execute('sysctl -w net.inet.icmp.bmcastecho=1') 
-    else
-      Shell.execute('sysctl -w net.inet.icmp.bmcastecho=0')       
-    end
+    Shell.execute("sysctl -w net.inet.icmp.bmcastecho=#{enabled ? 1 : 0}")
   end
 
-  def forwarding_enabled?()
+  def forwarding_enabled?
     Shell.execute('sysctl net.inet.ip.forwarding').strip.split(' ')[1] == '1'
   end
 
+  # What about making this a private method and the defining `#enable!` and `#disable!`?
   def enable(enabled)
     begin
-      if enabled
-        Shell.execute('pfctl -e >/dev/null 2>&1')
-      else
-        Shell.execute('pfctl -d >/dev/null 2>&1')
-      end
-    rescue
-    end
+      Shell.execute("pfctl -#{enabled ? ?e : ?d} >/dev/null 2>&1")
+    rescue; end
   end
 
   def add_port_redirection( iface, proto, from, addr, to )

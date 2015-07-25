@@ -52,7 +52,7 @@ class Response
     end
   end
 
-  def is_textual?
+  def is_textual? # textual?
     @content_type and ( @content_type =~ /^text\/.+/ or @content_type =~ /^application\/.+/ )
   end
 

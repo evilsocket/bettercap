@@ -17,36 +17,36 @@ class Target
     @@prefixes = nil
 
     def initialize( ip, mac )
-        @ip = ip
-        @mac = mac
-        @vendor = Target.lookup_vendor(mac) if not mac.nil?
-        @hostname = nil # for future use
+      @ip = ip
+      @mac = mac
+      @vendor = Target.lookup_vendor(mac) if not mac.nil?
+      @hostname = nil # for future use
     end
 
     def mac=(value)
-        @mac = value
-        @vendor = Target.lookup_vendor(@mac) if not @mac.nil?
+      @mac = value
+      @vendor = Target.lookup_vendor(@mac) if not @mac.nil?
     end
 
     def to_s
-        "#{@ip} : #{@mac}" + ( @vendor ? " ( #{@vendor} )" : "" )
+      "#{@ip} : #{@mac}" + ( @vendor ? " ( #{@vendor} )" : "" )
     end
 
 private
 
     def self.lookup_vendor( mac )
-        if @@prefixes == nil
-            Logger.debug 'Preloading hardware vendor prefixes ...'
+      if @@prefixes == nil
+        Logger.debug 'Preloading hardware vendor prefixes ...'
 
-            @@prefixes = {}
-            filename = File.dirname(__FILE__) + '/hw-prefixes'
-            File.open( filename ).each do |line|
-                if line =~ /^([A-F0-9]{6})\s(.+)$/
-                    @@prefixes[$1] = $2
-                end
-            end
+        @@prefixes = {}
+        filename = File.dirname(__FILE__) + '/hw-prefixes'
+        File.open( filename ).each do |line|
+          if line =~ /^([A-F0-9]{6})\s(.+)$/
+            @@prefixes[$1] = $2
+          end
         end
+      end
 
-        @@prefixes[ mac.split(':')[0,3].join('').upcase ]
+      @@prefixes[ mac.split(':')[0,3].join('').upcase ]
     end
 end

@@ -12,34 +12,9 @@
 
 =end
 
-require 'optparse'
-require 'colorize'
-require 'packetfu'
-require 'ipaddr'
-
-remove_const(:Config) if const_defined?(:Config)
-const_set(:Config, RbConfig)
-
-require 'bettercap/error'
-require 'bettercap/context'
-require 'bettercap/monkey/packetfu/utils'
-require 'bettercap/factories/firewall_factory'
-require 'bettercap/factories/spoofer_factory'
-require 'bettercap/factories/parser_factory'
-require 'bettercap/logger'
-require 'bettercap/shell'
-require 'bettercap/network'
-require 'bettercap/version'
-require 'bettercap/target'
-require 'bettercap/sniffer/sniffer'
-require 'bettercap/proxy/request'
-require 'bettercap/proxy/response'
-require 'bettercap/proxy/proxy'
-require 'bettercap/proxy/module'
-require 'bettercap/httpd/server'
+require 'bettercap'
 
 begin
-
   puts BetterCap::BANNER.green.bold
   puts "\n\n\n"
 
@@ -147,7 +122,6 @@ begin
     Logger.info "Targeting the whole subnet #{ctx.network.to_range} ..."
 
     ctx.start_discovery_thread
-
   else
     raise BetterCap::Error, "Invalid target '#{ctx.options[:target]}'" unless Network.is_ip? ctx.options[:target]
 
@@ -199,21 +173,19 @@ begin
   end
 
   if ctx.options[:sniffer]
-      Sniffer.start ctx
+    Sniffer.start ctx
   else
-      Logger.warn 'WARNING: Sniffer module was NOT enabled ( -X argument ), this will cause the MITM to run but no data to be collected.'
+    Logger.warn 'WARNING: Sniffer module was NOT enabled ( -X argument ), this will cause the MITM to run but no data to be collected.'
 
-      loop do
-        sleep 1
-      end
+    loop do
+      sleep 1
+    end
   end
 
 rescue SystemExit, Interrupt
-
   Logger.write "\n"
 
 rescue BetterCap::Error => e
-
   Logger.error e.message
 
 rescue Exception => e
