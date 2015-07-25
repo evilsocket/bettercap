@@ -32,7 +32,7 @@ class ArpSpoofer < ISpoofer
       raise BetterCap::Error, "Couldn't determine router MAC"
     end
 
-    Logger.info "  Gateway MAC   : #{@gw_hw}"
+    Logger.info "  Gateway : #{@ctx.gateway} ( #{@gw_hw} )"
   end
 
   def send_spoofed_packed( saddr, smac, daddr, dmac )
