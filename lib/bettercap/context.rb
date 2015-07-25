@@ -15,7 +15,7 @@ require 'bettercap/error'
 
 class Context
   attr_accessor :options, :iface, :ifconfig, :network, :firewall, :gateway,
-                :targets, :spoofer, :proxy
+                :targets, :spoofer, :proxy, :httpd
 
   @@instance = nil
 
@@ -37,9 +37,14 @@ class Context
         :local => false,
         :debug => false,
         :arpcache => false,
+
         :proxy => false,
         :proxy_port => 8080,
-        :proxy_module => nil
+        :proxy_module => nil,
+
+        :httpd => false,
+        :httpd_port => 8081,
+        :httpd_path => './'
     }
 
     @iface = nil
@@ -50,6 +55,7 @@ class Context
     @targets = []
     @proxy = nil
     @spoofer = nil
+    @httpd = nil
 
     @discovery_running = false
     @discovery_thread = nil
@@ -120,6 +126,10 @@ class Context
 
     if !@firewall.nil?
       @firewall.enable_forwarding(false)
+    end
+
+    if !@httpd.nil?
+      @httpd.stop
     end
   end
 end

@@ -36,6 +36,7 @@ require 'bettercap/proxy/request'
 require 'bettercap/proxy/response'
 require 'bettercap/proxy/proxy'
 require 'bettercap/proxy/module'
+require 'bettercap/httpd/server'
 
 begin
 
@@ -95,6 +96,20 @@ begin
 
     opts.on( '--proxy-module MODULE', 'Ruby proxy module to load.' ) do |v|
       ctx.options[:proxy_module] = File.expand_path v
+    end
+
+    opts.on( '--httpd', 'Enable HTTP server, default to false.' ) do
+      ctx.options[:httpd] = true
+    end
+
+    opts.on( '--httpd-port PORT', 'Set HTTP server port, default to ' + ctx.options[:httpd_port].to_s +  '.' ) do |v|
+      ctx.options[:httpd] = true
+      ctx.options[:httpd_port] = v.to_i
+    end
+
+    opts.on( '--httpd-path PATH', 'Set HTTP server path, default to ' + ctx.options[:httpd_path] +  '.' ) do |v|
+      ctx.options[:httpd] = true
+      ctx.options[:httpd_path] = v
     end
 
     opts.on('-h', '--help', 'Display the available options.') do
@@ -176,6 +191,11 @@ begin
     end
 
     ctx.proxy.start
+  end
+
+  if ctx.options[:httpd]
+    ctx.httpd = HTTPD::Server.new( ctx.options[:httpd_port], ctx.options[:httpd_path] )
+    ctx.httpd.start
   end
 
   if ctx.options[:sniffer]
