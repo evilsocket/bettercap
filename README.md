@@ -37,6 +37,8 @@ HOST DISCOVERY + ARP MAN IN THE MIDDLE
 You can target the whole network or a single known address, it doesn't really matter, bettercap arp spoofing capabilities and its multiple hosts discovery agents will do the dirty work for you.  
 Just launch the tool and wait for it to do its job ... again, [KISS!](https://en.wikipedia.org/wiki/KISS_principle)
 
+![credentials](https://raw.github.com/evilsocket/bettercap/master/pics/discovery.png)
+
 CREDENTIALS SNIFFER
 ===
 
@@ -50,6 +52,8 @@ The built in sniffer is currently able to dissect and print from the network the
 - IRC credentials.
 - POP, IMAP and SMTP credentials.
 - NTLMv1/v2 ( HTTP, SMB, LDAP, etc ) credentials.
+
+![credentials](https://raw.github.com/evilsocket/bettercap/master/pics/credentials.png)
 
 **Examples**
 
@@ -71,6 +75,8 @@ MODULAR TRANSPARENT PROXY
 A modular transparent proxy can be started with the --proxy argument, by default it won't do anything 
 but logging HTTP requests, but if you specify a **--proxy-module** argument you will be able to load
 your own modules and manipulate HTTP traffic as you like.  
+
+![credentials](https://raw.github.com/evilsocket/bettercap/master/pics/proxy.png)
 
 **Examples**
 
