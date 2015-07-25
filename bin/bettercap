@@ -17,8 +17,8 @@ require 'colorize'
 require 'packetfu'
 require 'ipaddr'
 
-Object.send :remove_const, :Config rescue nil
-Config = RbConfig
+remove_const(:Config) if const_defined?(:Config)
+const_set(:Config, RbConfig)
 
 require 'bettercap/error'
 require 'bettercap/context'
@@ -70,7 +70,7 @@ begin
 
     opts.on( '-L', '--local', 'Parse packets coming from/to the address of this computer ( NOTE: Will set -X to true ), default to false.' ) do
       ctx.options[:local] = true
-      ctx.options[:sniffer] = true      
+      ctx.options[:sniffer] = true
     end
 
     opts.on( '-X', '--sniffer', 'Enable sniffer.' ) do
@@ -78,7 +78,7 @@ begin
     end
 
     opts.on( '-P', '--parsers PARSERS', 'Comma separated list of packet parsers to enable, "*" for all ( NOTE: Will set -X to true ), available: ' + ParserFactory.available.join(', ') + ' - default: *' ) do |v|
-      ctx.options[:sniffer] = true      
+      ctx.options[:sniffer] = true
       ctx.options[:parsers] = ParserFactory.from_cmdline(v)
     end
 
@@ -142,7 +142,7 @@ begin
   Logger.logfile = ctx.options[:logfile]
 
   ctx.update_network
-  
+
   if ctx.options[:target].nil?
     Logger.info "Targeting the whole subnet #{ctx.network.to_range} ..."
 
@@ -171,12 +171,12 @@ begin
 
     if not ctx.options[:proxy_module].nil?
       require ctx.options[:proxy_module]
-    
-      Proxy::Module.register_modules 
-      
+
+      Proxy::Module.register_modules
+
       raise BetterCap::Error, "#{ctx.options[:proxy_module]} is not a valid bettercap proxy module." unless !Proxy::Module.modules.empty?
     end
-    
+
     ctx.proxy = Proxy::Proxy.new( ctx.iface[:ip_saddr], ctx.options[:proxy_port] ) do |request,response|
       if Proxy::Module.modules.empty?
         Logger.warn 'WARNING: No proxy module loaded, skipping request.'
