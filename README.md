@@ -4,6 +4,7 @@ BETTERCAP
 Copyleft of **Simone 'evilsocket' Margaritelli**.  
 http://www.evilsocket.net/
 
+http://www.bettercap.org/
 ---
 
 **bettercap** is a complete, modular, portable and easily extensible **MITM** tool and framework with every kind of diagnostic
