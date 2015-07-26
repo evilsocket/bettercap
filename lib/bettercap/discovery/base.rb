@@ -58,7 +58,7 @@ class BaseAgent
   private
 
   def send_probe( ip )
-
+    Logger.warn "#{self.class.name} not implemented!"
   end
 end
 
