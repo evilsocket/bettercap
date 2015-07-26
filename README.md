@@ -1,8 +1,8 @@
 ![logo](https://raw.github.com/evilsocket/bettercap/master/pics/logo.png)
 
 Copyleft of Simone '[evilsocket](https://twitter.com/evilsocket)' Margaritelli*.  
-http://www.bettercap.org/
-[![Gem Version](https://badge.fury.io/rb/bettercap.svg)](http://badge.fury.io/rb/bettercap)
+
+[![Gem Version](https://badge.fury.io/rb/bettercap.svg)](http://badge.fury.io/rb/bettercap) http://www.bettercap.org/
 ---
 
 **bettercap** is a complete, modular, portable and easily extensible **MITM** tool and framework with every kind of diagnostic
