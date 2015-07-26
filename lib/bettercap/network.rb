@@ -115,7 +115,7 @@ class Network
 
           begin
             Logger.debug 'Attempting to get MAC from packet capture ...'
-            target_mac = Timeout::timeout(0.1) { get_mac_from_capture(cap, ip_address) }
+            target_mac = Timeout::timeout(0.5) { get_mac_from_capture(cap, ip_address) }
           rescue Timeout::Error
             timeout += 0.1
             retry if target_mac.nil? && timeout <= 5
