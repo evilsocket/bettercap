@@ -59,9 +59,11 @@ class Network
         icmp = IcmpAgent.new timeout
         udp  = UdpAgent.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
         syn  = SynAgent.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
+        arp  = ArpAgent.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
 
         syn.wait
         icmp.wait
+        arp.wait
         udp.wait
       else
         Logger.debug 'Using current ARP cache.'
