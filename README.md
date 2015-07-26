@@ -1,4 +1,4 @@
-![logo](https://raw.github.com/evilsocket/bettercap/master/pics/logo.png)
+![logo](https://raw.github.com/evilsocket/bettercap/master/pics/header.png)
 
 Copyleft of Simone '[evilsocket](https://twitter.com/evilsocket)' Margaritelli*.  
 
@@ -170,5 +170,5 @@ dependency in order to make everything work:
 
     sudo apt-get install ruby-dev libpcap-dev
    
-This should solve issues such as [this](https://github.com/evilsocket/bettercap/issues/22).
+This should solve issues such as [this one](https://github.com/evilsocket/bettercap/issues/22).
 
