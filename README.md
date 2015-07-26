@@ -76,6 +76,7 @@ MODULAR TRANSPARENT PROXY
 A modular transparent proxy can be started with the --proxy argument, by default it won't do anything 
 but logging HTTP requests, but if you specify a **--proxy-module** argument you will be able to load
 your own modules and manipulate HTTP traffic as you like.  
+You can find some example modules in the [dedicated repository](https://github.com/evilsocket/bettercap-proxy-modules).
 
 ![credentials](https://raw.github.com/evilsocket/bettercap/master/pics/proxy.png)
 
@@ -89,9 +90,9 @@ Enable proxy and use a custom port:
     
     sudo bettercap --proxy --proxy-port=8081
     
-Enable proxy and load the module **example_proxy_module.rb**:
+Enable proxy and load the module **hack_title.rb**:
     
-    sudo bettercap --proxy --proxy-module=example_proxy_module.rb
+    sudo bettercap --proxy --proxy-module=hack_title.rb
 
 Disable spoofer and enable proxy ( stand alone proxy mode ):
 
