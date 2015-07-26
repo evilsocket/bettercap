@@ -5,9 +5,8 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [x] Replace PacketFu::Utils::whoami? with something else.
 - [x] Capture to .pcap file.
 - [x] BPF filters.
-- [x] BeEF proxy module ( BeefBOX ).
+- [x] BeEF proxy module ( [BeefBOX](https://github.com/evilsocket/bettercap-proxy-modules/blob/master/beefbox.rb) ).
 - [ ] ICMP Redirect.
-- [ ] Replace webrick with thin ( proxy too? )
 - [ ] sslstrip
 - [ ] sslmitm
 - [ ] *BSD Support.
@@ -16,7 +15,8 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 
 **Maybe**
 
+- [ ] Replace webrick with thin ( proxy too? )
 - [ ] DNS Spoofing ( not sure if it actually makes any sense ).
-- [ ] Windows Support?
+- [ ] Windows Support? ( OMG PLZ NO! )
 - [ ] Output/actions as json for UI integration?
 - [ ] BeefBox / BeefDRONE with Raspberry PI?
