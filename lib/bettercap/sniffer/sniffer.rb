@@ -31,7 +31,11 @@ class Sniffer
 
     @@parsers = ParserFactory.load_by_names ctx.options[:parsers]
 
-    cap = Capture.new( :iface => ctx.options[:iface], :start => true)
+    cap = Capture.new(
+        :iface => ctx.options[:iface],
+        :filter => ctx.options[:sniffer_filter],
+        :start => true
+    )
     cap.stream.each do |p|
       begin
         pcap.array_to_file( :filename => ctx.options[:sniffer_pcap], :array => [p], :append => true) unless pcap.nil?

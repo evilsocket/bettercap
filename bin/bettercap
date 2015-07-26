@@ -57,6 +57,11 @@ begin
       ctx.options[:sniffer_pcap] = File.expand_path v
     end
 
+    opts.on( '--sniffer-filter EXPRESSION', 'Configure the sniffer to use this BPF filter ( will enable sniffer ).' ) do |v|
+      ctx.options[:sniffer] = true
+      ctx.options[:sniffer_filter] = v
+    end
+
     opts.on( '-P', '--parsers PARSERS', 'Comma separated list of packet parsers to enable, "*" for all ( NOTE: Will set -X to true ), available: ' + ParserFactory.available.join(', ') + ' - default: *' ) do |v|
       ctx.options[:sniffer] = true
       ctx.options[:parsers] = ParserFactory.from_cmdline(v)

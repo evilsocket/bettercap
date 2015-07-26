@@ -34,6 +34,7 @@ class Context
 
       :sniffer => false,
       :sniffer_pcap => nil,
+      :sniffer_filter => nil,
       :parsers => ['*'],
       :local => false,
 
