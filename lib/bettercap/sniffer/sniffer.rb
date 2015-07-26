@@ -45,7 +45,7 @@ class Sniffer
 
       pkt = Packet.parse p
       if not pkt.nil? and pkt.is_ip?
-        next if ( pkt.ip_saddr == ctx.iface[:ip_saddr] or pkt.ip_daddr == ctx.iface[:ip_saddr] ) and !ctx.options[:local]
+        next if ( pkt.ip_saddr == ctx.ifconfig[:ip_saddr] or pkt.ip_daddr == ctx.ifconfig[:ip_saddr] ) and !ctx.options[:local]
 
         @@parsers.each do |parser|
           begin

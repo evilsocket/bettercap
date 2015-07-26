@@ -14,7 +14,7 @@ This project is released under the GPL 3 license.
 require 'bettercap/error'
 
 class Context
-  attr_accessor :options, :iface, :ifconfig, :network, :firewall, :gateway,
+  attr_accessor :options, :ifconfig, :network, :firewall, :gateway,
                 :targets, :spoofer, :proxy, :httpd
 
   @@instance = nil
@@ -47,7 +47,6 @@ class Context
       :httpd_path => './'
     }
 
-    @iface     = nil
     @ifconfig  = nil
     @network   = nil
     @firewall  = nil
@@ -62,14 +61,6 @@ class Context
   end
 
   def update_network
-    begin
-      @iface = PacketFu::Utils.whoami? :iface => @options[:iface]
-    rescue SocketError => e
-      Logger.debug e.message
-
-      raise BetterCap::Error, "Could not determine IPv4 address of '#{@options[:iface]}' interface, try to specify a different one with the -I argument."
-    end
-
     @firewall = FirewallFactory.get_firewall
     @ifconfig = PacketFu::Utils.ifconfig @options[:iface]
     @network  = @ifconfig[:ip4_obj]
@@ -77,9 +68,8 @@ class Context
 
     raise BetterCap::Error, "Could not determine IPv4 address of '#{@options[:iface]}' interface." unless !@network.nil?
 
-    Logger.debug "network=#{@network} gateway=#{@gateway} local_ip=#{@iface[:ip_saddr]}"
+    Logger.debug "network=#{@network} gateway=#{@gateway} local_ip=#{@ifconfig[:ip_saddr]}"
     Logger.debug "IFCONFIG: #{@ifconfig.inspect}"
-    Logger.debug "IFACE: #{@iface.inspect}"
   end
 
   def start_discovery_thread
@@ -134,7 +124,7 @@ class Context
 
     if !@proxy.nil?
       @proxy.stop
-      @firewall.del_port_redirection( @options[:iface], 'TCP', 80, @iface[:ip_saddr], @options[:proxy_port] )
+      @firewall.del_port_redirection( @options[:iface], 'TCP', 80, @ifconfig[:ip_saddr], @options[:proxy_port] )
     end
 
     if !@firewall.nil?

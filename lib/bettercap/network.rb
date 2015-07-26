@@ -57,8 +57,8 @@ class Network
     def get_alive_targets( ctx, timeout = 5 )
       if ctx.options[:arpcache] == false
         icmp = IcmpAgent.new timeout
-        udp  = UdpAgent.new ctx.ifconfig, ctx.gateway, ctx.iface[:ip_saddr]
-        syn  = SynAgent.new ctx.ifconfig, ctx.gateway, ctx.iface[:ip_saddr]
+        udp  = UdpAgent.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
+        syn  = SynAgent.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
 
         syn.wait
         icmp.wait

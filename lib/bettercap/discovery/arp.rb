@@ -24,7 +24,7 @@ class ArpAgent
     arp.split("\n").each do |line|
       m = /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{ctx.ifconfig[:iface]}.*/i.match(line)
       if !m.nil?
-        if m[1] != ctx.gateway and m[1] != ctx.iface[:ip_saddr] and m[2] != 'ff:ff:ff:ff:ff:ff'
+        if m[1] != ctx.gateway and m[1] != ctx.ifconfig[:ip_saddr] and m[2] != 'ff:ff:ff:ff:ff:ff'
           target = Target.new( m[1], m[2] )
           targets << target
           Logger.debug "FOUND  #{target}"
