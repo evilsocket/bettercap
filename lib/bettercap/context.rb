@@ -59,8 +59,15 @@ class Context
   end
 
   def update_network
+    begin
+      @iface = PacketFu::Utils.whoami? :iface => @options[:iface]
+    rescue SocketError => e
+      Logger.debug e.message
+
+      raise BetterCap::Error, "Could not determine IPv4 address of '#{@options[:iface]}' interface, try to specify a different one with the -I argument."
+    end
+
     @firewall = FirewallFactory.get_firewall
-    @iface    = PacketFu::Utils.whoami? :iface => @options[:iface]
     @ifconfig = PacketFu::Utils.ifconfig @options[:iface]
     @network  = @ifconfig[:ip4_obj]
     @gateway  = Network.get_gateway
