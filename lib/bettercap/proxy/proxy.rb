@@ -213,7 +213,7 @@ class Proxy
         if request.content_length > 0
           Logger.debug "Getting #{request.content_length} bytes from client"
 
-          binary_streaming client, server, :request => request
+          binary_streaming client, server, request: request
         end
 
         Logger.debug 'Reading response ...'
@@ -240,7 +240,7 @@ class Proxy
 
           Logger.debug 'Binary streaming'
 
-          binary_streaming server, client, :response => response
+          binary_streaming server, client, response: response
         end
 
         Logger.debug "#{client_ip}:#{client_port} served."

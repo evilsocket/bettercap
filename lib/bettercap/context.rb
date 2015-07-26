@@ -32,26 +32,26 @@ class Context
     end
 
     @options = {
-      :iface => iface,
-      :spoofer => 'ARP',
-      :target => nil,
-      :logfile => nil,
-      :debug => false,
-      :arpcache => false,
+      iface: iface,
+      spoofer: 'ARP',
+      target: nil,
+      logfile: nil,
+      debug: false,
+      arpcache: false,
 
-      :sniffer => false,
-      :sniffer_pcap => nil,
-      :sniffer_filter => nil,
-      :parsers => ['*'],
-      :local => false,
+      sniffer: false,
+      sniffer_pcap: nil,
+      sniffer_filter: nil,
+      parsers: ['*'],
+      local: false,
 
-      :proxy => false,
-      :proxy_port => 8080,
-      :proxy_module => nil,
+      proxy: false,
+      proxy_port: 8080,
+      proxy_module: nil,
 
-      :httpd => false,
-      :httpd_port => 8081,
-      :httpd_path => './'
+      httpd: false,
+      httpd_port: 8081,
+      httpd_path: './'
     }
 
     @ifconfig  = nil
