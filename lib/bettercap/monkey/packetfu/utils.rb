@@ -57,6 +57,9 @@ module PacketFu
           when /inet6 [a-z]+:[\s]*([0-9a-fA-F:\x2f]+)/
             ret[:ip6_saddr] = $1
             ret[:ip6_obj] = IPAddr.new($1)
+          when /ether[\s]+([0-9a-fA-F:]{17})/i
+            ret[:eth_saddr] = $1.downcase
+            ret[:eth_src] = EthHeader.mac2str(ret[:eth_saddr])
           end
         end # linux
       when /darwin/i
