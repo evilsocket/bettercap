@@ -36,9 +36,14 @@ class Network
       Logger.debug "NETSTAT:\n#{nstat}"
 
       out = nstat.split(/\n/).select {|n| n =~ /UG/ }
-      gw  = out.first.split[1]
+      gw  = nil
+      out.each do |line|
+        if line.include?( Context.get.options[:iface] )
+          gw = line.split[1]
+        end
+      end
 
-      raise BetterCap::Error, 'Could not detect gateway address' unless is_ip?(gw)
+      raise BetterCap::Error, 'Could not detect gateway address' unless gw.nil? or is_ip?(gw)
       gw
     end
 
