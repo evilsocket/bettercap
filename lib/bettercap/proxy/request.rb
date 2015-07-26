@@ -65,12 +65,12 @@ class Request
       @lines << line
     end
 
-    def is_post?
-      return @verb == 'POST'
+    def is_post? # #post?
+      @verb == 'POST'
     end
 
     def to_s
-      return @lines.join("\n") + "\n"
+      @lines.join("\n") + "\n"
     end
   end
 

@@ -52,7 +52,7 @@ class Proxy
       Logger.info 'Stopping proxy ...'
 
       if @socket and @running
-        @running = false        
+        @running = false
         @socket.close
       end
     rescue

@@ -20,45 +20,42 @@ class Context
   @@instance = nil
 
   def self.get
-    if @@instance.nil?
-      @@instance = self.new
-    end
-    @@instance
+    @@instance ||= self.new
   end
 
   def initialize
     @options = {
-        :iface => Pcap.lookupdev,
-        :spoofer => 'ARP',
-        :target => nil,
-        :logfile => nil,
-        :sniffer => false,
-        :parsers => ['*'],
-        :local => false,
-        :debug => false,
-        :arpcache => false,
+      :iface => Pcap.lookupdev,
+      :spoofer => 'ARP',
+      :target => nil,
+      :logfile => nil,
+      :sniffer => false,
+      :parsers => ['*'],
+      :local => false,
+      :debug => false,
+      :arpcache => false,
 
-        :proxy => false,
-        :proxy_port => 8080,
-        :proxy_module => nil,
+      :proxy => false,
+      :proxy_port => 8080,
+      :proxy_module => nil,
 
-        :httpd => false,
-        :httpd_port => 8081,
-        :httpd_path => './'
+      :httpd => false,
+      :httpd_port => 8081,
+      :httpd_path => './'
     }
 
-    @iface = nil
-    @ifconfig = nil
-    @network = nil
-    @firewall = nil
-    @gateway = nil
-    @targets = []
-    @proxy = nil
-    @spoofer = nil
-    @httpd = nil
+    @iface     = nil
+    @ifconfig  = nil
+    @network   = nil
+    @firewall  = nil
+    @gateway   = nil
+    @targets   = []
+    @proxy     = nil
+    @spoofer   = nil
+    @httpd     = nil
 
     @discovery_running = false
-    @discovery_thread = nil
+    @discovery_thread  = nil
   end
 
   def update_network
@@ -83,7 +80,7 @@ class Context
       while @discovery_running
         empty_list = false
 
-        if @targets.size == 0 and !@options[:arpcache]
+        if @targets.empty? and !@options[:arpcache]
           empty_list = true
           Logger.info 'Searching for alive targets ...'
         end
@@ -102,9 +99,11 @@ class Context
 
   def stop_discovery_thread
     @discovery_running = false
+
     if @discovery_thread != nil
       Logger.info 'Stopping network discovery thread ...'
 
+      # I doubt this will ever raise an exception
       begin
         @discovery_thread.join
       rescue
@@ -115,6 +114,7 @@ class Context
   def finalize
     stop_discovery_thread
 
+    # Consider !!@spoofer
     if !@spoofer.nil?
       @spoofer.stop
     end

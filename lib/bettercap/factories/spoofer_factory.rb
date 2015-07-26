@@ -12,25 +12,31 @@ This project is released under the GPL 3 license.
 require 'bettercap/error'
 
 class SpooferFactory
-  def SpooferFactory.available
-    avail = []
-    Dir.foreach( File.dirname(__FILE__) + '/../spoofers/') do |file|
-      if file =~ /.rb/
-        avail << file.gsub('.rb','').upcase
+  class << self
+    def available
+      avail = []
+      Dir.foreach( File.dirname(__FILE__) + '/../spoofers/') do |file|
+        if file =~ /.rb/
+          avail << file.gsub('.rb','').upcase
+        end
       end
+      avail
     end
-    avail
-  end
 
-  def SpooferFactory.get_by_name(name)
-    avail = SpooferFactory.available
+    def get_by_name(name)
+      raise BetterCap::Error, "Invalid spoofer name '#{name}'!" unless available? name
 
-    raise BetterCap::Error, "Invalid spoofer name '#{name}'!" unless avail.include? name
+      name.downcase!
 
-    name.downcase!
+      require_relative "../spoofers/#{name}"
 
-    require_relative "../spoofers/#{name}"
+      Kernel.const_get("#{name.capitalize}Spoofer").new
+    end
 
-    Kernel.const_get("#{name.capitalize}Spoofer").new
+    private
+
+    def available?(name)
+      available.include?(name)
+    end
   end
 end

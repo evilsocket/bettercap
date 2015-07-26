@@ -21,7 +21,7 @@ class Module
   end
 
   # we're enabled by default, yo!
-  def is_enabled?
+  def is_enabled? # We'd better naming method following the ruby-way, so: #enabled?
     true
   end
 
