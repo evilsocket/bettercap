@@ -93,6 +93,9 @@ class Context
         if @targets.empty? and !@options[:arpcache]
           empty_list = true
           Logger.info 'Searching for alive targets ...'
+        else
+          # make sure we don't stress the logging system
+          sleep 10
         end
 
         @targets = Network.get_alive_targets self
