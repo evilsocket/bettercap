@@ -36,6 +36,10 @@ def ftp_packets
   packets_with_filename 'ftp'
 end
 
+def http_packets
+  packets_with_filename 'http'
+end
+
 private
 
 def packets_with_filename(filename)
