@@ -1,9 +1,6 @@
-BETTERCAP
-==
+![logo](https://raw.github.com/evilsocket/bettercap/master/pics/logo.png)
 
-Copyleft of **Simone 'evilsocket' Margaritelli**.  
-http://www.evilsocket.net/
-
+Copyleft of Simone '[evilsocket](https://twitter.com/evilsocket)' Margaritelli*.  
 http://www.bettercap.org/
 [![Gem Version](https://badge.fury.io/rb/bettercap.svg)](http://badge.fury.io/rb/bettercap)
 ---
