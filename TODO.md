@@ -10,7 +10,8 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [ ] Replace webrick with thin ( proxy too? )
 - [ ] sslstrip
 - [ ] sslmitm
-- [ ] *BSD Support
+- [ ] *BSD Support.
+- [ ] HTTP/2 Support.
 - [ ] Active packet filtering/injection/etc.
 
 **Maybe**
