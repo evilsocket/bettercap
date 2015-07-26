@@ -24,8 +24,15 @@ class Context
   end
 
   def initialize
+    begin
+      iface = Pcap.lookupdev
+    rescue Exception => e
+      iface = nil
+      Logger.debug e.message
+    end
+
     @options = {
-      :iface => Pcap.lookupdev,
+      :iface => iface,
       :spoofer => 'ARP',
       :target => nil,
       :logfile => nil,
