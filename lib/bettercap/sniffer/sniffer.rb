@@ -22,10 +22,23 @@ class Sniffer
   def self.start( ctx )
     Logger.info 'Starting sniffer ...'
 
+    pcap = nil
+
+    if !ctx.options[:sniffer_pcap].nil?
+      pcap = PcapFile.new
+      Logger.warn "Saving packets to #{ctx.options[:sniffer_pcap]} ."
+    end
+
     @@parsers = ParserFactory.load_by_names ctx.options[:parsers]
 
     cap = Capture.new( :iface => ctx.options[:iface], :start => true)
     cap.stream.each do |p|
+      begin
+        pcap.array_to_file( :filename => ctx.options[:sniffer_pcap], :array => [p], :append => true) unless pcap.nil?
+      rescue Exception => e
+        Logger.warn e.message
+      end
+
       pkt = Packet.parse p
       if not pkt.nil? and pkt.is_ip?
         next if ( pkt.ip_saddr == ctx.iface[:ip_saddr] or pkt.ip_daddr == ctx.iface[:ip_saddr] ) and !ctx.options[:local]

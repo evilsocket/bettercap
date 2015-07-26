@@ -52,6 +52,11 @@ begin
       ctx.options[:sniffer] = true
     end
 
+    opts.on( '--sniffer-pcap FILE', 'Save all packets to the specified PCAP file ( will enable sniffer ).' ) do |v|
+      ctx.options[:sniffer] = true
+      ctx.options[:sniffer_pcap] = File.expand_path v
+    end
+
     opts.on( '-P', '--parsers PARSERS', 'Comma separated list of packet parsers to enable, "*" for all ( NOTE: Will set -X to true ), available: ' + ParserFactory.available.join(', ') + ' - default: *' ) do |v|
       ctx.options[:sniffer] = true
       ctx.options[:parsers] = ParserFactory.from_cmdline(v)

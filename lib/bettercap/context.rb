@@ -29,11 +29,13 @@ class Context
       :spoofer => 'ARP',
       :target => nil,
       :logfile => nil,
-      :sniffer => false,
-      :parsers => ['*'],
-      :local => false,
       :debug => false,
       :arpcache => false,
+
+      :sniffer => false,
+      :sniffer_pcap => nil,
+      :parsers => ['*'],
+      :local => false,
 
       :proxy => false,
       :proxy_port => 8080,
