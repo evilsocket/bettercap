@@ -24,7 +24,7 @@ class Sniffer
 
     @@parsers = ParserFactory.load_by_names ctx.options[:parsers]
 
-    cap = Capture.new( :iface => ctx.options[:iface], :promisc => true, :start => true)
+    cap = Capture.new( :iface => ctx.options[:iface], :start => true)
     cap.stream.each do |p|
       pkt = Packet.parse p
       if not pkt.nil? and pkt.is_ip?
