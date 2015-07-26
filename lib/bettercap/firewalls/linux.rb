@@ -25,7 +25,6 @@ class LinuxFirewall < IFirewall
     Shell.execute("echo #{enabled ? 0 : 1} > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts")
   end
 
-  # I'd make a private method for every Shell::execute here
   def add_port_redirection( iface, proto, from, addr, to )
     # clear nat
     Shell.execute('iptables -t nat -F')

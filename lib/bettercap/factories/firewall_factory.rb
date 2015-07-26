@@ -24,7 +24,7 @@ class FirewallFactory
     elsif RUBY_PLATFORM =~ /linux/
       @@instance = LinuxFirewall.new
     else
-      raise BetterCap::Error, 'Unsupported operating system' # I'd suggest NotImplementedError here btw
+      raise BetterCap::Error, 'Unsupported operating system'
     end
 
     @@instance

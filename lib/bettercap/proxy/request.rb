@@ -40,7 +40,7 @@ class Request
 
       line = "#{@verb} #{url} HTTP/1.0"
 
-      # get the host header value
+    # get the host header value
     elsif line =~ /^Host: (.*)$/
       @host = $1
       if host =~ /([^:]*):([0-9]*)$/
@@ -48,7 +48,7 @@ class Request
         @port = $2.to_i
       end
 
-      # parse content length, this will speed up data streaming
+    # parse content length, this will speed up data streaming
     elsif line =~ /^Content-Length:\s+(\d+)\s*$/i
       @content_length = $1.to_i
 
@@ -65,7 +65,7 @@ class Request
       @lines << line
     end
 
-    def is_post? # #post?
+    def post?
       @verb == 'POST'
     end
 

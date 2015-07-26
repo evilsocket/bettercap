@@ -16,7 +16,7 @@ require 'bettercap/factories/firewall_factory'
 # Send a broadcast ping trying to filling the ARP table.
 class IcmpAgent
   def initialize( timeout = 5 )
-    @thread = Thread.new do # Take a decision here: do..end or {...} for new threads? :D
+    @thread = Thread.new {
       FirewallFactory.get_firewall.enable_icmp_bcast(true)
 
       if RUBY_PLATFORM =~ /darwin/
@@ -24,7 +24,7 @@ class IcmpAgent
       elsif RUBY_PLATFORM =~ /linux/
         ping = Shell.execute("ping -i #{timeout} -c 2 -b 255.255.255.255")
       end
-    end
+    }
   end
 
   def wait

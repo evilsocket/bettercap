@@ -159,7 +159,7 @@ begin
       else
         # loop each loaded module and execute if enabled
         Proxy::Module.modules.each do |mod|
-          if mod.is_enabled?
+          if mod.enabled?
             mod.on_request request, response
           end
         end

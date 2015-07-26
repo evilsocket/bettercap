@@ -12,21 +12,20 @@ This project is released under the GPL 3 license.
 require 'bettercap/logger'
 require 'colorize'
 
-# Weren't you using 2 space for indentation?
 class BaseParser
-    def initialize
-        @filters = []
-        @name = 'BASE'
-    end
+  def initialize
+    @filters = []
+    @name = 'BASE'
+  end
 
-    def on_packet( pkt )
-        s = pkt.to_s
-        @filters.each do |filter|
-            if s =~ filter
-                Logger.write "[#{pkt.ip_saddr}:#{pkt.tcp_src} > #{pkt.ip_daddr}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
-                             "[#{@name}] ".green +
-                             pkt.payload.strip.yellow
-            end
-        end
+  def on_packet( pkt )
+    s = pkt.to_s
+    @filters.each do |filter|
+      if s =~ filter
+        Logger.write "[#{pkt.ip_saddr}:#{pkt.tcp_src} > #{pkt.ip_daddr}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
+                     "[#{@name}] ".green +
+                     pkt.payload.strip.yellow
+      end
     end
+  end
 end

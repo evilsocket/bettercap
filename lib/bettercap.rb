@@ -17,8 +17,8 @@ require 'colorize'
 require 'packetfu'
 require 'ipaddr'
 
-Object.remove_const(:Config) if Object.const_defined?(:Config)
-Object.const_set(:Config, RbConfig)
+Object.send :remove_const, :Config rescue nil
+Config = RbConfig
 
 require 'bettercap/error'
 require 'bettercap/context'

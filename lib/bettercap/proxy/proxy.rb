@@ -115,7 +115,7 @@ class Proxy
         read += buff.size
 
         # collect into the proper object
-        if not opts[:request].nil? and opts[:request].is_post?
+        if not opts[:request].nil? and opts[:request].post?
           opts[:request] << buff
         end
 

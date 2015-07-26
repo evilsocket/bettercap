@@ -25,7 +25,6 @@ class OSXFirewall < IFirewall
     Shell.execute('sysctl net.inet.ip.forwarding').strip.split(' ')[1] == '1'
   end
 
-  # What about making this a private method and the defining `#enable!` and `#disable!`?
   def enable(enabled)
     begin
       Shell.execute("pfctl -#{enabled ? ?e : ?d} >/dev/null 2>&1")
