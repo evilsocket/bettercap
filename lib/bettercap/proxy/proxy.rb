@@ -229,7 +229,7 @@ class Proxy
           break unless not response.headers_done
         end
 
-        if response.is_textual?
+        if response.textual?
           log_stream client_ip, request, response
 
           Logger.debug 'Detected textual response'
