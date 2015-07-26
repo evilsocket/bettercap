@@ -2,7 +2,9 @@
 
 Copyleft of Simone '[evilsocket](https://twitter.com/evilsocket)' Margaritelli*.  
 
-[![Gem Version](https://badge.fury.io/rb/bettercap.svg)](http://badge.fury.io/rb/bettercap) http://www.bettercap.org/
+http://www.bettercap.org/
+
+[![Gem Version](https://badge.fury.io/rb/bettercap.svg)](http://badge.fury.io/rb/bettercap) 
 ---
 
 **bettercap** is a complete, modular, portable and easily extensible **MITM** tool and framework with every kind of diagnostic
@@ -163,8 +165,10 @@ HOW TO INSTALL
 DEPENDS
 ===
 
-All dependencies will be automatically installed through the GEM system.
+All dependencies will be automatically installed through the GEM system, in some case you might need to install some system
+dependency in order to make everything work:
 
-- colorize (**gem install colorize**)
-- packetfu (**gem install packetfu**)
-- pcaprub  (**gem install pcaprub**) [sudo apt-get install ruby-dev libpcap-dev]
+    sudo apt-get install ruby-dev libpcap-dev
+   
+This should solve issues such as [this](https://github.com/evilsocket/bettercap/issues/22).
+
