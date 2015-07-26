@@ -1,4 +1,4 @@
-![logo](https://raw.github.com/evilsocket/bettercap/master/pics/header.png)
+![logo](http://www.bettercap.org/images/logo_dark.png)
 
 Copyleft of Simone '[evilsocket](https://twitter.com/evilsocket)' Margaritelli*.  
 
