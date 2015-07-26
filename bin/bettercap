@@ -71,6 +71,10 @@ begin
       ctx.options[:arpcache] = true
     end
 
+    opts.on( '--no-spoofing', 'Disable spoofing, alias for --spoofer NONE.' ) do |v|
+      ctx.options[:spoofer] = 'NONE'
+    end
+
     opts.on( '--proxy', 'Enable HTTP proxy and redirects all HTTP requests to it, default to false.' ) do
       ctx.options[:proxy] = true
     end
