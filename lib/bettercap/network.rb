@@ -104,6 +104,8 @@ class Network
 
         cap_thread = Thread.new do
           target_mac = nil
+          timeout = 0
+
           cap = PacketFu::Capture.new(
             :iface => iface[:iface],
             :start => true,
@@ -111,21 +113,14 @@ class Network
           )
           arp_pkt.to_w(iface[:iface])
 
-          timeout = 0
-
-          while target_mac.nil? && timeout <= 5
-            cap.stream.each do |p|
-              arp_response = PacketFu::Packet.parse(p)
-              target_mac = arp_response.arp_saddr_mac if arp_response.arp_saddr_ip == ip_address
-
-              break unless target_mac.nil?
-            end
-
+          begin
+            Logger.debug 'Attempting to get MAC from packet capture ...'
+            target_mac = Timeout::timeout(0.1) { get_mac_from_capture(cap, ip_address) }
+          rescue Timeout::Error
             timeout += 0.1
-
-            Logger.debug 'Retrying ...'
-            sleep 0.1
+            retry if target_mac.nil? && timeout <= 5
           end
+
           target_mac
         end
         hw_address = cap_thread.value
@@ -134,6 +129,16 @@ class Network
       end
 
       hw_address
+    end
+
+    private
+
+    def get_mac_from_capture( cap, ip_address )
+      cap.stream.each do |p|
+        arp_response = PacketFu::Packet.parse(p)
+        target_mac = arp_response.arp_saddr_mac if arp_response.arp_saddr_ip == ip_address
+        break target_mac unless target_mac.nil?
+      end
     end
   end
 end
