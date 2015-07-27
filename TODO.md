@@ -8,9 +8,9 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [x] BeEF proxy module ( [BeefBOX](https://github.com/evilsocket/bettercap-proxy-modules/blob/master/beefbox.rb) ).
 - [ ] Use raw file arp parsing instead of "arp -a" to improve speed.
 - [ ] ICMP Redirect.
+- [ ] *BSD Support.
 - [ ] sslstrip
 - [ ] sslmitm
-- [ ] *BSD Support.
 - [ ] HTTP/2 Support.
 - [ ] Active packet filtering/injection/etc.
 
