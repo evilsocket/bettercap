@@ -47,6 +47,7 @@ module PacketFu
     def self.linux_ifconfig(iface='eth0',ifconfig_data)
       Logger.debug "Linux ifconfig #{iface}:\n#{ifconfig_data}"
 
+      ret = {}
       real_iface = ifconfig_data.first
       ret[:iface] = real_iface.split.first.downcase.gsub(':','')
 
@@ -82,6 +83,7 @@ module PacketFu
     def self.darwin_ifconfig(iface='eth0',ifconfig_data)
       Logger.debug "OSX ifconfig #{iface}:\n#{ifconfig_data}"
 
+      ret = {}
       real_iface = ifconfig_data.first
       ret[:iface] = real_iface.split(':')[0]
 
