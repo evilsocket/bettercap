@@ -37,6 +37,22 @@ class ArpAgent < BaseAgent
     targets
   end
 
+  def self.find_address( ip )
+    arp = Shell.arp
+    mac = nil
+
+    arp.split("\n").each do |line|
+      m = /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{ctx.ifconfig[:iface]}.*/i.match(line)
+      if !m.nil?
+        if m[1] == ip and m[2] != 'ff:ff:ff:ff:ff:ff'
+          mac = m[2]
+        end
+      end
+    end
+
+    mac
+  end
+
   private
 
   def send_probe( ip )

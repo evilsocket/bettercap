@@ -92,41 +92,43 @@ class Network
   won't catch anything, instead we're using cap.stream.each.
 =end
     def get_hw_address( iface, ip_address, attempts = 2 )
-      hw_address = nil
+      hw_address = ArpAgent.find_address( ip_address )
 
-      attempts.times do
-        arp_pkt = PacketFu::ARPPacket.new
+      if hw_address.nil?
+        attempts.times do
+          arp_pkt = PacketFu::ARPPacket.new
 
-        arp_pkt.eth_saddr     = arp_pkt.arp_saddr_mac = iface[:eth_saddr]
-        arp_pkt.eth_daddr     = 'ff:ff:ff:ff:ff:ff'
-        arp_pkt.arp_daddr_mac = '00:00:00:00:00:00'
-        arp_pkt.arp_saddr_ip  = iface[:ip_saddr]
-        arp_pkt.arp_daddr_ip  = ip_address
+          arp_pkt.eth_saddr     = arp_pkt.arp_saddr_mac = iface[:eth_saddr]
+          arp_pkt.eth_daddr     = 'ff:ff:ff:ff:ff:ff'
+          arp_pkt.arp_daddr_mac = '00:00:00:00:00:00'
+          arp_pkt.arp_saddr_ip  = iface[:ip_saddr]
+          arp_pkt.arp_daddr_ip  = ip_address
 
-        cap_thread = Thread.new do
-          target_mac = nil
-          timeout = 0
+          cap_thread = Thread.new do
+            target_mac = nil
+            timeout = 0
 
-          cap = PacketFu::Capture.new(
-            iface: iface[:iface],
-            start: true,
-            filter: "arp src #{ip_address} and ether dst #{arp_pkt.eth_saddr}"
-          )
-          arp_pkt.to_w(iface[:iface])
+            cap = PacketFu::Capture.new(
+              iface: iface[:iface],
+              start: true,
+              filter: "arp src #{ip_address} and ether dst #{arp_pkt.eth_saddr}"
+            )
+            arp_pkt.to_w(iface[:iface])
 
-          begin
-            Logger.debug 'Attempting to get MAC from packet capture ...'
-            target_mac = Timeout::timeout(0.5) { get_mac_from_capture(cap, ip_address) }
-          rescue Timeout::Error
-            timeout += 0.1
-            retry if target_mac.nil? && timeout <= 5
+            begin
+              Logger.debug 'Attempting to get MAC from packet capture ...'
+              target_mac = Timeout::timeout(0.5) { get_mac_from_capture(cap, ip_address) }
+            rescue Timeout::Error
+              timeout += 0.1
+              retry if target_mac.nil? && timeout <= 5
+            end
+
+            target_mac
           end
+          hw_address = cap_thread.value
 
-          target_mac
+          break unless hw_address.nil?
         end
-        hw_address = cap_thread.value
-
-        break unless hw_address.nil?
       end
 
       hw_address

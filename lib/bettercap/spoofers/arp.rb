@@ -84,7 +84,7 @@ class ArpSpoofer < ISpoofer
           if target.mac.nil?
             Logger.warn "Getting target #{target.ip} MAC address ..."
 
-            hw = Network.get_hw_address( @ctx.ifconfig, target.ip, 1 )
+            hw = Network.get_hw_address( @ctx.ifconfig, target.ip )
             if hw.nil?
               Logger.warn "Couldn't determine target MAC"
               next
