@@ -7,7 +7,7 @@ module MockShell
     end
 
     def ifconfig(iface = '')
-      self.execute("LANG=en && inconfig #{iface}")
+      self.execute("LANG=en && ifconfig #{iface}")
     end
 
     def arp
