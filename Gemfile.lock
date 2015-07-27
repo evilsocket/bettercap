@@ -10,6 +10,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     colorize (0.7.7)
+    minitest (5.7.0)
     packetfu (1.1.10)
     pcaprub (0.12.0)
 
@@ -18,6 +19,7 @@ PLATFORMS
 
 DEPENDENCIES
   bettercap!
+  minitest
 
 BUNDLED WITH
    1.10.3
