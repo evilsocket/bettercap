@@ -37,6 +37,7 @@ module Logger
       # make sure that logging is thread safe
       @@semaphore.synchronize {
         puts message
+
         if !@logfile.nil?
           f = File.open( @logfile, 'a+t' )
           f.puts( message.gsub( /\e\[(\d+)(;\d+)*m/, '') + "\n")
@@ -46,6 +47,7 @@ module Logger
     end
 
     private
+
     def formatted_message(message, message_type)
       "[#{message_type}] #{message}"
     end

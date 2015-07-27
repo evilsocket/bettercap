@@ -28,6 +28,8 @@ class ParserFactory
     end
 
     def from_cmdline(v)
+      raise BetterCap::Error, "No parser names provided" if v.nil?
+
       avail = available
       list = v.split(',').collect(&:strip).collect(&:upcase).reject{ |c| c.empty? }
       list.each do |parser|
