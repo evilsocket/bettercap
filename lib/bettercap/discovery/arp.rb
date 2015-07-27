@@ -13,6 +13,7 @@ require 'bettercap/logger'
 require 'bettercap/shell'
 require 'bettercap/target'
 require 'bettercap/discovery/base'
+require 'bettercap/context'
 
 # Parse the ARP table searching for new hosts.
 class ArpAgent < BaseAgent
@@ -42,7 +43,7 @@ class ArpAgent < BaseAgent
     mac = nil
 
     arp.split("\n").each do |line|
-      m = /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{ctx.ifconfig[:iface]}.*/i.match(line)
+      m = /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{Context.get.ifconfig[:iface]}.*/i.match(line)
       if !m.nil?
         if m[1] == ip and m[2] != 'ff:ff:ff:ff:ff:ff'
           mac = m[2]
