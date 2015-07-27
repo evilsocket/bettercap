@@ -108,7 +108,7 @@ the following is a sample module that injects some contents into the title tag o
 class HackTitle < Proxy::Module
   def on_request( request, response )
     # is it a html page?
-    if response.content_type == 'text/html'
+    if response.content_type =~ /^text\/html.*/
       Logger.info "Hacking http://#{request.host}#{request.url} title tag"
       # make sure to use sub! or gsub! to update the instance
       response.body.sub!( '<title>', '<title> !!! HACKED !!! ' )
@@ -132,7 +132,7 @@ You could use a **proxy module** like the following:
 class InjectJS < Proxy::Module
   def on_request( request, response )
     # is it a html page?
-    if response.content_type == 'text/html'
+    if response.content_type =~ /^text\/html.*/
       Logger.info "Injecting javascript file into http://#{request.host}#{request.url} page"
       # get the local interface address and HTTPD port
       localaddr = Context.get.ifconfig[:ip_saddr]
