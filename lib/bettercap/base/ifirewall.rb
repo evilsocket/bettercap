@@ -10,6 +10,10 @@ This project is released under the GPL 3 license.
 
 =end
 class IFirewall
+  def initialize
+    @frwd_initial_state = forwarding_enabled?
+  end
+
   def enable_forwarding(enabled)
     not_implemented_method!
   end
@@ -24,6 +28,12 @@ class IFirewall
 
   def del_port_redirection( iface, proto, from, addr, to )
     not_implemented_method!
+  end
+
+  def restore
+    if forwarding_enabled? != @frwd_initial_state
+      enable_forwarding @frwd_initial_state
+    end
   end
 
 private

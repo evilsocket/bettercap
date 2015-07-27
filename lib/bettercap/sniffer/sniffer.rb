@@ -49,7 +49,7 @@ class Sniffer
         pkt = nil
         Logger.debug e.message
       end
-      
+
       if not pkt.nil? and pkt.is_ip?
         next if ( pkt.ip_saddr == ctx.ifconfig[:ip_saddr] or pkt.ip_daddr == ctx.ifconfig[:ip_saddr] ) and !ctx.options[:local]
 

@@ -135,7 +135,7 @@ class Context
     end
 
     if !@firewall.nil?
-      @firewall.enable_forwarding(false)
+      @firewall.restore
     end
 
     if !@httpd.nil?
