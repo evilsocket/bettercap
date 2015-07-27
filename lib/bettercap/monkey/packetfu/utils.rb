@@ -38,7 +38,7 @@ module PacketFu
       when /darwin/i
         ret = darwin_ifconfig iface, ifconfig_data
       end
-      
+
       ret
     end
 

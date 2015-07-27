@@ -24,7 +24,7 @@ module Shell
     end
 
     def arp
-      self.execute( 'LANG=en && arp -a' )
+      self.execute( 'LANG=en && arp -a -n' )
     end
 
   end
