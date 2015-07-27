@@ -6,7 +6,7 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [x] Capture to .pcap file.
 - [x] BPF filters.
 - [x] BeEF proxy module ( [BeefBOX](https://github.com/evilsocket/bettercap-proxy-modules/blob/master/beefbox.rb) ).
-- [ ] Use raw file arp parsing instead of "arp -a" to improve speed.
+- [x] Use raw file arp parsing instead of "arp -a" to improve speed. ( Solved with arp -a -n )
 - [ ] ICMP Redirect.
 - [ ] *BSD Support.
 - [ ] sslstrip
