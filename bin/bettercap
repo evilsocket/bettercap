@@ -22,6 +22,7 @@ begin
 
   OptionParser.new do |opts|
     opts.banner = "Usage: #{$0} [options]"
+    opts.version = BetterCap::VERSION
 
     opts.on( '-I', '--interface IFACE', 'Network interface name - default: ' + ctx.options[:iface].to_s ) do |v|
       ctx.options[:iface] = v
