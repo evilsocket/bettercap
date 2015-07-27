@@ -40,6 +40,7 @@ class Network
       out.each do |line|
         if line.include?( Context.get.options[:iface] )
           gw = line.split[1]
+          break if is_ip?(gw)
         end
       end
 
