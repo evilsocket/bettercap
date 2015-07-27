@@ -11,7 +11,10 @@ This project is released under the GPL 3 license.
 =end
 
 # this class holds global states & data
+require 'bettercap/version'
 require 'bettercap/error'
+require 'net/http'
+require 'json'
 
 class Context
   attr_accessor :options, :ifconfig, :network, :firewall, :gateway,
@@ -51,7 +54,9 @@ class Context
 
       httpd: false,
       httpd_port: 8081,
-      httpd_path: './'
+      httpd_path: './',
+
+      check_updates: false
     }
 
     @ifconfig  = nil
@@ -65,6 +70,19 @@ class Context
 
     @discovery_running = false
     @discovery_thread  = nil
+  end
+
+  def check_updates
+    Logger.info 'Checking for updates ...'
+
+    api  = URI('https://api.github.com/repos/evilsocket/bettercap/releases/latest')
+    body = Net::HTTP.get(api)
+    json = JSON.parse(body)
+
+    if json['tag_name'] != BetterCap::VERSION and json['tag_name'] != "v#{BetterCap::VERSION}"
+      return json['tag_name']
+    end
+    nil
   end
 
   def update_network
