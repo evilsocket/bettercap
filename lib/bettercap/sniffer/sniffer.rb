@@ -44,13 +44,13 @@ class Sniffer
     end
 
     if not pkt.nil? and pkt.is_ip?
-      next if skip_packet? pkt
-
-      @@parsers.each do |parser|
-        begin
-          parser.on_packet pkt
-        rescue Exception => e
-          Logger.warn e.message
+      if !skip_packet? pkt
+        @@parsers.each do |parser|
+          begin
+            parser.on_packet pkt
+          rescue Exception => e
+            Logger.warn e.message
+          end
         end
       end
     end
