@@ -52,12 +52,12 @@ class Response
     end
   end
 
-  def is_textual?
+  def textual? # textual?
     @content_type and ( @content_type =~ /^text\/.+/ or @content_type =~ /^application\/.+/ )
   end
 
   def to_s
-    if is_textual?
+    if textual?
       @headers.map! do |header|
         # update content length in case the body was
         # modified

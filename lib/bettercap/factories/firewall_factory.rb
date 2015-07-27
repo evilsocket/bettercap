@@ -16,7 +16,7 @@ require 'bettercap/firewalls/linux'
 class FirewallFactory
   @@instance = nil
 
-  def FirewallFactory.get_firewall
+  def self.get_firewall
     return @@instance unless @@instance.nil?
 
     if RUBY_PLATFORM =~ /darwin/

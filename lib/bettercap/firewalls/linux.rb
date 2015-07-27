@@ -14,11 +14,7 @@ require 'bettercap/shell'
 
 class LinuxFirewall < IFirewall
   def enable_forwarding(enabled)
-    if enabled then
-      shell.execute('echo 1 > /proc/sys/net/ipv4/ip_forward')
-    else
-      shell.execute('echo 0 > /proc/sys/net/ipv4/ip_forward')
-    end
+    shell.execute("echo #{enabled ? 1 : 0} > /proc/sys/net/ipv4/ip_forward")
   end
 
   def forwarding_enabled?
@@ -26,11 +22,7 @@ class LinuxFirewall < IFirewall
   end
 
   def enable_icmp_bcast(enabled)
-    if enabled then
-      shell.execute('echo 0 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts')
-    else
-      shell.execute('echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts')
-    end
+    shell.execute("echo #{enabled ? 0 : 1} > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts")
   end
 
   def add_port_redirection( iface, proto, from, addr, to )

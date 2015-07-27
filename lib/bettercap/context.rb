@@ -11,68 +11,90 @@ This project is released under the GPL 3 license.
 =end
 
 # this class holds global states & data
+require 'bettercap/version'
 require 'bettercap/error'
+require 'net/http'
+require 'json'
 
 class Context
-  attr_accessor :options, :iface, :ifconfig, :network, :firewall, :gateway,
+  attr_accessor :options, :ifconfig, :network, :firewall, :gateway,
                 :targets, :spoofer, :proxy, :httpd
 
   @@instance = nil
 
   def self.get
-    if @@instance.nil?
-      @@instance = self.new
-    end
-    @@instance
+    @@instance ||= self.new
   end
 
   def initialize
+    begin
+      iface = Pcap.lookupdev
+    rescue Exception => e
+      iface = nil
+      Logger.debug e.message
+    end
+
     @options = {
-        :iface => Pcap.lookupdev,
-        :spoofer => 'ARP',
-        :target => nil,
-        :logfile => nil,
-        :sniffer => false,
-        :parsers => ['*'],
-        :local => false,
-        :debug => false,
-        :arpcache => false,
+      iface: iface,
+      spoofer: 'ARP',
+      target: nil,
+      logfile: nil,
+      debug: false,
+      arpcache: false,
 
-        :proxy => false,
-        :proxy_port => 8080,
-        :proxy_module => nil,
+      sniffer: false,
+      sniffer_pcap: nil,
+      sniffer_filter: nil,
+      parsers: ['*'],
+      local: false,
 
-        :httpd => false,
-        :httpd_port => 8081,
-        :httpd_path => './'
+      proxy: false,
+      proxy_port: 8080,
+      proxy_module: nil,
+
+      httpd: false,
+      httpd_port: 8081,
+      httpd_path: './',
+
+      check_updates: false
     }
 
-    @iface = nil
-    @ifconfig = nil
-    @network = nil
-    @firewall = nil
-    @gateway = nil
-    @targets = []
-    @proxy = nil
-    @spoofer = nil
-    @httpd = nil
+    @ifconfig  = nil
+    @network   = nil
+    @firewall  = nil
+    @gateway   = nil
+    @targets   = []
+    @proxy     = nil
+    @spoofer   = nil
+    @httpd     = nil
 
     @discovery_running = false
-    @discovery_thread = nil
+    @discovery_thread  = nil
+  end
+
+  def check_updates
+    Logger.info 'Checking for updates ...'
+
+    api  = URI('https://api.github.com/repos/evilsocket/bettercap/releases/latest')
+    body = Net::HTTP.get(api)
+    json = JSON.parse(body)
+
+    if json['tag_name'] != BetterCap::VERSION and json['tag_name'] != "v#{BetterCap::VERSION}"
+      return json['tag_name']
+    end
+    nil
   end
 
   def update_network
     @firewall = FirewallFactory.get_firewall
-    @iface    = PacketFu::Utils.whoami? :iface => @options[:iface]
     @ifconfig = PacketFu::Utils.ifconfig @options[:iface]
     @network  = @ifconfig[:ip4_obj]
     @gateway  = Network.get_gateway
 
     raise BetterCap::Error, "Could not determine IPv4 address of '#{@options[:iface]}' interface." unless !@network.nil?
 
-    Logger.debug "network=#{@network} gateway=#{@gateway} local_ip=#{@iface[:ip_saddr]}"
+    Logger.debug "network=#{@network} gateway=#{@gateway} local_ip=#{@ifconfig[:ip_saddr]}"
     Logger.debug "IFCONFIG: #{@ifconfig.inspect}"
-    Logger.debug "IFACE: #{@iface.inspect}"
   end
 
   def start_discovery_thread
@@ -83,9 +105,12 @@ class Context
       while @discovery_running
         empty_list = false
 
-        if @targets.size == 0 and !@options[:arpcache]
+        if @targets.empty? and !@options[:arpcache]
           empty_list = true
           Logger.info 'Searching for alive targets ...'
+        else
+          # make sure we don't stress the logging system
+          sleep 10
         end
 
         @targets = Network.get_alive_targets self
@@ -102,9 +127,11 @@ class Context
 
   def stop_discovery_thread
     @discovery_running = false
+
     if @discovery_thread != nil
       Logger.info 'Stopping network discovery thread ...'
 
+      # I doubt this will ever raise an exception
       begin
         @discovery_thread.join
       rescue
@@ -115,17 +142,18 @@ class Context
   def finalize
     stop_discovery_thread
 
+    # Consider !!@spoofer
     if !@spoofer.nil?
       @spoofer.stop
     end
 
     if !@proxy.nil?
       @proxy.stop
-      @firewall.del_port_redirection( @options[:iface], 'TCP', 80, @iface[:ip_saddr], @options[:proxy_port] )
+      @firewall.del_port_redirection( @options[:iface], 'TCP', 80, @ifconfig[:ip_saddr], @options[:proxy_port] )
     end
 
     if !@firewall.nil?
-      @firewall.enable_forwarding(false)
+      @firewall.restore
     end
 
     if !@httpd.nil?

@@ -20,10 +20,10 @@ class Server
     @port = port
     @path = path
     @server = WEBrick::HTTPServer.new(
-        :Port => @port,
-        :DocumentRoot => @path,
-        :Logger => WEBrick::Log.new("/dev/null"),
-        :AccessLog => []
+      Port: @port,
+      DocumentRoot: @path,
+      Logger: WEBrick::Log.new("/dev/null"),
+      AccessLog: []
     )
   end
 

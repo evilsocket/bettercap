@@ -52,7 +52,7 @@ class Proxy
       Logger.info 'Stopping proxy ...'
 
       if @socket and @running
-        @running = false        
+        @running = false
         @socket.close
       end
     rescue
@@ -115,7 +115,7 @@ class Proxy
         read += buff.size
 
         # collect into the proper object
-        if not opts[:request].nil? and opts[:request].is_post?
+        if not opts[:request].nil? and opts[:request].post?
           opts[:request] << buff
         end
 
@@ -213,7 +213,7 @@ class Proxy
         if request.content_length > 0
           Logger.debug "Getting #{request.content_length} bytes from client"
 
-          binary_streaming client, server, :request => request
+          binary_streaming client, server, request: request
         end
 
         Logger.debug 'Reading response ...'
@@ -229,7 +229,7 @@ class Proxy
           break unless not response.headers_done
         end
 
-        if response.is_textual?
+        if response.textual?
           log_stream client_ip, request, response
 
           Logger.debug 'Detected textual response'
@@ -240,7 +240,7 @@ class Proxy
 
           Logger.debug 'Binary streaming'
 
-          binary_streaming server, client, :response => response
+          binary_streaming server, client, response: response
         end
 
         Logger.debug "#{client_ip}:#{client_port} served."

@@ -11,14 +11,20 @@ This project is released under the GPL 3 license.
 =end
 class ISpoofer
   def initialize
-    raise 'ISpoofer: Unimplemented method!'
+    not_implemented_method!
   end
 
   def start
-    raise 'ISpoofer: Unimplemented method!'
+    not_implemented_method!
   end
 
   def stop
-    raise 'ISpoofer: Unimplemented method!'
+    not_implemented_method!
+  end
+
+private
+
+  def not_implemented_method!
+    raise NotImplementedError, 'ISpoofer: Unimplemented method!'
   end
 end

@@ -38,12 +38,12 @@ class TestProxyResponse < MiniTest::Test
     assert_equal response.body, body
   end
 
-  def test_is_textual
+  def test_textual
     text_response = response_with_line 'Content-Type: text/xml'
     image_response = response_with_line 'Content-Type: image/png'
 
-    assert text_response.is_textual?
-    refute image_response.is_textual?
+    assert text_response.textual?
+    refute image_response.textual?
   end
 
   private

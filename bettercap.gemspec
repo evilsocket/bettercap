@@ -15,12 +15,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency( 'packetfu', '~> 1.1.10' )
   gem.add_dependency( 'pcaprub', '~> 0.12.0' )
 
-  gem.files = Dir.glob("lib/**/*") + Dir.glob("bin/*") + [
-      "LICENSE",
-      "README.md",
-      "bettercap.gemspec",
-      "example_proxy_module.rb"
-  ]
+  gem.files = `git ls-files`.split("\n")
   gem.require_paths = ["lib"]
 
   gem.executables   = %w(bettercap)

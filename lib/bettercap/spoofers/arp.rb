@@ -27,7 +27,7 @@ class ArpSpoofer < ISpoofer
     Logger.debug 'ARP SPOOFER SELECTED'
 
     Logger.info "Getting gateway #{@ctx.gateway} MAC address ..."
-    @gw_hw = Network.get_hw_address( @ctx.iface, @ctx.gateway )
+    @gw_hw = Network.get_hw_address( @ctx.ifconfig, @ctx.gateway )
     if @gw_hw.nil?
       raise BetterCap::Error, "Couldn't determine router MAC"
     end
@@ -45,7 +45,7 @@ class ArpSpoofer < ISpoofer
     pkt.arp_daddr_ip = daddr
     pkt.arp_opcode = 2
 
-    pkt.to_w(@ctx.iface[:iface])
+    pkt.to_w(@ctx.ifconfig[:iface])
   end
 
   def start
@@ -84,7 +84,7 @@ class ArpSpoofer < ISpoofer
           if target.mac.nil?
             Logger.warn "Getting target #{target.ip} MAC address ..."
 
-            hw = Network.get_hw_address( @ctx.iface, target.ip, 1 )
+            hw = Network.get_hw_address( @ctx.ifconfig, target.ip )
             if hw.nil?
               Logger.warn "Couldn't determine target MAC"
               next
@@ -95,8 +95,8 @@ class ArpSpoofer < ISpoofer
             end
           end
 
-          send_spoofed_packed @ctx.gateway,    @ctx.iface[:eth_saddr], target.ip, target.mac
-          send_spoofed_packed target.ip, @ctx.iface[:eth_saddr], @ctx.gateway,    @gw_hw
+          send_spoofed_packed @ctx.gateway,    @ctx.ifconfig[:eth_saddr], target.ip, target.mac
+          send_spoofed_packed target.ip, @ctx.ifconfig[:eth_saddr], @ctx.gateway,    @gw_hw
         end
 
         prev_size = @ctx.targets.size
