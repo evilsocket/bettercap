@@ -43,7 +43,13 @@ class Sniffer
         Logger.warn e.message
       end
 
-      pkt = Packet.parse p
+      begin
+        pkt = Packet.parse p
+      rescue Exception => e
+        pkt = nil
+        Logger.debug e.message
+      end
+      
       if not pkt.nil? and pkt.is_ip?
         next if ( pkt.ip_saddr == ctx.ifconfig[:ip_saddr] or pkt.ip_daddr == ctx.ifconfig[:ip_saddr] ) and !ctx.options[:local]
 
