@@ -15,6 +15,8 @@ Gem::Specification.new do |gem|
   gem.add_dependency( 'packetfu', '~> 1.1.10' )
   gem.add_dependency( 'pcaprub', '~> 0.12.0' )
 
+  gem.add_development_dependency( 'minitest' )
+
   gem.files = `git ls-files`.split("\n")
   gem.require_paths = ["lib"]
 
