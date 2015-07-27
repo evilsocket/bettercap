@@ -44,8 +44,6 @@ class Sniffer
     end
 
     if not pkt.nil? and pkt.is_ip?
-
-
       next if skip_packet? pkt
 
       @@parsers.each do |parser|
