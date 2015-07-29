@@ -151,8 +151,12 @@ class Context
   end
 
   def enable_port_redirection
+    Logger.info "Redirecting traffic from port 80 to #{@ifconfig[:ip_saddr]}:#{@options[:proxy_port]}"
+
     @firewall.add_port_redirection( @options[:iface], 'TCP', 80, @ifconfig[:ip_saddr], @options[:proxy_port] )
     if @options[:proxy_https]
+      Logger.info "Redirecting traffic from port 443 to #{@ifconfig[:ip_saddr]}:#{@options[:proxy_https_port]}"
+
       @firewall.add_port_redirection( @options[:iface], 'TCP', 443, @ifconfig[:ip_saddr], @options[:proxy_https_port] )
     end
   end
