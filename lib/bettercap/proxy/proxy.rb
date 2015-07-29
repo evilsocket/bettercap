@@ -80,7 +80,7 @@ class Proxy
     if @is_https
       begin
         Thread.new @sslserver.accept, &method(:client_thread)
-      rescue OpenSSL::SSL::SSLError => e
+      rescue Exception => e
         Logger.warn "Error while accepting #{@type} connection: #{e.inspect}"
       end
     else
