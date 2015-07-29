@@ -36,7 +36,7 @@ class OSXFirewall < IFirewall
     config_file = "/tmp/bettercap_pf_#{Process.pid}.conf"
 
     File.open( config_file, 'a+t' ) do |f|
-      f.write "rdr pass on #{iface} inet proto #{proto} from any to any port #{from} -> #{addr} port #{to}\n"
+      f.write "rdr pass on #{iface} proto #{proto} from any to any port #{from} -> #{addr} port #{to}\n"
     end
 
     # load the rule
