@@ -80,10 +80,22 @@ begin
       ctx.options[:proxy] = true
     end
 
+    opts.on( '--proxy-https', 'Enable HTTPS proxy and redirects all HTTPS requests to it, default to false.' ) do
+      ctx.options[:proxy] = true
+      ctx.options[:proxy_https] = true
+    end
+
     opts.on( '--proxy-port PORT', 'Set HTTP proxy port, default to ' + ctx.options[:proxy_port].to_s + ' .' ) do |v|
       ctx.options[:proxy] = true
       ctx.options[:proxy_port] = v.to_i
     end
+
+    opts.on( '--proxy-https-port PORT', 'Set HTTPS proxy port, default to ' + ctx.options[:proxy_https_port].to_s + ' .' ) do |v|
+      ctx.options[:proxy] = true
+      ctx.options[:proxy_https] = true
+      ctx.options[:proxy_https_port] = v.to_i
+    end
+
 
     opts.on( '--proxy-module MODULE', 'Ruby proxy module to load.' ) do |v|
       ctx.options[:proxy] = true
@@ -186,30 +198,9 @@ begin
       Logger.warn "WARNING: Both HTTP transparent proxy and URL parser are enabled, you're gonna see duplicated logs."
     end
 
-    ctx.firewall.add_port_redirection( ctx.options[:iface], 'TCP', 80, ctx.ifconfig[:ip_saddr], ctx.options[:proxy_port] )
+    ctx.enable_port_redirection
 
-    if not ctx.options[:proxy_module].nil?
-      require ctx.options[:proxy_module]
-
-      Proxy::Module.register_modules
-
-      raise BetterCap::Error, "#{ctx.options[:proxy_module]} is not a valid bettercap proxy module." unless !Proxy::Module.modules.empty?
-    end
-
-    ctx.proxy = Proxy::Proxy.new( ctx.ifconfig[:ip_saddr], ctx.options[:proxy_port] ) do |request,response|
-      if Proxy::Module.modules.empty?
-        Logger.warn 'WARNING: No proxy module loaded, skipping request.'
-      else
-        # loop each loaded module and execute if enabled
-        Proxy::Module.modules.each do |mod|
-          if mod.enabled?
-            mod.on_request request, response
-          end
-        end
-      end
-    end
-
-    ctx.proxy.start
+    ctx.create_proxies
   end
 
   if ctx.options[:httpd]

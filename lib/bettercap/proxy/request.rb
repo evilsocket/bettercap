@@ -15,17 +15,19 @@ module Proxy
 class Request
   attr_reader :lines, :verb, :url, :host, :port, :content_length
 
-  def initialize
+  def initialize( default_port = 80 )
     @lines  = []
     @verb   = nil
     @url    = nil
     @host   = nil
-    @port   = 80
+    @port   = default_port
     @content_length = 0
   end
 
   def <<(line)
     line = line.chomp
+
+    Logger.debug "  REQUEST LINE: '#{line}'"
 
     # is this the first line '<VERB> <URI> HTTP/<VERSION>' ?
     if @url.nil? and line =~ /^(\w+)\s+(\S+)\s+HTTP\/[\d\.]+\s*$/
@@ -35,13 +37,13 @@ class Request
       # fix url
       if @url.include? '://'
         uri = URI::parse @url
-        @url = "#{uri.path}" + ( uri.query ? "?#{uri.query}" : "" )
+        @url = "#{uri.path}" + ( uri.query ? "?#{uri.query}" : '' )
       end
 
       line = "#{@verb} #{url} HTTP/1.0"
 
     # get the host header value
-    elsif line =~ /^Host: (.*)$/
+    elsif line =~ /^Host:\s*(.*)$/
       @host = $1
       if host =~ /([^:]*):([0-9]*)$/
         @host = $1

@@ -19,10 +19,14 @@ require 'bettercap/network'
 module Proxy
 
 class Proxy
-  def initialize address, port, &processor
+  def initialize( address, port, is_https, &processor )
     @socket      = nil
     @address     = address
     @port        = port
+    @is_https    = is_https
+    @type        = is_https ? 'HTTPS' : 'HTTP'
+    @sslserver   = nil
+    @sslcontext  = nil
     @main_thread = nil
     @running     = false
     @processor   = processor
@@ -40,16 +44,31 @@ class Proxy
   def start
     begin
       @socket = TCPServer.new( @address, @port )
+
+      if @is_https
+        # We're not acting as a normal HTTPS proxy, thus we're not
+        # able to handle CONNECT requests, thus we don't know the
+        # hostname the client is going to connect to.
+        # We can only use a self signed certificate.
+        cert = CertStore.get_selfsigned
+
+        @sslcontext      = OpenSSL::SSL::SSLContext.new
+        @sslcontext.cert = cert[:cert]
+        @sslcontext.key  = cert[:key]
+
+        @sslserver = OpenSSL::SSL::SSLServer.new( @socket, @sslcontext )
+      end
+
       @main_thread = Thread.new &method(:server_thread)
     rescue Exception => e
-      Logger.error "Error starting proxy: #{e.inspect}"
+      Logger.error "Error starting #{@type} proxy: #{e.inspect}"
       @socket.close unless @socket.nil?
     end
   end
 
   def stop
     begin
-      Logger.info 'Stopping proxy ...'
+      Logger.info "Stopping #{@type} proxy ..."
 
       if @socket and @running
         @running = false
@@ -61,25 +80,37 @@ class Proxy
 
   private
 
+  def async_accept
+    if @is_https
+      begin
+        Thread.new @sslserver.accept, &method(:client_thread)
+      rescue OpenSSL::SSL::SSLError => e
+        Logger.warn "Error while accepting #{@type} connection: #{e.inspect}"
+      end
+    else
+      Thread.new @socket.accept, &method(:client_thread)
+    end
+  end
+
   def server_thread
-    Logger.info "Proxy started on #{@address}:#{@port} ...\n"
+    Logger.info "#{@type} Proxy started on #{@address}:#{@port} ...\n"
 
     @running = true
 
     begin
       while @running do
-        Thread.new @socket.accept, &method(:client_thread)
+        async_accept
       end
     rescue Exception => e
       if @running
-        Logger.warn "Error while accepting connection: #{e.inspect}"
+        Logger.error "Error while accepting #{@type} connection: #{e.inspect}"
       end
     ensure
       @socket.close unless @socket.nil?
     end
   end
 
-  def binary_streaming from, to, opts = {}
+  def binary_streaming( from, to, opts = {} )
 
     total_size = 0
 
@@ -125,8 +156,8 @@ class Proxy
     end
   end
 
-  def html_streaming request, response, from, to
-    buff = ""
+  def html_streaming( request, response, from, to )
+    buff = ''
     loop do
       from.read 1024, buff
 
@@ -141,12 +172,12 @@ class Proxy
     to.write response.to_s
   end
 
-  def log_stream client, request, response
+  def log_stream( client, request, response )
     client_s   = "[#{client}]"
     verb_s     = request.verb
-    request_s  = "http://#{request.host}#{request.url}"
+    request_s  = "#{@is_https ? 'https' : 'http'}://#{request.host}#{request.url}"
     response_s = "( #{response.content_type} )"
-    request_s  = request_s.slice(0..50) + "..." unless request_s.length <= 50
+    request_s  = request_s.slice(0..50) + '...' unless request_s.length <= 50
 
     verb_s = verb_s.light_blue
 
@@ -165,23 +196,57 @@ class Proxy
     Logger.write "#{client_s} #{verb_s} #{request_s} #{response_s}"
   end
 
-  def is_self_request? request
+  def is_self_request?(request)
     @local_ips.include? IPSocket.getaddress(request.host)
   end
 
-  def rickroll_lamer client
+  def rickroll_lamer(client)
     client.write "HTTP/1.1 302 Found\n"
     client.write "Location: https://www.youtube.com/watch?v=dQw4w9WgXcQ\n\n"
   end
 
-  def client_thread client
-    client_port, client_ip = Socket.unpack_sockaddr_in(client.getpeername)
-    Logger.debug "New connection from #{client_ip}:#{client_port}"
+  def create_upstream_connection( request )
+    if @is_https
+      sock = TCPSocket.new( request.host, request.port )
+
+      ctx = OpenSSL::SSL::SSLContext.new
+
+      # do we need this? :P ctx.set_params(verify_mode: OpenSSL::SSL::VERIFY_PEER)
+
+      socket = OpenSSL::SSL::SSLSocket.new(sock, ctx).tap do |socket|
+        socket.sync_close = true
+        socket.connect
+      end
+
+      socket
+    else
+      TCPSocket.new( request.host, request.port )
+    end
+  end
+
+  def get_client_details( client )
+    if !@is_https
+      client_port, client_ip = Socket.unpack_sockaddr_in(client.getpeername)
+    else
+      _, client_port, _, client_ip = client.peeraddr
+    end
+
+    [ client_ip, client_port ]
+  end
+
+  def client_thread( client )
+    client_ip, client_port = get_client_details client
+
+    Logger.debug "New #{@type} connection from #{client_ip}:#{client_port}"
 
     server = nil
-    request = Request.new
+    request = Request.new @is_https ? 443 : 80
+
+    Logger.debug 'Created request ...'
 
     begin
+      Logger.debug 'Reading request ...'
+
       # read the first line
       request << client.readline
 
@@ -189,12 +254,12 @@ class Proxy
         line = client.readline
         request << line
 
-        if line.chomp == ""
+        if line.chomp == ''
           break
         end
       end
 
-      raise "Couldn't extract host from the request." unless request.host
+      raise "Couldn't extract host from the #{@type} request." unless request.host
 
       # someone is having fun with us =)
       if is_self_request? request
@@ -203,9 +268,15 @@ class Proxy
 
         rickroll_lamer client
 
+      elsif request.verb == 'CONNECT'
+
+        Logger.error "You're using bettercap as a 'normal' HTTPS proxy, it wasn't designed to handle CONNECT requests."
+
       else
 
-        server = TCPSocket.new( request.host, request.port )
+        Logger.debug 'Creating upstream connection ...'
+
+        server = create_upstream_connection request
 
         server.write request.to_s
 
@@ -243,7 +314,7 @@ class Proxy
           binary_streaming server, client, response: response
         end
 
-        Logger.debug "#{client_ip}:#{client_port} served."
+        Logger.debug "#{@type} client served."
       end
 
     rescue Exception => e

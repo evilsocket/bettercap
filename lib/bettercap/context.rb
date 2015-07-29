@@ -18,7 +18,7 @@ require 'json'
 
 class Context
   attr_accessor :options, :ifconfig, :network, :firewall, :gateway,
-                :targets, :spoofer, :proxy, :httpd
+                :targets, :spoofer, :proxy, :https_proxy, :httpd
 
   @@instance = nil
 
@@ -49,7 +49,9 @@ class Context
       local: false,
 
       proxy: false,
+      proxy_https: false,
       proxy_port: 8080,
+      proxy_https_port: 8083,
       proxy_module: nil,
 
       httpd: false,
@@ -59,14 +61,15 @@ class Context
       check_updates: false
     }
 
-    @ifconfig  = nil
-    @network   = nil
-    @firewall  = nil
-    @gateway   = nil
-    @targets   = []
-    @proxy     = nil
-    @spoofer   = nil
-    @httpd     = nil
+    @ifconfig    = nil
+    @network     = nil
+    @firewall    = nil
+    @gateway     = nil
+    @targets     = []
+    @proxy       = nil
+    @https_proxy = nil
+    @spoofer     = nil
+    @httpd       = nil
 
     @discovery_running = false
     @discovery_thread  = nil
@@ -144,6 +147,64 @@ class Context
     end
   end
 
+  def enable_port_redirection
+    @firewall.add_port_redirection( @options[:iface], 'TCP', 80, @ifconfig[:ip_saddr], @options[:proxy_port] )
+    if @options[:proxy_https]
+      @firewall.add_port_redirection( @options[:iface], 'TCP', 443, @ifconfig[:ip_saddr], @options[:proxy_https_port] )
+    end
+  end
+
+  def disable_port_redirection
+    @firewall.del_port_redirection( @options[:iface], 'TCP', 80, @ifconfig[:ip_saddr], @options[:proxy_port] )
+    if @options[:proxy_https]
+      @firewall.del_port_redirection( @options[:iface], 'TCP', 443, @ifconfig[:ip_saddr], @options[:proxy_https_port] )
+    end
+  end
+
+  def create_proxies
+    if not @options[:proxy_module].nil?
+      require @options[:proxy_module]
+
+      Proxy::Module.register_modules
+
+      raise BetterCap::Error, "#{@options[:proxy_module]} is not a valid bettercap proxy module." unless !Proxy::Module.modules.empty?
+    end
+
+    # create HTTP proxy
+    @proxy = Proxy::Proxy.new( @ifconfig[:ip_saddr], @options[:proxy_port], false ) do |request,response|
+      if Proxy::Module.modules.empty?
+        Logger.warn 'WARNING: No proxy module loaded, skipping request.'
+      else
+        # loop each loaded module and execute if enabled
+        Proxy::Module.modules.each do |mod|
+          if mod.enabled?
+            mod.on_request request, response
+          end
+        end
+      end
+    end
+
+    # create HTTPS proxy
+    if @options[:proxy_https]
+      @https_proxy = Proxy::Proxy.new( @ifconfig[:ip_saddr], @options[:proxy_https_port], true ) do |request,response|
+        if Proxy::Module.modules.empty?
+          Logger.warn 'WARNING: No proxy module loaded, skipping request.'
+        else
+          # loop each loaded module and execute if enabled
+          Proxy::Module.modules.each do |mod|
+            if mod.enabled?
+              mod.on_request request, response
+            end
+          end
+        end
+      end
+
+      @https_proxy.start
+    end
+
+    @proxy.start
+  end
+
   def finalize
     stop_discovery_thread
 
@@ -154,7 +215,10 @@ class Context
 
     if !@proxy.nil?
       @proxy.stop
-      @firewall.del_port_redirection( @options[:iface], 'TCP', 80, @ifconfig[:ip_saddr], @options[:proxy_port] )
+      if !@https_proxy.nil?
+        @https_proxy.stop
+      end
+      disable_port_redirection
     end
 
     if !@firewall.nil?
