@@ -1,4 +1,4 @@
-![logo](http://www.bettercap.org/images/logo_dark.png)
+![logo](http://www.bettercap.org/assets/img/navbar-logo.png)
 
 Copyleft of Simone '[evilsocket](https://twitter.com/evilsocket)' Margaritelli*.  
 
