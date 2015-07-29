@@ -96,6 +96,11 @@ begin
       ctx.options[:proxy_https_port] = v.to_i
     end
 
+    opts.on( '--proxy-pem FILE', 'Use a custom PEM certificate file for the HTTPS proxy.' ) do |v|
+      ctx.options[:proxy] = true
+      ctx.options[:proxy_https] = true
+      ctx.options[:proxy_pem_file] = File.expand_path v
+    end
 
     opts.on( '--proxy-module MODULE', 'Ruby proxy module to load.' ) do |v|
       ctx.options[:proxy] = true

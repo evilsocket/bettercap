@@ -46,11 +46,7 @@ class Proxy
       @socket = TCPServer.new( @address, @port )
 
       if @is_https
-        # We're not acting as a normal HTTPS proxy, thus we're not
-        # able to handle CONNECT requests, thus we don't know the
-        # hostname the client is going to connect to.
-        # We can only use a self signed certificate.
-        cert = CertStore.get_selfsigned
+        cert = Context.get.certificate
 
         @sslcontext      = OpenSSL::SSL::SSLContext.new
         @sslcontext.cert = cert[:cert]

@@ -18,7 +18,8 @@ require 'json'
 
 class Context
   attr_accessor :options, :ifconfig, :network, :firewall, :gateway,
-                :targets, :spoofer, :proxy, :https_proxy, :httpd
+                :targets, :spoofer, :proxy, :https_proxy, :httpd,
+                :certificate
 
   @@instance = nil
 
@@ -52,6 +53,7 @@ class Context
       proxy_https: false,
       proxy_port: 8080,
       proxy_https_port: 8083,
+      proxy_pem_file: nil,
       proxy_module: nil,
 
       httpd: false,
@@ -70,6 +72,7 @@ class Context
     @https_proxy = nil
     @spoofer     = nil
     @httpd       = nil
+    @certificate = nil
 
     @discovery_running = false
     @discovery_thread  = nil
@@ -186,6 +189,16 @@ class Context
 
     # create HTTPS proxy
     if @options[:proxy_https]
+      # We're not acting as a normal HTTPS proxy, thus we're not
+      # able to handle CONNECT requests, thus we don't know the
+      # hostname the client is going to connect to.
+      # We can only use a self signed certificate.
+      if @options[:proxy_pem_file].nil?
+        @certificate = Proxy::CertStore.get_selfsigned
+      else
+        @certificate = Proxy::CertStore.from_file @options[:proxy_pem_file]
+      end
+
       @https_proxy = Proxy::Proxy.new( @ifconfig[:ip_saddr], @options[:proxy_https_port], true ) do |request,response|
         if Proxy::Module.modules.empty?
           Logger.warn 'WARNING: No proxy module loaded, skipping request.'

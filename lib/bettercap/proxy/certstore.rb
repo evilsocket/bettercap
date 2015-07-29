@@ -15,6 +15,19 @@ require 'openssl'
 module Proxy
   class CertStore
     @@selfsigned = {}
+    @@frompems = {}
+
+    def self.from_file( filename )
+      if !@@frompems.has_key? filename
+        Logger.info "Loading self signed HTTPS certificate from '#{filename}' ..."
+
+        pem = File.read filename
+
+        @@frompems[filename] = { :cert => OpenSSL::X509::Certificate.new(pem), :key => OpenSSL::PKey::RSA.new(pem) }
+      end
+
+      @@frompems[filename]
+    end
 
     # TODO: Put a better default subject here!
     def self.get_selfsigned( subject = '/C=BE/O=Test/OU=Test/CN=Test' )
