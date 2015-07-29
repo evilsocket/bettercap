@@ -51,8 +51,13 @@ class OSXFirewall < IFirewall
 
     # disable pf
     enable false
-    # remove the pf config file
-    File.delete( "/tmp/bettercap_pf_#{Process.pid}.conf" )
+
+    begin
+      # remove the pf config file
+      File.delete( "/tmp/bettercap_pf_#{Process.pid}.conf" )
+    rescue
+    end
+
   end
 
   private
