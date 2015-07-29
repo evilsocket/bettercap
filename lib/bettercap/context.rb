@@ -161,6 +161,50 @@ class Context
     end
   end
 
+  def create_proxies
+    if not @options[:proxy_module].nil?
+      require @options[:proxy_module]
+
+      Proxy::Module.register_modules
+
+      raise BetterCap::Error, "#{@options[:proxy_module]} is not a valid bettercap proxy module." unless !Proxy::Module.modules.empty?
+    end
+
+    # create HTTP proxy
+    @proxy = Proxy::Proxy.new( @ifconfig[:ip_saddr], @options[:proxy_port], false ) do |request,response|
+      if Proxy::Module.modules.empty?
+        Logger.warn 'WARNING: No proxy module loaded, skipping request.'
+      else
+        # loop each loaded module and execute if enabled
+        Proxy::Module.modules.each do |mod|
+          if mod.enabled?
+            mod.on_request request, response
+          end
+        end
+      end
+    end
+
+    # create HTTPS proxy
+    if @options[:proxy_https]
+      @https_proxy = Proxy::Proxy.new( @ifconfig[:ip_saddr], @options[:proxy_https_port], true ) do |request,response|
+        if Proxy::Module.modules.empty?
+          Logger.warn 'WARNING: No proxy module loaded, skipping request.'
+        else
+          # loop each loaded module and execute if enabled
+          Proxy::Module.modules.each do |mod|
+            if mod.enabled?
+              mod.on_request request, response
+            end
+          end
+        end
+      end
+
+      @https_proxy.start
+    end
+
+    @proxy.start
+  end
+
   def finalize
     stop_discovery_thread
 

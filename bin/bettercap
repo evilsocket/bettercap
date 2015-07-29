@@ -200,47 +200,7 @@ begin
 
     ctx.enable_port_redirection
 
-    if not ctx.options[:proxy_module].nil?
-      require ctx.options[:proxy_module]
-
-      Proxy::Module.register_modules
-
-      raise BetterCap::Error, "#{ctx.options[:proxy_module]} is not a valid bettercap proxy module." unless !Proxy::Module.modules.empty?
-    end
-
-    # create HTTP proxy
-    ctx.proxy = Proxy::Proxy.new( ctx.ifconfig[:ip_saddr], ctx.options[:proxy_port], false ) do |request,response|
-      if Proxy::Module.modules.empty?
-        Logger.warn 'WARNING: No proxy module loaded, skipping request.'
-      else
-        # loop each loaded module and execute if enabled
-        Proxy::Module.modules.each do |mod|
-          if mod.enabled?
-            mod.on_request request, response
-          end
-        end
-      end
-    end
-
-    # create HTTPS proxy
-    if ctx.options[:proxy_https]
-      ctx.https_proxy = Proxy::Proxy.new( ctx.ifconfig[:ip_saddr], ctx.options[:proxy_https_port], true ) do |request,response|
-        if Proxy::Module.modules.empty?
-          Logger.warn 'WARNING: No proxy module loaded, skipping request.'
-        else
-          # loop each loaded module and execute if enabled
-          Proxy::Module.modules.each do |mod|
-            if mod.enabled?
-              mod.on_request request, response
-            end
-          end
-        end
-      end
-
-      ctx.https_proxy.start
-    end
-
-    ctx.proxy.start
+    ctx.create_proxies
   end
 
   if ctx.options[:httpd]
