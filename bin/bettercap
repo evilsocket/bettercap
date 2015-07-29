@@ -72,7 +72,7 @@ begin
       ctx.options[:arpcache] = true
     end
 
-    opts.on( '--no-spoofing', 'Disable spoofing, alias for --spoofer NONE.' ) do |v|
+    opts.on( '--no-spoofing', 'Disable spoofing, alias for --spoofer NONE.' ) do
       ctx.options[:spoofer] = 'NONE'
     end
 
@@ -216,7 +216,9 @@ begin
   if ctx.options[:sniffer]
     Sniffer.start ctx
   else
-    Logger.warn 'WARNING: Sniffer module was NOT enabled ( -X argument ), this will cause the MITM to run but no data to be collected.'
+    if ctx.options[:spoofer] != 'NONE' and ctx.options[:spoofer] != 'none'
+      Logger.warn 'WARNING: Sniffer module was NOT enabled ( -X argument ), this will cause the MITM to run but no data to be collected.'
+    end
 
     loop do
       sleep 1
