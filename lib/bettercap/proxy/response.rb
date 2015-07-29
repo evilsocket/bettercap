@@ -25,6 +25,21 @@ class Response
     @headers_done = false
   end
 
+  def self.from_socket(sock)
+    response = Response.new
+
+    # read all response headers
+    loop do
+      line = sock.readline
+
+      response << line
+
+      break unless not response.headers_done
+    end
+
+    response
+  end
+
   def <<(line)
     # we already parsed the heders, collect response body
     if @headers_done

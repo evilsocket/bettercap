@@ -238,24 +238,10 @@ class Proxy
     server = nil
     request = Request.new @is_https ? 443 : 80
 
-    Logger.debug 'Created request ...'
-
     begin
       Logger.debug 'Reading request ...'
 
-      # read the first line
-      request << client.readline
-
-      loop do
-        line = client.readline
-        request << line
-
-        if line.chomp == ''
-          break
-        end
-      end
-
-      raise "Couldn't extract host from the #{@type} request." unless request.host
+      request.read client
 
       # someone is having fun with us =)
       if is_self_request? request
@@ -266,7 +252,7 @@ class Proxy
 
       elsif request.verb == 'CONNECT'
 
-        Logger.error "You're using bettercap as a 'normal' HTTPS proxy, it wasn't designed to handle CONNECT requests."
+        Logger.error "You're using bettercap as a normal HTTPS proxy, it wasn't designed to handle CONNECT requests."
 
       else
 
@@ -285,16 +271,7 @@ class Proxy
 
         Logger.debug 'Reading response ...'
 
-        response = Response.new
-
-        # read all response headers
-        loop do
-          line = server.readline
-
-          response << line
-
-          break unless not response.headers_done
-        end
+        response = Response.from_socket server
 
         if response.textual?
           log_stream client_ip, request, response

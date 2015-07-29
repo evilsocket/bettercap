@@ -24,6 +24,22 @@ class Request
     @content_length = 0
   end
 
+  def read(sock)
+    # read the first line
+    self << sock.readline
+
+    loop do
+      line = sock.readline
+      self << line
+
+      if line.chomp == ''
+        break
+      end
+    end
+
+    raise "Couldn't extract host from the request." unless @host
+  end
+
   def <<(line)
     line = line.chomp
 
