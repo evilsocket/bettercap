@@ -32,7 +32,7 @@ begin
       ctx.options[:spoofer] = v
     end
 
-    opts.on( '-T', '--target ADDRESS', 'Target IP address, if not specified the whole subnet will be targeted.' ) do |v|
+    opts.on( '-T', '--target ADDRESS1,ADDRESS2', 'Target IP addresses, if not specified the whole subnet will be targeted.' ) do |v|
       ctx.options[:target] = v
     end
 
@@ -160,9 +160,17 @@ begin
 
     ctx.start_discovery_thread
   else
-    raise BetterCap::Error, "Invalid target '#{ctx.options[:target]}'" unless Network.is_ip? ctx.options[:target]
+    targets = ctx.options[:target].split(",")
+    valid_targets = targets.select { |target| Network.is_ip?(target) }
 
-    ctx.targets = [ Target.new( ctx.options[:target], nil ) ]
+    raise BetterCap::Error, "Invalid target" if valid_targets.empty?
+
+    invalid_targets = targets - valid_targets
+    invalid_targets.each do |target|
+      Logger.warn "Invalid target #{target}"
+    end
+
+    ctx.targets = valid_targets.map { |target| Target.new(target) }
   end
 
   ctx.spoofer = SpooferFactory.get_by_name( ctx.options[:spoofer] )

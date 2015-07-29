@@ -16,7 +16,7 @@ class Target
 
     @@prefixes = nil
 
-    def initialize( ip, mac )
+    def initialize( ip, mac=nil )
       @ip = ip
       @mac = mac
       @vendor = Target.lookup_vendor(mac) if not mac.nil?
