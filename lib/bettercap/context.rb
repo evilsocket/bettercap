@@ -18,7 +18,7 @@ require 'json'
 
 class Context
   attr_accessor :options, :ifconfig, :network, :firewall, :gateway,
-                :targets, :spoofer, :proxy, :httpd
+                :targets, :spoofer, :proxy, :https_proxy, :httpd
 
   @@instance = nil
 
@@ -49,7 +49,9 @@ class Context
       local: false,
 
       proxy: false,
+      proxy_https: false,
       proxy_port: 8080,
+      proxy_https_port: 8083,
       proxy_module: nil,
 
       httpd: false,
@@ -59,14 +61,15 @@ class Context
       check_updates: false
     }
 
-    @ifconfig  = nil
-    @network   = nil
-    @firewall  = nil
-    @gateway   = nil
-    @targets   = []
-    @proxy     = nil
-    @spoofer   = nil
-    @httpd     = nil
+    @ifconfig    = nil
+    @network     = nil
+    @firewall    = nil
+    @gateway     = nil
+    @targets     = []
+    @proxy       = nil
+    @https_proxy = nil
+    @spoofer     = nil
+    @httpd       = nil
 
     @discovery_running = false
     @discovery_thread  = nil
@@ -144,6 +147,20 @@ class Context
     end
   end
 
+  def enable_port_redirection
+    @firewall.add_port_redirection( @options[:iface], 'TCP', 80, @ifconfig[:ip_saddr], @options[:proxy_port] )
+    if @options[:proxy_https]
+      @firewall.add_port_redirection( @options[:iface], 'TCP', 443, @ifconfig[:ip_saddr], @options[:proxy_https_port] )
+    end
+  end
+
+  def disable_port_redirection
+    @firewall.del_port_redirection( @options[:iface], 'TCP', 80, @ifconfig[:ip_saddr], @options[:proxy_port] )
+    if @options[:proxy_https]
+      @firewall.del_port_redirection( @options[:iface], 'TCP', 443, @ifconfig[:ip_saddr], @options[:proxy_https_port] )
+    end
+  end
+
   def finalize
     stop_discovery_thread
 
@@ -154,7 +171,10 @@ class Context
 
     if !@proxy.nil?
       @proxy.stop
-      @firewall.del_port_redirection( @options[:iface], 'TCP', 80, @ifconfig[:ip_saddr], @options[:proxy_port] )
+      if !@https_proxy.nil?
+        @https_proxy.stop
+      end
+      disable_port_redirection
     end
 
     if !@firewall.nil?

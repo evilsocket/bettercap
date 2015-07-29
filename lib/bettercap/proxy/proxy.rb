@@ -19,10 +19,11 @@ require 'bettercap/network'
 module Proxy
 
 class Proxy
-  def initialize address, port, &processor
+  def initialize address, port, is_https, &processor
     @socket      = nil
     @address     = address
     @port        = port
+    @is_https    = is_https
     @main_thread = nil
     @running     = false
     @processor   = processor
