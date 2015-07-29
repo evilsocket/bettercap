@@ -110,7 +110,12 @@ class Context
           Logger.info 'Searching for alive targets ...'
         else
           # make sure we don't stress the logging system
-          sleep 10
+          10.times do
+            sleep 1
+            if !@discovery_running
+              break
+            end
+          end
         end
 
         @targets = Network.get_alive_targets self
