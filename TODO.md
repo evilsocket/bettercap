@@ -7,9 +7,8 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [x] BPF filters.
 - [x] BeEF proxy module ( [BeefBOX](https://github.com/evilsocket/bettercap-proxy-modules/blob/master/beefbox.rb) ).
 - [x] Use raw file arp parsing instead of "arp -a" to improve speed. ( Solved with arp -a -n )
+- [x] sslmitm
 - [ ] *BSD Support.
-- [ ] sslstrip
-- [ ] sslmitm
 - [ ] HTTP/2 Support.
 - [ ] Active packet filtering/injection/etc.
 
@@ -21,3 +20,4 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [ ] Windows Support? ( OMG PLZ NO! )
 - [ ] Output/actions as json for UI integration?
 - [ ] BeefBox / BeefDRONE with Raspberry PI?
+- [ ] sslstrip ( not really sure, currently is quite useless )
