@@ -37,7 +37,7 @@ class ArpSpoofer < ISpoofer
     Logger.info "  Gateway : #{@ctx.gateway} ( #{@gw_hw} )"
   end
 
-  def send_spoofed_packed( saddr, smac, daddr, dmac )
+  def send_spoofed_packet( saddr, smac, daddr, dmac )
     pkt = PacketFu::ARPPacket.new
     pkt.eth_saddr = smac
     pkt.eth_daddr = dmac
@@ -81,7 +81,7 @@ class ArpSpoofer < ISpoofer
             if !is_from_us
               Logger.info "[ARP] #{pkt.arp_src_ip.to_s} is asking who #{pkt.arp_dst_ip.to_s} is."
 
-              send_spoofed_packed pkt.arp_dst_ip.to_s, @ctx.ifconfig[:eth_saddr], pkt.arp_src_ip.to_s, pkt.arp_src_mac.to_s
+              send_spoofed_packet pkt.arp_dst_ip.to_s, @ctx.ifconfig[:eth_saddr], pkt.arp_src_ip.to_s, pkt.arp_src_mac.to_s
             end
           end
         rescue Exception => e
@@ -125,8 +125,8 @@ class ArpSpoofer < ISpoofer
             end
           end
 
-          send_spoofed_packed @ctx.gateway,    @ctx.ifconfig[:eth_saddr], target.ip, target.mac
-          send_spoofed_packed target.ip, @ctx.ifconfig[:eth_saddr], @ctx.gateway,    @gw_hw
+          send_spoofed_packet @ctx.gateway,    @ctx.ifconfig[:eth_saddr], target.ip, target.mac
+          send_spoofed_packet target.ip, @ctx.ifconfig[:eth_saddr], @ctx.gateway,    @gw_hw
         end
 
         prev_size = @ctx.targets.size
@@ -151,8 +151,8 @@ class ArpSpoofer < ISpoofer
 
     @ctx.targets.each do |target|
       if !target.mac.nil?
-        send_spoofed_packed @ctx.gateway,    @gw_hw,     target.ip, target.mac
-        send_spoofed_packed target.ip, target.mac, @ctx.gateway,    @gw_hw
+        send_spoofed_packet @ctx.gateway,    @gw_hw,     target.ip, target.mac
+        send_spoofed_packet target.ip, target.mac, @ctx.gateway,    @gw_hw
       end
     end
     sleep 1
