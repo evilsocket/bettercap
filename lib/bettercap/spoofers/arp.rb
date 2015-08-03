@@ -125,8 +125,7 @@ class ArpSpoofer < ISpoofer
             end
           end
 
-          send_spoofed_packet @ctx.gateway,    @ctx.ifconfig[:eth_saddr], target.ip, target.mac
-          send_spoofed_packet target.ip, @ctx.ifconfig[:eth_saddr], @ctx.gateway,    @gw_hw
+          send_spoofed_packet @ctx.gateway, @ctx.ifconfig[:eth_saddr], target.ip, target.mac
         end
 
         prev_size = @ctx.targets.size
@@ -151,8 +150,7 @@ class ArpSpoofer < ISpoofer
 
     @ctx.targets.each do |target|
       if !target.mac.nil?
-        send_spoofed_packet @ctx.gateway,    @gw_hw,     target.ip, target.mac
-        send_spoofed_packet target.ip, target.mac, @ctx.gateway,    @gw_hw
+        send_spoofed_packet @ctx.gateway, @gw_hw, target.ip, target.mac
       end
     end
     sleep 1
