@@ -76,6 +76,10 @@ begin
       ctx.options[:spoofer] = 'NONE'
     end
 
+    opts.on( '--half-duplex', 'Enable half-duplex MITM, this will make bettercap work in those cases when the router is not vulnerable.' ) do
+      ctx.options[:half_duplex] = true
+    end
+
     opts.on( '--proxy', 'Enable HTTP proxy and redirects all HTTP requests to it, default to false.' ) do
       ctx.options[:proxy] = true
     end

@@ -38,6 +38,7 @@ class Context
     @options = {
       iface: iface,
       spoofer: 'ARP',
+      half_duplex: false,
       target: nil,
       logfile: nil,
       debug: false,
