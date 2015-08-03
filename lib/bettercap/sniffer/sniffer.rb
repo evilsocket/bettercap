@@ -28,38 +28,36 @@ class Sniffer
     setup( ctx )
 
     @@cap.stream.each do |p|
-      append_packet p
-      parse_packet p
+      begin
+        parsed = Packet.parse p
+      rescue Exception => e
+        parsed = nil
+        Logger.debug e.message
+      end
+
+      if not parsed.nil? and parsed.is_ip? and !skip_packet?(parsed)
+        append_packet p
+        parse_packet parsed
+      end
     end
   end
 
   private
 
-  def self.parse_packet( p )
-    begin
-      pkt = Packet.parse p
-    rescue Exception => e
-      pkt = nil
-      Logger.debug e.message
-    end
-
-    if not pkt.nil? and pkt.is_ip?
-      if !skip_packet? pkt
-        @@parsers.each do |parser|
-          begin
-            parser.on_packet pkt
-          rescue Exception => e
-            Logger.warn e.message
-          end
-        end
-      end
-    end
-  end
-
   def self.skip_packet?( pkt )
     !@@ctx.options[:local] and
-    ( pkt.ip_saddr == @@ctx.ifconfig[:ip_saddr] or
-      pkt.ip_daddr == @@ctx.ifconfig[:ip_saddr] )
+        ( pkt.ip_saddr == @@ctx.ifconfig[:ip_saddr] or
+            pkt.ip_daddr == @@ctx.ifconfig[:ip_saddr] )
+  end
+
+  def self.parse_packet( parsed )
+    @@parsers.each do |parser|
+      begin
+        parser.on_packet parsed
+      rescue Exception => e
+        Logger.warn e.message
+      end
+    end
   end
 
   def self.append_packet( p )
