@@ -185,7 +185,13 @@ class Context
         # loop each loaded module and execute if enabled
         Proxy::Module.modules.each do |mod|
           if mod.enabled?
-            mod.on_request request, response
+            original = response
+            begin
+              mod.on_request request, response
+            rescue Exception => e
+              Logger.warn "Error with proxy module: #{e.message}"
+              response = original
+            end
           end
         end
       end
@@ -210,7 +216,13 @@ class Context
           # loop each loaded module and execute if enabled
           Proxy::Module.modules.each do |mod|
             if mod.enabled?
-              mod.on_request request, response
+              original = response
+              begin
+                mod.on_request request, response
+              rescue Exception => e
+                Logger.warn "Error with proxy module: #{e.message}"
+                response = original
+              end
             end
           end
         end
