@@ -39,12 +39,18 @@ class Network
       gw  = nil
       out.each do |line|
         if line.include?( Context.get.options[:iface] )
-          gw = line.split[1]
-          break if is_ip?(gw)
+          tmp = line.split[1]
+          if is_ip?(tmp)
+            gw = tmp
+            break
+          end
         end
       end
 
-      raise BetterCap::Error, 'Could not detect gateway address' unless gw.nil? or is_ip?(gw)
+      raise BetterCap::Error, "Could not detect the gateway address for interface #{Context.get.options[:iface]}, "\
+                              'make sure you\'ve specified the correct network interface to use and to have the '\
+                              'correct network configuration, this could also happen if bettercap '\
+                              'is launched from a virtual environment.' unless !gw.nil? and is_ip?(gw)
       gw
     end
 
