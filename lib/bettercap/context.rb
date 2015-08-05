@@ -79,8 +79,17 @@ class Context
     @discovery_thread  = nil
   end
 
-  def check_updates
-    get_latest_version
+  def check_updates(error_policy = ->{ raise })
+    ver = get_latest_version
+
+    case ver
+    when "v#{BetterCap::VERSION}"
+      Logger.info 'You are running the latest version.'
+    else
+      Logger.warn "New version '#{ver}' available!"
+    end
+  rescue Exception => e
+    error_policy.call(e)
   end
 
   def get_latest_version
