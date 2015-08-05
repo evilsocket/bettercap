@@ -80,6 +80,10 @@ class Context
   end
 
   def check_updates
+    get_latest_version
+  end
+
+  def get_latest_version
     Logger.info 'Checking for updates ...'
 
     api  = URI('https://api.github.com/repos/evilsocket/bettercap/releases/latest')
