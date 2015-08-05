@@ -131,23 +131,7 @@ module BetterCap
 
         opts.on('-h', '--help', 'Display the available options.') do
           puts opts
-          puts "\nExamples:\n".bold
-          puts " - Sniffer / Credentials Harvester\n".bold
-          puts "  Default sniffer mode, all parsers enabled:\n\n"
-          puts "    sudo bettercap -X\n".bold
-          puts "  Enable sniffer and load only specified parsers:\n\n"
-          puts "    sudo bettercap -X -P \"FTP,HTTPAUTH,MAIL,NTLMSS\"\n".bold
-          puts "  Enable sniffer + all parsers and parse local traffic as well:\n\n"
-          puts "    sudo bettercap -X -L\n".bold
-          puts " - Transparent Proxy\n".bold
-          puts "  Enable proxy on default ( 8080 ) port with no modules ( quite useless ):\n\n"
-          puts "    sudo bettercap --proxy\n".bold
-          puts "  Enable proxy and use a custom port:\n\n"
-          puts "    sudo bettercap --proxy --proxy-port=8081\n".bold
-          puts "  Enable proxy and load the module example_proxy_module.rb:\n\n"
-          puts "    sudo bettercap --proxy --proxy-module=example_proxy_module.rb\n".bold
-          puts "  Disable spoofer and enable proxy ( stand alone proxy mode ):\n\n"
-          puts "    sudo bettercap -S NONE --proxy".bold
+          puts examples
           exit
         end
 
@@ -161,6 +145,46 @@ module BetterCap
       end.parse!
 
       ctx.options.merge(options)
+    end
+
+    def examples
+      <<EOS
+
+Examples:
+
+ - Sniffer / Credentials Harvester
+
+  Default sniffer mode, all parsers enabled:
+
+    sudo bettercap -X
+
+  Enable sniffer and load only specified parsers:
+
+    sudo bettercap -X -P \"FTP,HTTPAUTH,MAIL,NTLMSS\"
+
+  Enable sniffer + all parsers and parse local traffic as well:
+
+    sudo bettercap -X -L
+
+ - Transparent Proxy
+
+  Enable proxy on default ( 8080 ) port with no modules ( quite useless ):
+
+    sudo bettercap --proxy
+
+  Enable proxy and use a custom port:
+
+    sudo bettercap --proxy --proxy-port=8081
+
+  Enable proxy and load the module example_proxy_module.rb:
+
+    sudo bettercap --proxy --proxy-module=example_proxy_module.rb
+
+  Disable spoofer and enable proxy ( stand alone proxy mode ):
+
+    sudo bettercap -S NONE --proxy"
+
+EOS
     end
   end
 end
