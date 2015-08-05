@@ -19,7 +19,7 @@ require 'bettercap/network'
 module Proxy
 
 class Proxy
-  def initialize( address, port, is_https, &processor )
+  def initialize( address, port, is_https, processor )
     @socket      = nil
     @address     = address
     @port        = port
@@ -252,7 +252,7 @@ class Proxy
 
       elsif request.verb == 'CONNECT'
 
-        Logger.error "You're using bettercap as a normal HTTPS proxy, it wasn't designed to handle CONNECT requests."
+        Logger.error "You're using bettercap as a normal HTTP(S) proxy, it wasn't designed to handle CONNECT requests:\n\n#{request.to_s}"
 
       else
 

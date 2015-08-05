@@ -69,6 +69,7 @@ class Context
     @firewall    = nil
     @gateway     = nil
     @targets     = []
+    @proxy_processor = nil
     @proxy       = nil
     @https_proxy = nil
     @spoofer     = nil
@@ -178,15 +179,17 @@ class Context
       raise BetterCap::Error, "#{@options[:proxy_module]} is not a valid bettercap proxy module." unless !Proxy::Module.modules.empty?
     end
 
-    # create HTTP proxy
-    @proxy = Proxy::Proxy.new( @ifconfig[:ip_saddr], @options[:proxy_port], false ) do |request,response|
+    @proxy_processor = Proc.new do |request,response|
       if Proxy::Module.modules.empty?
         Logger.warn 'WARNING: No proxy module loaded, skipping request.'
       else
         # loop each loaded module and execute if enabled
         Proxy::Module.modules.each do |mod|
           if mod.enabled?
+            # we need to save the original response in case something
+            # in the module will go wrong
             original = response
+
             begin
               mod.on_request request, response
             rescue Exception => e
@@ -197,6 +200,10 @@ class Context
         end
       end
     end
+
+    # create HTTP proxy
+    @proxy = Proxy::Proxy.new( @ifconfig[:ip_saddr], @options[:proxy_port], false, @proxy_processor )
+    @proxy.start
 
     # create HTTPS proxy
     if @options[:proxy_https]
@@ -210,29 +217,9 @@ class Context
         @certificate = Proxy::CertStore.from_file @options[:proxy_pem_file]
       end
 
-      @https_proxy = Proxy::Proxy.new( @ifconfig[:ip_saddr], @options[:proxy_https_port], true ) do |request,response|
-        if Proxy::Module.modules.empty?
-          Logger.warn 'WARNING: No proxy module loaded, skipping request.'
-        else
-          # loop each loaded module and execute if enabled
-          Proxy::Module.modules.each do |mod|
-            if mod.enabled?
-              original = response
-              begin
-                mod.on_request request, response
-              rescue Exception => e
-                Logger.warn "Error with proxy module: #{e.message}"
-                response = original
-              end
-            end
-          end
-        end
-      end
-
+      @https_proxy = Proxy::Proxy.new( @ifconfig[:ip_saddr], @options[:proxy_https_port], true, @proxy_processor )
       @https_proxy.start
     end
-
-    @proxy.start
   end
 
   def finalize
