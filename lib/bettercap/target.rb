@@ -11,7 +11,8 @@ This project is released under the GPL 3 license.
 =end
 require 'bettercap/logger'
 
-class Target
+module BetterCap
+  class Target
     attr_accessor :ip, :mac, :vendor, :hostname
 
     @@prefixes = nil
@@ -32,7 +33,7 @@ class Target
       "#{@ip} : #{@mac}" + ( @vendor ? " ( #{@vendor} )" : "" )
     end
 
-private
+    private
 
     def self.lookup_vendor( mac )
       if @@prefixes == nil
@@ -49,4 +50,5 @@ private
 
       @@prefixes[ mac.split(':')[0,3].join('').upcase ]
     end
+  end
 end

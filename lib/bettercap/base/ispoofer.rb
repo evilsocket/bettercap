@@ -9,22 +9,24 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-class ISpoofer
-  def initialize
-    not_implemented_method!
-  end
+module BetterCap
+  class ISpoofer
+    def initialize
+      not_implemented_method!
+    end
 
-  def start
-    not_implemented_method!
-  end
+    def start
+      not_implemented_method!
+    end
 
-  def stop
-    not_implemented_method!
-  end
+    def stop
+      not_implemented_method!
+    end
 
-private
+    private
 
-  def not_implemented_method!
-    raise NotImplementedError, 'ISpoofer: Unimplemented method!'
+    def not_implemented_method!
+      raise NotImplementedError, 'ISpoofer: Unimplemented method!'
+    end
   end
 end

@@ -13,34 +13,33 @@ require 'webrick'
 
 require 'bettercap/logger'
 
-module HTTPD
+module BetterCap
+  module HTTPD
+    class Server
+      def initialize( port = 8081, path = './' )
+        @port = port
+        @path = path
+        @server = WEBrick::HTTPServer.new(
+          Port: @port,
+          DocumentRoot: @path,
+          Logger: WEBrick::Log.new("/dev/null"),
+          AccessLog: []
+        )
+      end
 
-class Server
-  def initialize( port = 8081, path = './' )
-    @port = port
-    @path = path
-    @server = WEBrick::HTTPServer.new(
-      Port: @port,
-      DocumentRoot: @path,
-      Logger: WEBrick::Log.new("/dev/null"),
-      AccessLog: []
-    )
-  end
+      def start
+        Logger.info "Starting HTTPD on port #{@port} and path #{@path} ..."
+        @thread = Thread.new {
+          @server.start
+        }
+      end
 
-  def start
-    Logger.info "Starting HTTPD on port #{@port} and path #{@path} ..."
-    @thread = Thread.new {
-      @server.start
-    }
-  end
+      def stop
+        Logger.info 'Stopping HTTPD ...'
 
-  def stop
-    Logger.info 'Stopping HTTPD ...'
-
-    @server.stop
-    @thread.join
+        @server.stop
+        @thread.join
+      end
+    end
   end
 end
-
-end
-

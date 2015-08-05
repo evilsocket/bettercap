@@ -25,11 +25,11 @@ class FirewallFactoryTest < MiniTest::Test
   # end
 
   def test_unknown_firewall
-    FirewallFactory.clear_firewall
+    BetterCap::FirewallFactory.clear_firewall
 
     override_ruby_platform('ms') do
       assert_raises BetterCap::Error do
-        FirewallFactory.get_firewall
+        BetterCap::FirewallFactory.get_firewall
       end
     end
   end

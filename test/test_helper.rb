@@ -18,7 +18,7 @@ end
 # called inside the block of this method.
 def silence(output_file_name = SecureRandom.hex)
   captured_output = Tempfile.new output_file_name
-  Logger.logfile = captured_output
+  BetterCap::Logger.logfile = captured_output
 
   $stdout = File.new('/dev/null', 'w')
   yield captured_output
