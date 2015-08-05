@@ -1,7 +1,7 @@
 require 'minitest/autorun'
 require 'test_helper'
 require 'bettercap/firewalls/osx'
-require 'helpers/mock_shell'
+require 'bettercap/helpers/mock_shell'
 
 class OSXFirewallTest < MiniTest::Test
   def test_enabling_forwarding

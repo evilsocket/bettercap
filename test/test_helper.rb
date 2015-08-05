@@ -1,4 +1,4 @@
-require 'helpers/mock_shell'
+require 'bettercap/helpers/mock_shell'
 require 'securerandom'
 
 # Override the `shell` private method of the firewall to return the mock
