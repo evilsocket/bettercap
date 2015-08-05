@@ -86,10 +86,7 @@ class Context
     body = Net::HTTP.get(api)
     json = JSON.parse(body)
 
-    if json['tag_name'] != BetterCap::VERSION and json['tag_name'] != "v#{BetterCap::VERSION}"
-      return json['tag_name']
-    end
-    nil
+    return json['tag_name']
   end
 
   def update_network

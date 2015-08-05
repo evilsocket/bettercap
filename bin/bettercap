@@ -155,10 +155,11 @@ begin
   if ctx.options[:check_updates]
     begin
     ver = ctx.check_updates
-    if !ver.nil?
-      Logger.warn "New version #{ver} available!"
-    else
+    case ver
+    when "v#{BetterCap::VERSION}"
       Logger.info 'You are running the latest version.'
+    else
+      Logger.warn "New version #{ver} available!"
     end
     rescue Exception => e
       Logger.error "Could not check for updates: #{e.message}"
