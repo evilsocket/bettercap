@@ -84,7 +84,7 @@ class Context
     ver = get_latest_version
 
     case ver
-    when "v#{BetterCap::VERSION}"
+    when BetterCap::VERSION
       Logger.info 'You are running the latest version.'
     else
       Logger.warn "New version '#{ver}' available!"
@@ -96,7 +96,7 @@ class Context
   def get_latest_version
     Logger.info 'Checking for updates ...'
 
-    api = URI('https://api.github.com/repos/evilsocket/bettercap/releases/latest')
+    api = URI('https://rubygems.org/api/v1/versions/bettercap/latest.json')
     response = Net::HTTP.get_response(api)
 
     case response
@@ -106,7 +106,7 @@ class Context
       raise response.message
     end
 
-    return json['tag_name']
+    return json['version']
   end
 
   def update_network
