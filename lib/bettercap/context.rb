@@ -95,9 +95,15 @@ class Context
   def get_latest_version
     Logger.info 'Checking for updates ...'
 
-    api  = URI('https://api.github.com/repos/evilsocket/bettercap/releases/latest')
-    body = Net::HTTP.get(api)
-    json = JSON.parse(body)
+    api = URI('https://api.github.com/repos/evilsocket/bettercap/releases/latest')
+    response = Net::HTTP.get_response(api)
+
+    case response
+    when Net::HTTPSuccess
+      json = JSON.parse(response.body)
+    else
+      raise response.message
+    end
 
     return json['tag_name']
   end
