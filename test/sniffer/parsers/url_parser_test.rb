@@ -1,7 +1,7 @@
 require 'minitest/autorun'
 require 'test_helper'
 require 'packetfu'
-require 'sniffer/parsers/url'
+require 'bettercap/sniffer/parsers/url'
 
 class UrlParserTest < MiniTest::Test
   def setup

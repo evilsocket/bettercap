@@ -1,6 +1,6 @@
 require 'minitest/autorun'
 require 'test_helper'
-require 'sniffer/parsers/ftp'
+require 'bettercap/sniffer/parsers/ftp'
 require 'packetfu'
 
 class BaseParserTest < MiniTest::Test

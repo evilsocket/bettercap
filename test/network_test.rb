@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require 'network'
+require 'bettercap/network'
 
 class NetworkTest < MiniTest::Test
   def test_valid_ip_address

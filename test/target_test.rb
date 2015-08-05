@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require 'target'
+require 'bettercap/target'
 
 class TestTarget < MiniTest::Test
   def setup

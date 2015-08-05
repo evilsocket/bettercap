@@ -1,6 +1,6 @@
 require 'minitest/autorun'
 require 'test_helper'
-require 'firewalls/osx'
+require 'bettercap/firewalls/osx'
 require 'helpers/mock_shell'
 
 class OSXFirewallTest < MiniTest::Test

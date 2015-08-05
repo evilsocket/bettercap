@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require 'factories/firewall_factory'
+require 'bettercap/factories/firewall_factory'
 
 class FirewallFactoryTest < MiniTest::Test
   # TODO: Fix the tests for the Mac and Linux firewall initialization. Right now

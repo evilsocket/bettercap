@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require 'factories/parser_factory'
+require 'bettercap/factories/parser_factory'
 
 class ParserFactoryTest < MiniTest::Test
   def test_getting_available_parsers

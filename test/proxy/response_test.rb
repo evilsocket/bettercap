@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require 'proxy/response'
+require 'bettercap/proxy/response'
 
 class TestProxyResponse < MiniTest::Test
   def test_response_status_parsing
