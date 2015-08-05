@@ -80,17 +80,33 @@ class Context
     @discovery_thread  = nil
   end
 
-  def check_updates
+  def check_updates(error_policy = ->{ raise })
+    ver = get_latest_version
+
+    case ver
+    when "v#{BetterCap::VERSION}"
+      Logger.info 'You are running the latest version.'
+    else
+      Logger.warn "New version '#{ver}' available!"
+    end
+  rescue Exception => e
+    error_policy.call(e)
+  end
+
+  def get_latest_version
     Logger.info 'Checking for updates ...'
 
-    api  = URI('https://api.github.com/repos/evilsocket/bettercap/releases/latest')
-    body = Net::HTTP.get(api)
-    json = JSON.parse(body)
+    api = URI('https://api.github.com/repos/evilsocket/bettercap/releases/latest')
+    response = Net::HTTP.get_response(api)
 
-    if json['tag_name'] != BetterCap::VERSION and json['tag_name'] != "v#{BetterCap::VERSION}"
-      return json['tag_name']
+    case response
+    when Net::HTTPSuccess
+      json = JSON.parse(response.body)
+    else
+      raise response.message
     end
-    nil
+
+    return json['tag_name']
   end
 
   def update_network

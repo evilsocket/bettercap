@@ -153,17 +153,11 @@ begin
   end.parse!
 
   if ctx.options[:check_updates]
-    begin
-    ver = ctx.check_updates
-    if !ver.nil?
-      Logger.warn "New version #{ver} available!"
-    else
-      Logger.info 'You are running the latest version.'
-    end
-    rescue Exception => e
-      Logger.error "Could not check for updates: #{e.message}"
-    end
+    error_policy = lambda { |e|
+      Logger.error("Could not check for udpates: #{e.message}")
+    }
 
+    ctx.check_updates(error_policy)
     exit
   end
 
