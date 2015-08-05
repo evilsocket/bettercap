@@ -1,23 +1,20 @@
 require 'optparse'
 require 'bettercap'
+require 'forwardable'
 
 module BetterCap
   class Options
     attr_accessor :options
     attr_reader :ctx
 
+    extend Forwardable
+
+    def_delegators :@options, :[], :[]=
+
     def initialize(argv)
       @ctx = Context.get
       @options = {}
       parse(argv)
-    end
-
-    def [](sel)
-      options[sel]
-    end
-
-    def []=(sel, value)
-      options[sel] = value
     end
 
     private
