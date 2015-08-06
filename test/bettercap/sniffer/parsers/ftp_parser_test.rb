@@ -1,14 +1,14 @@
 require 'minitest/autorun'
 require 'test_helper'
 require 'packetfu'
-require 'sniffer/parsers/ftp'
+require 'bettercap/sniffer/parsers/ftp'
 
 class FtpParserTest < MiniTest::Test
   def setup
     # The pcap file for the FTP tests was taken from the Practical Packet
     # Analysis GitHub repo: https://github.com/markofu/pcaps
     @packets = ftp_packets
-    @parser = FtpParser.new
+    @parser = BetterCap::FtpParser.new
   end
 
   def test_parsing_ftp_packets_with_no_user_data

@@ -1,12 +1,12 @@
 require 'minitest/autorun'
 require 'test_helper'
-require 'sniffer/parsers/ftp'
+require 'bettercap/sniffer/parsers/ftp'
 require 'packetfu'
 
 class BaseParserTest < MiniTest::Test
   def setup
     @packets = parsed_packets
-    @parser = BaseParser.new
+    @parser = BetterCap::BaseParser.new
   end
 
   # The base parser has no parsers by default, so it shouldn't be writing

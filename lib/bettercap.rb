@@ -20,6 +20,7 @@ require 'ipaddr'
 Object.send :remove_const, :Config rescue nil
 Config = RbConfig
 
+require 'bettercap/banner'
 require 'bettercap/error'
 require 'bettercap/context'
 require 'bettercap/monkey/packetfu/utils'

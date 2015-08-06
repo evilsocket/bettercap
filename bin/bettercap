@@ -15,10 +15,10 @@
 require 'bettercap'
 
 begin
-  puts BetterCap::BANNER.green.bold
+  BetterCap::Banner.print
   puts "\n\n\n"
 
-  ctx = Context.get
+  ctx = BetterCap::Context.get
 
   OptionParser.new do |opts|
     opts.banner = "Usage: #{$0} [options]"
@@ -28,7 +28,7 @@ begin
       ctx.options[:iface] = v
     end
 
-    opts.on( '-S', '--spoofer NAME', 'Spoofer module to use, available: ' + SpooferFactory.available.join(', ') + ' - default: ' + ctx.options[:spoofer] ) do |v|
+    opts.on( '-S', '--spoofer NAME', 'Spoofer module to use, available: ' + BetterCap::SpooferFactory.available.join(', ') + ' - default: ' + ctx.options[:spoofer] ) do |v|
       ctx.options[:spoofer] = v
     end
 
@@ -63,9 +63,9 @@ begin
       ctx.options[:sniffer_filter] = v
     end
 
-    opts.on( '-P', '--parsers PARSERS', 'Comma separated list of packet parsers to enable, "*" for all ( NOTE: Will set -X to true ), available: ' + ParserFactory.available.join(', ') + ' - default: *' ) do |v|
+    opts.on( '-P', '--parsers PARSERS', 'Comma separated list of packet parsers to enable, "*" for all ( NOTE: Will set -X to true ), available: ' + BetterCap::ParserFactory.available.join(', ') + ' - default: *' ) do |v|
       ctx.options[:sniffer] = true
-      ctx.options[:parsers] = ParserFactory.from_cmdline(v)
+      ctx.options[:parsers] = BetterCap::ParserFactory.from_cmdline(v)
     end
 
     opts.on( '--no-discovery', 'Do not actively search for hosts, just use the current ARP cache, default to false.' ) do
@@ -154,7 +154,7 @@ begin
 
   if ctx.options[:check_updates]
     error_policy = lambda { |e|
-      Logger.error("Could not check for udpates: #{e.message}")
+      BetterCap::Logger.error("Could not check for udpates: #{e.message}")
     }
 
     ctx.check_updates(error_policy)
@@ -164,14 +164,14 @@ begin
   raise BetterCap::Error, 'This software must run as root.' unless Process.uid == 0
   raise BetterCap::Error, 'No default interface found, please specify one with the -I argument.' unless !ctx.options[:iface].nil?
 
-  Logger.debug_enabled = true unless !ctx.options[:debug]
+  BetterCap::Logger.debug_enabled = true unless !ctx.options[:debug]
 
-  Logger.logfile = ctx.options[:logfile]
+  BetterCap::Logger.logfile = ctx.options[:logfile]
 
   ctx.update_network
 
   if ctx.options[:target].nil?
-    Logger.info "Targeting the whole subnet #{ctx.network.to_range} ..."
+    BetterCap::Logger.info "Targeting the whole subnet #{ctx.network.to_range} ..."
 
     ctx.start_discovery_thread
   else
@@ -182,7 +182,7 @@ begin
 
     invalid_targets = targets - valid_targets
     invalid_targets.each do |target|
-      Logger.warn "Invalid target #{target}"
+      BetterCap::Logger.warn "Invalid target #{target}"
     end
 
     ctx.targets = valid_targets.map { |target| Target.new(target) }
@@ -190,15 +190,15 @@ begin
 
   ctx.spoofer = SpooferFactory.get_by_name( ctx.options[:spoofer] )
 
-  Logger.info "  Local : #{ctx.ifconfig[:ip_saddr]} ( #{ctx.ifconfig[:eth_saddr]} )"
+  BetterCap::Logger.info "  Local : #{ctx.ifconfig[:ip_saddr]} ( #{ctx.ifconfig[:eth_saddr]} )"
 
-  Logger.debug "Module: #{ctx.options[:spoofer]}"
+  BetterCap::Logger.debug "Module: #{ctx.options[:spoofer]}"
 
   ctx.spoofer.start
 
   if ctx.options[:proxy]
     if ctx.options[:sniffer] and ( ctx.options[:parsers].include?'*' or ctx.options[:parsers].include?'URL' )
-      Logger.warn "WARNING: Both HTTP transparent proxy and URL parser are enabled, you're gonna see duplicated logs."
+      BetterCap::Logger.warn "WARNING: Both HTTP transparent proxy and URL parser are enabled, you're gonna see duplicated logs."
     end
 
     ctx.enable_port_redirection
@@ -215,7 +215,7 @@ begin
     Sniffer.start ctx
   else
     if ctx.options[:spoofer] != 'NONE' and ctx.options[:spoofer] != 'none'
-      Logger.warn 'WARNING: Sniffer module was NOT enabled ( -X argument ), this will cause the MITM to run but no data to be collected.'
+      BetterCap::Logger.warn 'WARNING: Sniffer module was NOT enabled ( -X argument ), this will cause the MITM to run but no data to be collected.'
     end
 
     loop do
@@ -224,14 +224,14 @@ begin
   end
 
 rescue SystemExit, Interrupt
-  Logger.write "\n"
+  BetterCap::Logger.write "\n"
 
 rescue BetterCap::Error => e
-  Logger.error e.message
+  BetterCap::Logger.error e.message
 
 rescue Exception => e
-  Logger.error e.message
-  Logger.error e.backtrace.join("\n")
+  BetterCap::Logger.error e.message
+  BetterCap::Logger.error e.backtrace.join("\n")
 
 ensure
   ctx.finalize unless ctx.nil?
