@@ -15,7 +15,7 @@
 require 'bettercap'
 
 begin
-  puts BetterCap::BANNER.green.bold
+  BetterCap::Banner.print
   puts "\n\n\n"
 
   ctx = BetterCap::Context.get
