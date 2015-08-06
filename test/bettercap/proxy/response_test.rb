@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require 'proxy/response'
+require 'bettercap/proxy/response'
 
 class TestProxyResponse < MiniTest::Test
   def test_response_status_parsing
@@ -49,7 +49,7 @@ class TestProxyResponse < MiniTest::Test
   private
 
   def response_with_line(line)
-    response = Proxy::Response.new
+    response = BetterCap::Proxy::Response.new
     response << line
     response
   end

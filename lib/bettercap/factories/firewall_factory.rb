@@ -13,24 +13,26 @@ require 'bettercap/error'
 require 'bettercap/firewalls/osx'
 require 'bettercap/firewalls/linux'
 
-class FirewallFactory
-  @@instance = nil
+module BetterCap
+  class FirewallFactory
+    @@instance = nil
 
-  def self.get_firewall
-    return @@instance unless @@instance.nil?
+    def self.get_firewall
+      return @@instance unless @@instance.nil?
 
-    if RUBY_PLATFORM =~ /darwin/
-      @@instance = OSXFirewall.new
-    elsif RUBY_PLATFORM =~ /linux/
-      @@instance = LinuxFirewall.new
-    else
-      raise BetterCap::Error, 'Unsupported operating system'
+      if RUBY_PLATFORM =~ /darwin/
+        @@instance = OSXFirewall.new
+      elsif RUBY_PLATFORM =~ /linux/
+        @@instance = LinuxFirewall.new
+      else
+        raise BetterCap::Error, 'Unsupported operating system'
+      end
+
+      @@instance
     end
 
-    @@instance
-  end
-
-  def FirewallFactory.clear_firewall
-    @@instance = nil
+    def FirewallFactory.clear_firewall
+      @@instance = nil
+    end
   end
 end

@@ -16,6 +16,8 @@ Gem::Specification.new do |gem|
   gem.add_dependency( 'pcaprub', '~> 0.12.0' )
 
   gem.add_development_dependency( 'minitest' )
+  gem.add_development_dependency( 'guard', '~> 2.13' )
+  gem.add_development_dependency( 'guard-minitest', '~> 2.4' )
 
   gem.files = `git ls-files`.split("\n")
   gem.require_paths = ["lib"]
