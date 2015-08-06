@@ -11,9 +11,11 @@ This project is released under the GPL 3 license.
 =end
 require 'bettercap/sniffer/parsers/base'
 
-class MailParser < BaseParser
+module BetterCap
+  class MailParser < BaseParser
     def initialize
-        @filters = [ /(\d+ )?(auth|authenticate) ([a-z\-_0-9]+)/i ]
-        @name = 'MAIL'
+      @filters = [ /(\d+ )?(auth|authenticate) ([a-z\-_0-9]+)/i ]
+      @name = 'MAIL'
     end
+  end
 end

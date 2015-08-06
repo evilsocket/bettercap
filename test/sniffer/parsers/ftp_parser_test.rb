@@ -8,7 +8,7 @@ class FtpParserTest < MiniTest::Test
     # The pcap file for the FTP tests was taken from the Practical Packet
     # Analysis GitHub repo: https://github.com/markofu/pcaps
     @packets = ftp_packets
-    @parser = FtpParser.new
+    @parser = BetterCap::FtpParser.new
   end
 
   def test_parsing_ftp_packets_with_no_user_data

@@ -12,13 +12,15 @@ This project is released under the GPL 3 license.
 require 'bettercap/sniffer/parsers/base'
 require 'colorize'
 
-class PostParser < BaseParser
+module BetterCap
+  class PostParser < BaseParser
     def on_packet( pkt )
-        s = pkt.to_s
-        if s =~ /POST\s+[^\s]+\s+HTTP.+/
-            Logger.write "[#{pkt.ip_saddr}:#{pkt.tcp_src} > #{pkt.ip_daddr}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
-                         "[POST]\n".green +
-                         pkt.payload.strip.yellow
-        end
+      s = pkt.to_s
+      if s =~ /POST\s+[^\s]+\s+HTTP.+/
+        Logger.write "[#{pkt.ip_saddr}:#{pkt.tcp_src} > #{pkt.ip_daddr}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
+        "[POST]\n".green +
+          pkt.payload.strip.yellow
+      end
     end
+  end
 end

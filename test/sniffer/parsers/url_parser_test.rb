@@ -6,7 +6,7 @@ require 'sniffer/parsers/url'
 class UrlParserTest < MiniTest::Test
   def setup
     @packets = http_packets
-    @parser = UrlParser.new
+    @parser = BetterCap::UrlParser.new
   end
 
   def test_parsing_http_packets

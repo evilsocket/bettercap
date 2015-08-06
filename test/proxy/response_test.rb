@@ -49,7 +49,7 @@ class TestProxyResponse < MiniTest::Test
   private
 
   def response_with_line(line)
-    response = Proxy::Response.new
+    response = BetterCap::Proxy::Response.new
     response << line
     response
   end
