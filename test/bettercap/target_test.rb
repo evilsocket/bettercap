@@ -1,9 +1,9 @@
 require 'minitest/autorun'
-require 'target'
+require 'bettercap/target'
 
 class TestTarget < MiniTest::Test
   def setup
-    @target = Target.new('127.0.0.1', '08:00:20')
+    @target = BetterCap::Target.new('127.0.0.1', '08:00:20')
   end
 
   def test_initialization
