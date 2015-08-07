@@ -188,13 +188,14 @@ begin
     ctx.targets = valid_targets.map { |target| Target.new(target) }
   end
 
-  ctx.spoofer = SpooferFactory.get_by_name( ctx.options[:spoofer] )
 
-  Logger.info "  Local : #{ctx.ifconfig[:ip_saddr]} ( #{ctx.ifconfig[:eth_saddr]} )"
-
-  Logger.debug "Module: #{ctx.options[:spoofer]}"
-
-  ctx.spoofer.start
+  ctx.spoofer=Array.new
+  spoofer_modules_names=ctx.options[:spoofer].split(",")
+  spoofer_modules_names.each do |module_name|
+    Logger.info "Loading module : #{module_name}"
+    ctx.spoofer << SpooferFactory.get_by_name( module_name )
+    ctx.spoofer.last.start
+  end
 
   if ctx.options[:proxy]
     if ctx.options[:sniffer] and ( ctx.options[:parsers].include?'*' or ctx.options[:parsers].include?'URL' )
