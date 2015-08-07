@@ -64,12 +64,16 @@ class ArpSpoofer < ISpoofer
     @running = true
     @sniff_thread = Thread.new do
       Logger.info 'ARP watcher started ...'
-
-      @capture = Capture.new(
+      begin
+      @capture = PacketFu::Capture.new(
           iface: @ctx.options[:iface],
           filter: 'arp',
           start: true
       )
+      rescue Exception => e
+        Logger.error e.message
+      end
+        
 
       @capture.stream.each do |p|
         begin
