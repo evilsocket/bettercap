@@ -64,16 +64,20 @@ class ArpSpoofer < ISpoofer
     @running = true
     @sniff_thread = Thread.new do
       Logger.info 'ARP watcher started ...'
-
-      @capture = Capture.new(
+      begin
+      @capture = PacketFu::Capture.new(
           iface: @ctx.options[:iface],
           filter: 'arp',
           start: true
       )
+      rescue Exception => e
+        Logger.error e.message
+      end
+        
 
       @capture.stream.each do |p|
         begin
-          pkt = Packet.parse p
+          pkt = PacketFu::Packet.parse (p)
           # we're only interested in 'who-has' packets
           if pkt.arp_opcode == 1 and pkt.arp_dst_mac.to_s == '00:00:00:00:00:00'
             is_from_us = ( pkt.arp_src_ip.to_s == @ctx.ifconfig[:ip_saddr] )

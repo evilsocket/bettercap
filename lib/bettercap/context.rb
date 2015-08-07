@@ -242,8 +242,10 @@ class Context
     stop_discovery_thread
 
     # Consider !!@spoofer
-    if !@spoofer.nil?
-      @spoofer.stop
+    if !@spoofer.nil? and @spoofer.length != 0 
+      @spoofer.each do |tmp|
+        tmp.stop
+      end
     end
 
     if !@proxy.nil?
