@@ -3,3 +3,5 @@
 *.gem
 *.sh
 .idea
+test_https_proxy.rb
+mkchangelog.rb
