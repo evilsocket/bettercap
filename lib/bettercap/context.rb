@@ -47,6 +47,7 @@ class Context
       sniffer: false,
       sniffer_pcap: nil,
       sniffer_filter: nil,
+      sniffer_src: nil,
       parsers: ['*'],
       local: false,
 
@@ -158,9 +159,8 @@ class Context
     @discovery_running = false
 
     if @discovery_thread != nil
-      Logger.info 'Stopping network discovery thread ...'
+      Logger.info( 'Stopping network discovery thread ...' ) unless @options[:arpcache]
 
-      # I doubt this will ever raise an exception
       begin
         @discovery_thread.join
       rescue

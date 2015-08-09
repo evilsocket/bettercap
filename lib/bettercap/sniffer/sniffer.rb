@@ -27,7 +27,7 @@ class Sniffer
 
     setup( ctx )
 
-    @@cap.stream.each do |p|
+    self.stream.each do |p|
       begin
         parsed = Packet.parse p
       rescue Exception => e
@@ -43,6 +43,16 @@ class Sniffer
   end
 
   private
+
+  def self.stream
+    if @@ctx.options[:sniffer_src].nil?
+      @@cap.stream
+    else
+      Logger.info "Reading packets from #{@@ctx.options[:sniffer_src]} ..."
+
+      PcapFile.file_to_array @@ctx.options[:sniffer_src]
+    end
+  end
 
   def self.skip_packet?( pkt )
     !@@ctx.options[:local] and
