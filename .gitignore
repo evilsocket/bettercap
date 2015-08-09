@@ -3,5 +3,8 @@
 *.gem
 *.sh
 .idea
+cert.crt
+cert.key
+cert.pem
 test_https_proxy.rb
 mkchangelog.rb
