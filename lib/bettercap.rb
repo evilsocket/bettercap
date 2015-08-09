@@ -12,6 +12,10 @@
 
 =end
 
+# they hate us 'cause they ain't us
+Encoding.default_external = Encoding::UTF_8
+Encoding.default_internal = Encoding::UTF_8
+
 require 'optparse'
 require 'colorize'
 require 'packetfu'
