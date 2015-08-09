@@ -85,8 +85,6 @@ class Network
     end
 
 =begin
-  FIXME:
-
   Apparently on Mac OSX the gem pcaprub ( or libpcap itself ) has
   a bug, so we can't use 'PacketFu::Utils::arp' since the funtion
   it's using:
