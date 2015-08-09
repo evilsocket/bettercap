@@ -160,7 +160,8 @@ begin
   ctx.update_network
 
   if ctx.options[:target].nil?
-    Logger.info "Targeting the whole subnet #{ctx.network.to_range} ..."
+    Logger.info( "Targeting the whole subnet #{ctx.network.to_range} ..." ) unless \
+     ctx.options[:spoofer] == 'NONE' or ctx.options[:spoofer] == 'none'
 
     ctx.start_discovery_thread
   else
@@ -181,7 +182,6 @@ begin
   ctx.spoofer=Array.new
   spoofer_modules_names=ctx.options[:spoofer].split(",")
   spoofer_modules_names.each do |module_name|
-    Logger.info "Loading module : #{module_name}"
     ctx.spoofer << SpooferFactory.get_by_name( module_name )
     ctx.spoofer.last.start
   end

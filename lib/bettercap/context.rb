@@ -125,7 +125,7 @@ class Context
   def start_discovery_thread
     @discovery_running = true
     @discovery_thread = Thread.new {
-      Logger.info 'Network discovery thread started.'
+      Logger.info( 'Network discovery thread started.' ) unless @options[:arpcache]
 
       while @discovery_running
         empty_list = false
