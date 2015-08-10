@@ -44,7 +44,7 @@ class Response
   def <<(line)
     # we already parsed the heders, collect response body
     if @headers_done
-      @body += line
+      @body += line.force_encoding( @charset )
     else
       # parse the response status
       if @code.nil? and line =~ /^HTTP\/[\d\.]+\s+(.+)/
@@ -62,7 +62,7 @@ class Response
         @content_length = $1.to_i
 
       # last line, we're done with the headers
-      elsif line.chomp == ""
+      elsif line.chomp.empty?
         @headers_done = true
 
       end
