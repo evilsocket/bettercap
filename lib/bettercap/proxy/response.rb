@@ -13,11 +13,12 @@ This project is released under the GPL 3 license.
 module Proxy
 
 class Response
-  attr_reader :content_type, :content_length, :headers, :code, :headers_done
+  attr_reader :content_type, :charset, :content_length, :headers, :code, :headers_done
   attr_accessor :body
 
   def initialize
     @content_type = nil
+    @charset = 'UTF-8'
     @content_length = nil
     @body = ''
     @code = nil
@@ -49,15 +50,18 @@ class Response
       if @code.nil? and line =~ /^HTTP\/[\d\.]+\s+(.+)/
         @code = $1.chomp
 
-        # parse the content type
-      elsif line =~ /^Content-Type: ([^;]+).*/i
+      # parse the content type
+      elsif line =~ /^Content-Type:\s*([^;]+).*/i
         @content_type = $1.chomp
+        if line =~ /^.+;\s*charset=(.+)/i
+          @charset = $1.chomp
+        end
 
-        # parse content length
+      # parse content length
       elsif line =~ /^Content-Length:\s+(\d+)\s*$/i
         @content_length = $1.to_i
 
-        # last line, we're done with the headers
+      # last line, we're done with the headers
       elsif line.chomp == ""
         @headers_done = true
 
