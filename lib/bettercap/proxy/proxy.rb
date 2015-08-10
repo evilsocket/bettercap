@@ -121,7 +121,7 @@ class Proxy
       total_size = opts[:request].content_length unless opts[:request].content_length.nil?
     end
 
-    buff = ""
+    buff = ''
     read = 0
 
     if total_size
@@ -154,11 +154,17 @@ class Proxy
 
   def html_streaming( request, response, from, to )
     buff = ''
-    loop do
-      from.read 1024, buff
 
-      break unless buff.size > 0
+    if response.content_length.nil?
+      loop do
+        from.read 1024, buff
 
+        break unless buff.size > 0
+
+        response << buff
+      end
+    else
+      from.read response.content_length, buff
       response << buff
     end
 
