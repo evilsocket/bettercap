@@ -26,10 +26,6 @@ class LinuxFirewall < IFirewall
   end
 
   def add_port_redirection( iface, proto, from, addr, to )
-    # clear nat
-    shell.execute('iptables -t nat -F')
-    # clear
-    shell.execute('iptables -F')
     # post route
     shell.execute('iptables -t nat -I POSTROUTING -s 0/0 -j MASQUERADE')
     # accept all
