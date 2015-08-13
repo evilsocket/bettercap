@@ -162,7 +162,7 @@ class Context
       Logger.info( 'Stopping network discovery thread ...' ) unless @options[:arpcache]
 
       begin
-        @discovery_thread.join
+        @discovery_thread.exit
       rescue
       end
     end

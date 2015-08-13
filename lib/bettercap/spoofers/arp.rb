@@ -147,7 +147,10 @@ class ArpSpoofer < ISpoofer
     @ctx.firewall.enable_forwarding( @forwarding )
 
     @running = false
-    @spoof_thread.join
+    begin
+      @spoof_thread.exit
+    rescue
+    end
 
     Logger.info "Restoring ARP table of #{@ctx.targets.size} targets ..."
 
