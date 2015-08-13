@@ -18,7 +18,6 @@ require 'bettercap/target'
 require 'bettercap/factories/firewall_factory'
 require 'bettercap/discovery/icmp'
 require 'bettercap/discovery/udp'
-require 'bettercap/discovery/syn'
 require 'bettercap/discovery/arp'
 
 class Network
@@ -70,10 +69,8 @@ class Network
       if ctx.options[:arpcache] == false
         icmp = IcmpAgent.new timeout
         udp  = UdpAgent.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
-        syn  = SynAgent.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
         arp  = ArpAgent.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
 
-        syn.wait
         icmp.wait
         arp.wait
         udp.wait
