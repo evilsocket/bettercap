@@ -22,7 +22,7 @@ class IcmpAgent
       if RUBY_PLATFORM =~ /darwin/
         ping = Shell.execute("ping -i #{timeout} -c 2 255.255.255.255")
       elsif RUBY_PLATFORM =~ /linux/
-        ping = Shell.execute("ping -i #{timeout} -c 2 -b 255.255.255.255")
+        ping = Shell.execute("ping -i #{timeout} -c 2 -b 255.255.255.255 2> /dev/null")
       end
     }
   end
