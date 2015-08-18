@@ -124,10 +124,11 @@ class Proxy
     buff = ''
     read = 0
 
+
     if total_size
-      chunk_size = 1024
-    else
       chunk_size = [ 1024, total_size ].min
+    else
+      chunk_size = 1024
     end
 
     if chunk_size > 0
