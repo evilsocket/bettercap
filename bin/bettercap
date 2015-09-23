@@ -168,7 +168,7 @@ begin
     Logger.info("Targetting manual gateway #{ctx.gateway}")
   end
   
-	ctx.update_network
+  ctx.update_network
 
   if ctx.options[:target].nil?
     Logger.info( "Targeting the whole subnet #{ctx.network.to_range} ..." ) unless \
