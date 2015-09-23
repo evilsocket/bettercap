@@ -23,6 +23,10 @@ begin
   OptionParser.new do |opts|
     opts.banner = "Usage: #{$0} [options]"
     opts.version = BetterCap::VERSION
+    
+		opts.on( '-G', '--gateway ADDRESS', 'Manually specify the gateway address, if not specified the current gateway will be retrieved and used. ' ) do |v|
+      ctx.options[:gateway] = v
+    end
 
     opts.on( '-I', '--interface IFACE', 'Network interface name - default: ' + ctx.options[:iface].to_s ) do |v|
       ctx.options[:iface] = v
@@ -157,7 +161,14 @@ begin
 
   Logger.logfile = ctx.options[:logfile]
 
-  ctx.update_network
+
+  if !ctx.options[:gateway].nil?
+    raise BetterCap::Error, "Invalid gateway" if !Network.is_ip?(ctx.options[:gateway])
+    ctx.gateway = ctx.options[:gateway]
+    Logger.info("Targetting manual gateway #{ctx.gateway}")
+  end
+  
+	ctx.update_network
 
   if ctx.options[:target].nil?
     Logger.info( "Targeting the whole subnet #{ctx.network.to_range} ..." ) unless \
