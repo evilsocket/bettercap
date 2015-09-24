@@ -36,6 +36,7 @@ class Context
     end
 
     @options = {
+      gateway: nil,
       iface: iface,
       spoofer: 'ARP',
       half_duplex: false,
@@ -114,7 +115,7 @@ class Context
     @firewall = FirewallFactory.get_firewall
     @ifconfig = PacketFu::Utils.ifconfig @options[:iface]
     @network  = @ifconfig[:ip4_obj]
-    @gateway  = Network.get_gateway
+    @gateway  = Network.get_gateway if @gateway.nil?
 
     raise BetterCap::Error, "Could not determine IPv4 address of '#{@options[:iface]}' interface." unless !@network.nil?
 
