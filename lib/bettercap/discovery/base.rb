@@ -35,10 +35,29 @@ class BaseAgent
     @workers = (0...4).map do
       Thread.new do
         begin
-          while ip = @queue.pop(true)
-            Logger.debug "#{self.class.name} : Probing #{ip} ..."
+          while ip = @queue.pop(true) 
+            loop do
+              Logger.debug "#{self.class.name} : Probing #{ip} ..."
 
-            send_probe ip.to_s
+              begin
+                send_probe ip.to_s
+
+                break
+              rescue Exception => e
+                Logger.debug "#{self.class.name}#send_probe : #{ip} -> #{e.message}"          
+
+                # If we've got an error message such as:
+                #   (cannot open BPF device) /dev/bpf0: Too many open files
+                # We want to retry to probe this ip in a while.
+                if e.message.include? 'Too many open files'
+                  Logger.debug "Retrying #{self.class.name}#send_probe on #{ip} in 1 second."
+
+                  sleep 1
+                else
+                  break
+                end
+              end
+            end
           end
         rescue Exception => e
           Logger.debug "#{self.class.name} : #{ip} -> #{e.message}"
