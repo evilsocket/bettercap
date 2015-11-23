@@ -267,7 +267,11 @@ class Proxy
 
         server = create_upstream_connection request
 
-        server.write request.to_s
+        sreq = request.to_s
+
+        Logger.debug "Sending request:\n#{sreq}"
+
+        server.write sreq
 
         # this is probably a POST request, collect incoming data
         if request.content_length > 0
