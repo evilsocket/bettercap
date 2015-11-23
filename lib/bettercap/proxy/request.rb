@@ -70,18 +70,18 @@ class Request
     elsif line =~ /^Content-Length:\s+(\d+)\s*$/i
       @content_length = $1.to_i
 
-        # we don't want to have hundreds of threads running
-      elsif line =~ /^Connection: keep-alive/i
-        line = 'Connection: close'
+    # we don't want to have hundreds of threads running
+    elsif line =~ /^Connection: keep-alive/i
+      line = 'Connection: close'
 
-      elsif line =~ /^Proxy-Connection: (.+)/i
-        line = "Connection: #{$1}"
+    elsif line =~ /^Proxy-Connection: (.+)/i
+      line = "Connection: #{$1}"
 
-        # disable gzip, chunked, etc encodings
-      elsif line =~ /^Accept-Encoding:.*/i
-        line = 'Accept-Encoding: identity'
+    # disable gzip, chunked, etc encodings
+    elsif line =~ /^Accept-Encoding:.*/i
+      line = 'Accept-Encoding: identity'
 
-      end
+    end
 
       @lines << line
     end
