@@ -6,6 +6,8 @@ Gem::Specification.new do |gem|
   gem.license = 'GPL3'
   gem.description = %q{A complete, modular, portable and easily extensible MITM framework.}
   gem.summary = %q{A complete, modular, portable and easily extensible MITM framework.}
+  gem.required_ruby_version = '>= 1.9'
+  
 
   gem.authors = ['Simone Margaritelli']
   gem.email = %q{evilsocket@gmail.com}
