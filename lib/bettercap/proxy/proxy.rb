@@ -154,6 +154,8 @@ class Proxy
     buff = ''
 
     if response.content_length.nil?
+      Logger.debug "Reading response body using 1024 bytes chunks ..."
+
       loop do
         from.read 1024, buff
 
@@ -162,12 +164,23 @@ class Proxy
         response << buff
       end
     else
-      from.read response.content_length, buff
+      Logger.debug "Reading response body using #{response.content_length} bytes buffer ..."
+
+      size = response.content_length
+
+      while size > 0
+        tmp = from.read(size)
+        buff << tmp
+        size -= tmp.bytesize
+      end
+
+      Logger.debug "Read #{buff.size} / #{response.content_length} bytes."
+      
       response << buff
     end
 
     @processor.call( request, response )
-
+    
     # Response::to_s will patch the headers if needed
     to.write response.to_s
   end

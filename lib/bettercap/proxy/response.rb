@@ -44,7 +44,7 @@ class Response
   def <<(line)
     # we already parsed the heders, collect response body
     if @headers_done
-      @body += line.force_encoding( @charset )
+      @body << line.force_encoding( @charset )
     else
       # parse the response status
       if @code.nil? and line =~ /^HTTP\/[\d\.]+\s+(.+)/
@@ -67,11 +67,11 @@ class Response
 
       end
 
-      @headers << line.chomp
+      @headers << line.chomp      
     end
   end
 
-  def textual? # textual?
+  def textual?
     @content_type and ( @content_type =~ /^text\/.+/ or @content_type =~ /^application\/.+/ )
   end
 
@@ -81,7 +81,9 @@ class Response
         # update content length in case the body was
         # modified
         if header =~ /Content-Length:\s*(\d+)/i
-          "Content-Length: #{@body.size}"
+          Logger.debug "Updating response content length from #{$1} to #{@body.bytesize}"
+
+          "Content-Length: #{@body.bytesize}"
         else
           header
         end
