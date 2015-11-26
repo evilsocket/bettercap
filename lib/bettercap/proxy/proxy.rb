@@ -27,6 +27,7 @@ class Proxy
     @type        = is_https ? 'HTTPS' : 'HTTP'
     @sslserver   = nil
     @sslcontext  = nil
+    @server      = nil
     @main_thread = nil
     @running     = false
     @processor   = processor
@@ -43,7 +44,7 @@ class Proxy
 
   def start
     begin
-      @socket = TCPServer.new( @address, @port )
+      @server = @socket = TCPServer.new( @address, @port )
 
       if @is_https
         cert = Context.get.certificate
@@ -52,7 +53,7 @@ class Proxy
         @sslcontext.cert = cert[:cert]
         @sslcontext.key  = cert[:key]
 
-        @sslserver = OpenSSL::SSL::SSLServer.new( @socket, @sslcontext )
+        @server = @sslserver = OpenSSL::SSL::SSLServer.new( @socket, @sslcontext )
       end
 
       @main_thread = Thread.new &method(:server_thread)
@@ -77,14 +78,10 @@ class Proxy
   private
 
   def async_accept
-    if @is_https
-      begin
-        Thread.new @sslserver.accept, &method(:client_thread)
-      rescue Exception => e
-        Logger.warn "Error while accepting #{@type} connection: #{e.inspect}"
-      end
-    else
-      Thread.new @socket.accept, &method(:client_thread)
+    begin
+      Thread.new @server.accept, &method(:client_thread)
+    rescue Exception => e
+      Logger.warn "Error while accepting #{@type} connection: #{e.inspect}"
     end
   end
 
@@ -209,22 +206,19 @@ class Proxy
   end
 
   def create_upstream_connection( request )
+    sock = TCPSocket.new( request.host, request.port )
+    
     if @is_https
-      sock = TCPSocket.new( request.host, request.port )
-
       ctx = OpenSSL::SSL::SSLContext.new
-
       # do we need this? :P ctx.set_params(verify_mode: OpenSSL::SSL::VERIFY_PEER)
 
-      socket = OpenSSL::SSL::SSLSocket.new(sock, ctx).tap do |socket|
-        socket.sync_close = true
-        socket.connect
+      sock = OpenSSL::SSL::SSLSocket.new(sock, ctx).tap do |socket|
+        sock.sync_close = true
+        sock.connect
       end
-
-      socket
-    else
-      TCPSocket.new( request.host, request.port )
     end
+
+    sock
   end
 
   def get_client_details( client )
