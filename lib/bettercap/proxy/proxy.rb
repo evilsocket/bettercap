@@ -30,7 +30,7 @@ class Proxy
     @server      = nil
     @main_thread = nil
     @running     = false
-    @processor   = processor
+    @streamer    = Streamer.new processor
     @local_ips   = []
 
     begin
@@ -103,95 +103,8 @@ class Proxy
     end
   end
 
-  def binary_streaming( from, to, opts = {} )
-
-    total_size = 0
-
-    # if response|request object is available and a content length as well
-    # use it to speed up data streaming with precise data size
-    if not opts[:response].nil?
-      to.write opts[:response].to_s
-
-      total_size = opts[:response].content_length unless opts[:response].content_length.nil?
-    elsif not opts[:request].nil?
-
-      total_size = opts[:request].content_length unless opts[:request].content_length.nil?
-    end
-
-    buff = ''
-    read = 0
-
-
-    if total_size
-      chunk_size = [ 1024, total_size ].min
-    else
-      chunk_size = 1024
-    end
-
-    if chunk_size > 0
-      loop do
-        from.read chunk_size, buff
-
-        # nothing more to read?
-        break unless buff.size > 0
-
-        to.write buff
-
-        read += buff.size
-
-        # collect into the proper object
-        if not opts[:request].nil? and opts[:request].post?
-          opts[:request] << buff
-        end
-
-        # we've done reading?
-        break unless read != total_size
-      end
-    end
-  end
-
-  def html_streaming( request, response, from, to )
-    buff = ''
-
-    if response.content_length.nil?
-      Logger.debug "Reading response body using 1024 bytes chunks ..."
-
-      loop do
-        from.read 1024, buff
-
-        break unless buff.size > 0
-
-        response << buff
-      end
-    else
-      Logger.debug "Reading response body using #{response.content_length} bytes buffer ..."
-
-      size = response.content_length
-
-      while size > 0
-        tmp = from.read(size)
-        buff << tmp
-        size -= tmp.bytesize
-      end
-
-      Logger.debug "Read #{buff.size} / #{response.content_length} bytes."
-      
-      response << buff
-    end
-
-    @processor.call( request, response )
-    
-    # Response::to_s will patch the headers if needed
-    to.write response.to_s
-  end
-
   def is_self_request?(request)
     @local_ips.include? IPSocket.getaddress(request.host)
-  end
-
-  def rickroll_lamer(client)
-    client.write "HTTP/1.1 302 Found\n"
-    client.write "Location: https://www.youtube.com/watch?v=dQw4w9WgXcQ\n\n"
   end
 
   def create_upstream_connection( request )
@@ -238,7 +151,7 @@ class Proxy
 
         Logger.warn "#{client_ip} is connecting to us directly."
 
-        rickroll_lamer client
+        @streamer.rickroll client
 
       elsif request.verb == 'CONNECT'
 
@@ -260,7 +173,7 @@ class Proxy
         if request.content_length > 0
           Logger.debug "Getting #{request.content_length} bytes from client"
 
-          binary_streaming client, server, request: request
+          @streamer.binary client, server, request: request
         end
 
         Logger.debug 'Reading response ...'
@@ -272,13 +185,13 @@ class Proxy
 
           Logger.debug 'Detected textual response'
 
-          html_streaming request, response, server, client
+          @streamer.html request, response, server, client
         else
           Logger.debug "[#{client_ip}] -> #{request.host}#{request.url} [#{response.code}]"
 
           Logger.debug 'Binary streaming'
 
-          binary_streaming server, client, response: response
+          @streamer.binary server, client, response: response
         end
 
         Logger.debug "#{@type} client served."
