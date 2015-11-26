@@ -104,8 +104,10 @@ class Streamer
 
     while size > 0
       tmp = sd.read(size)
-      buffer << tmp
-      size -= tmp.bytesize
+      unless tmp.nil?
+        buffer << tmp
+        size -= tmp.bytesize
+      end
     end
 
     buffer

@@ -32,7 +32,7 @@ class Proxy
     @running     = false
     @streamer    = Streamer.new processor
     @local_ips   = []
-
+  
     begin
       @local_ips = Socket.ip_address_list.collect { |x| x.ip_address }
     rescue
@@ -42,6 +42,10 @@ class Proxy
     end
 
     BasicSocket.do_not_reverse_lookup = true
+
+    @pool = ThreadPool.new( 4, 16 ) do |client|
+       client_worker client
+    end
   end
 
   def start
@@ -72,6 +76,7 @@ class Proxy
       if @socket and @running
         @running = false
         @socket.close
+        @pool.shutdown
       end
     rescue
     end
@@ -79,30 +84,20 @@ class Proxy
 
   private
 
-  def async_accept
-    begin
-      Thread.new @server.accept, &method(:client_thread)
-    rescue Exception => e
-      Logger.warn "Error while accepting #{@type} connection: #{e.inspect}"
-    end
-  end
-
   def server_thread
     Logger.info "#{@type} Proxy started on #{@address}:#{@port} ...\n"
 
     @running = true
 
-    begin
-      while @running do
-        async_accept
+    while @running do
+      begin
+        @pool << @server.accept
+      rescue Exception => e
+        Logger.warn "Error while accepting #{@type} connection: #{e.inspect}"
       end
-    rescue Exception => e
-      if @running
-        Logger.error "Error while accepting #{@type} connection: #{e.inspect}"
-      end
-    ensure
-      @socket.close unless @socket.nil?
     end
+
+    @socket.close unless @socket.nil?
   end
 
   def is_self_request?(request)
@@ -135,7 +130,7 @@ class Proxy
     [ client_ip, client_port ]
   end
 
-  def client_thread( client )
+  def client_worker( client )
     client_ip, client_port = get_client_details client
 
     Logger.debug "New #{@type} connection from #{client_ip}:#{client_port}"
