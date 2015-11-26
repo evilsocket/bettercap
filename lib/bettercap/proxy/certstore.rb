@@ -29,8 +29,7 @@ module Proxy
       @@frompems[filename]
     end
 
-    # TODO: Put a better default subject here!
-    def self.get_selfsigned( subject = '/C=BE/O=Test/OU=Test/CN=Test' )
+    def self.get_selfsigned( subject = '/C=US/ST=California/L=Mountain View/O=Google Inc/CN=www.google.com' )
       if !@@selfsigned.has_key? subject
         Logger.info "Generating self signed HTTPS certificate for subject '#{subject}' ..."
 
