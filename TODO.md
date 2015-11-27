@@ -10,7 +10,7 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [x] sslmitm
 - [ ] *BSD Support.
 - [ ] HTTP/2 Support.
-- [ ] [Active packet filtering/injection/etc](https://github.com/evilsocket/bettercap/issues/75).
+- [ ] [Active packet filtering/injection/etc](https://github.com/evilsocket/bettercap/issues/75) ( maybe using [this](https://github.com/gdelugre/ruby-nfqueue) ).
 
 **Maybe**
 
