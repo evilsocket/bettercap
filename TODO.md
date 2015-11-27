@@ -20,5 +20,4 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [ ] DNS Spoofing ( not sure if it actually makes any sense ).
 - [ ] Windows Support? ( OMG PLZ NO! )
 - [ ] Output/actions as json for UI integration?
-- [ ] BeefBox / BeefDRONE with Raspberry PI?
 - [ ] sslstrip ( not really sure, currently is quite useless )
