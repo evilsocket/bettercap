@@ -120,6 +120,22 @@ begin
       ctx.options[:proxy_module] = File.expand_path v
     end
 
+    opts.on( '--custom-proxy ADDRESS', 'Use a custom HTTP upstream proxy instead of the builtin one.' ) do |v|
+      ctx.options[:custom_proxy] = v
+    end
+
+    opts.on( '--custom-proxy-port PORT', 'Specify a port for the custom HTTP upstream proxy, default to ' + ctx.options[:custom_proxy_port].to_s + ' .' ) do |v|
+      ctx.options[:custom_proxy_port] = v.to_i
+    end
+
+    opts.on( '--custom-https-proxy ADDRESS', 'Use a custom HTTPS upstream proxy instead of the builtin one.' ) do |v|
+      ctx.options[:custom_https_proxy] = v
+    end
+
+    opts.on( '--custom-https-proxy-port PORT', 'Specify a port for the custom HTTPS upstream proxy, default to ' + ctx.options[:custom_https_proxy_port].to_s + ' .' ) do |v|
+      ctx.options[:custom_https_proxy_port] = v.to_i
+    end
+
     opts.on( '--httpd', 'Enable HTTP server, default to false.' ) do
       ctx.options[:httpd] = true
     end
@@ -189,9 +205,8 @@ begin
     ctx.targets = valid_targets.map { |target| Target.new(target) }
   end
 
-
-  ctx.spoofer=Array.new
-  spoofer_modules_names=ctx.options[:spoofer].split(",")
+  ctx.spoofer = []
+  spoofer_modules_names = ctx.options[:spoofer].split(",")
   spoofer_modules_names.each do |module_name|
     ctx.spoofer << SpooferFactory.get_by_name( module_name )
     ctx.spoofer.last.start
@@ -202,11 +217,19 @@ begin
       Logger.warn "WARNING: Both HTTP transparent proxy and URL parser are enabled, you're gonna see duplicated logs."
     end
 
-    ctx.enable_port_redirection
-
     ctx.create_proxies
   end
 
+  if ctx.options[:custom_proxy]
+    raise BetterCap::Error, 'Invalid custom HTTP upstream proxy address specified.' unless Network.is_ip? ctx.options[:custom_proxy]  
+  end
+
+  if ctx.options[:custom_https_proxy]
+    raise BetterCap::Error, 'Invalid custom HTTPS upstream proxy address specified.' unless Network.is_ip? ctx.options[:custom_https_proxy]  
+  end
+
+  ctx.enable_port_redirection
+  
   if ctx.options[:httpd]
     ctx.httpd = HTTPD::Server.new( ctx.options[:httpd_port], ctx.options[:httpd_path] )
     ctx.httpd.start

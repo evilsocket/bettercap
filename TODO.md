@@ -8,7 +8,7 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [x] BeEF proxy module ( [BeefBOX](https://github.com/evilsocket/bettercap-proxy-modules/blob/master/beefbox.rb) ).
 - [x] Use raw file arp parsing instead of "arp -a" to improve speed. ( Solved with arp -a -n )
 - [x] sslmitm
-- [ ] Implement --custom-proxy option to redirect traffic to [3rd party tools such as Burp](https://twitter.com/c3c/status/670335125662601216).
+- [x] Implement --custom-proxy option to redirect traffic to [3rd party tools such as Burp](https://twitter.com/c3c/status/670335125662601216).
 - [ ] *BSD Support.
 - [ ] HTTP/2 Support.
 - [ ] [Active packet filtering/injection/etc](https://github.com/evilsocket/bettercap/issues/75) ( maybe using [this](https://github.com/gdelugre/ruby-nfqueue) ).

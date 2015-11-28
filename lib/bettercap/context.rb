@@ -59,6 +59,12 @@ class Context
       proxy_pem_file: nil,
       proxy_module: nil,
 
+      custom_proxy: nil,
+      custom_proxy_port: 8080,
+
+      custom_https_proxy: nil,
+      custom_https_proxy_port: 8083,
+
       httpd: false,
       httpd_port: 8081,
       httpd_path: './',
@@ -66,17 +72,18 @@ class Context
       check_updates: false
     }
 
-    @ifconfig    = nil
-    @network     = nil
-    @firewall    = nil
-    @gateway     = nil
-    @targets     = []
+    @ifconfig        = nil
+    @network         = nil
+    @firewall        = nil
+    @gateway         = nil
+    @targets         = []
     @proxy_processor = nil
-    @proxy       = nil
-    @https_proxy = nil
-    @spoofer     = nil
-    @httpd       = nil
-    @certificate = nil
+    @proxy           = nil
+    @https_proxy     = nil
+    @spoofer         = nil
+    @httpd           = nil
+    @certificate     = nil
+    @redirections    = []
 
     @discovery_running = false
     @discovery_thread  = nil
@@ -170,21 +177,55 @@ class Context
   end
 
   def enable_port_redirection
-    Logger.info "Redirecting traffic from port 80 to #{@ifconfig[:ip_saddr]}:#{@options[:proxy_port]}"
+    @redirections = []
+    
+    if @options[:proxy]
+      @redirections << Redirection.new( @options[:iface], 
+                                        'TCP',
+                                        80,
+                                        @ifconfig[:ip_saddr], 
+                                        @options[:proxy_port] )
+    end
 
-    @firewall.add_port_redirection( @options[:iface], 'TCP', 80, @ifconfig[:ip_saddr], @options[:proxy_port] )
     if @options[:proxy_https]
-      Logger.info "Redirecting traffic from port 443 to #{@ifconfig[:ip_saddr]}:#{@options[:proxy_https_port]}"
+      @redirections << Redirection.new( @options[:iface], 
+                                        'TCP',
+                                        443,
+                                        @ifconfig[:ip_saddr], 
+                                        @options[:proxy_https_port] )
+    end
 
-      @firewall.add_port_redirection( @options[:iface], 'TCP', 443, @ifconfig[:ip_saddr], @options[:proxy_https_port] )
+    if @options[:custom_proxy]
+      @redirections << Redirection.new( @options[:iface], 
+                                        'TCP',
+                                        80,
+                                        @options[:custom_proxy], 
+                                        @options[:custom_proxy_port] )            
+    end
+
+    if @options[:custom_https_proxy]
+      @redirections << Redirection.new( @options[:iface], 
+                                        'TCP',
+                                        443,
+                                        @options[:custom_https_proxy], 
+                                        @options[:custom_https_proxy_port] )            
+    end
+
+    @redirections.each do |r|
+      Logger.warn "Redirecting #{r.protocol} traffic from port #{r.src_port} to #{r.dst_address}:#{r.dst_port}"
+
+      @firewall.add_port_redirection( r.interface, r.protocol, r.src_port, r.dst_address, r.dst_port )      
     end
   end
 
   def disable_port_redirection
-    @firewall.del_port_redirection( @options[:iface], 'TCP', 80, @ifconfig[:ip_saddr], @options[:proxy_port] )
-    if @options[:proxy_https]
-      @firewall.del_port_redirection( @options[:iface], 'TCP', 443, @ifconfig[:ip_saddr], @options[:proxy_https_port] )
+    @redirections.each do |r|
+      Logger.debug "Removing #{r.protocol} port redirect from port #{r.src_port} to #{r.dst_address}:#{r.dst_port}"
+
+      @firewall.del_port_redirection( r.interface, r.protocol, r.src_port, r.dst_address, r.dst_port )      
     end
+
+    @redirections = []
   end
 
   def create_proxies
@@ -242,8 +283,6 @@ class Context
   def finalize
     stop_discovery_thread
 
-    # Consider !!@spoofer
-
     if !@spoofer.nil? and @spoofer.length != 0 
       @spoofer.each do |itr|
         itr.stop
@@ -255,9 +294,10 @@ class Context
       if !@https_proxy.nil?
         @https_proxy.stop
       end
-      disable_port_redirection
     end
-
+    
+    disable_port_redirection
+    
     if !@firewall.nil?
       @firewall.restore
     end
