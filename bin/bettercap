@@ -40,6 +40,10 @@ begin
       ctx.options[:target] = v
     end
 
+    opts.on( '--ignore ADDRESS1,ADDRESS2', 'Ignore these addresses if found while searching for targets.' ) do |v|
+      ctx.options[:ignore] = v
+    end
+
     opts.on( '-O', '--log LOG_FILE', 'Log all messages into a file, if not specified the log messages will be only print into the shell.' ) do |v|
       ctx.options[:logfile] = v
     end
@@ -203,6 +207,22 @@ begin
     end
 
     ctx.targets = valid_targets.map { |target| Target.new(target) }
+  end
+
+  unless ctx.options[:ignore].nil?
+    ignore = ctx.options[:ignore].split(",")
+    valid = ignore.select { |target| Network.is_ip?(target) }
+
+    raise BetterCap::Error, "Invalid ignore addresses specified." if valid.empty?
+
+    invalid = ignore - valid
+    invalid.each do |target|
+      Logger.warn "Not a valid address: #{target}"
+    end
+
+    ctx.options[:ignore] = valid
+
+    Logger.warn "Ignoring #{valid.join(", ")} ."
   end
 
   ctx.spoofer = []

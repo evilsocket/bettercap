@@ -45,6 +45,8 @@ class Context
       debug: false,
       arpcache: false,
 
+      ignore: nil,
+
       sniffer: false,
       sniffer_pcap: nil,
       sniffer_filter: nil,
