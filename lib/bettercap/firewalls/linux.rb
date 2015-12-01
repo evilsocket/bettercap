@@ -31,14 +31,14 @@ class LinuxFirewall < IFirewall
     # accept all
     shell.execute('iptables -P FORWARD ACCEPT')
     # add redirection
-    shell.execute("iptables -t nat -A PREROUTING -i #{iface} -p #{proto} --dport #{from} -j REDIRECT --to #{addr}:#{to}")
+    shell.execute("iptables -t nat -A PREROUTING -i #{iface} -p #{proto} --dport #{from} -j DNAT --to #{addr}:#{to}")
   end
 
   def del_port_redirection( iface, proto, from, addr, to )
     # remove post route
     shell.execute('iptables -t nat -D POSTROUTING -s 0/0 -j MASQUERADE')
     # remove redirection
-    shell.execute("iptables -t nat -D PREROUTING -i #{iface} -p #{proto} --dport #{from} -j REDIRECT --to #{addr}:#{to}")
+    shell.execute("iptables -t nat -D PREROUTING -i #{iface} -p #{proto} --dport #{from} -j DNAT --to #{addr}:#{to}")
   end
 
   private
