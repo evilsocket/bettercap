@@ -18,7 +18,7 @@ require 'json'
 
 class Context
   attr_accessor :options, :ifconfig, :network, :firewall, :gateway,
-                :targets, :spoofer, :proxy, :https_proxy, :httpd,
+                :targets, :spoofer, :httpd,
                 :certificate
 
   @@instance = nil
@@ -80,11 +80,10 @@ class Context
     @gateway         = nil
     @targets         = []
     @proxy_processor = nil
-    @proxy           = nil
-    @https_proxy     = nil
     @spoofer         = nil
     @httpd           = nil
     @certificate     = nil
+    @proxies         = []
     @redirections    = []
 
     @discovery_running = false
@@ -180,43 +179,43 @@ class Context
 
   def enable_port_redirection
     @redirections = []
-    
+
     if @options[:proxy]
-      @redirections << Redirection.new( @options[:iface], 
+      @redirections << Redirection.new( @options[:iface],
                                         'TCP',
                                         80,
-                                        @ifconfig[:ip_saddr], 
+                                        @ifconfig[:ip_saddr],
                                         @options[:proxy_port] )
     end
 
     if @options[:proxy_https]
-      @redirections << Redirection.new( @options[:iface], 
+      @redirections << Redirection.new( @options[:iface],
                                         'TCP',
                                         443,
-                                        @ifconfig[:ip_saddr], 
+                                        @ifconfig[:ip_saddr],
                                         @options[:proxy_https_port] )
     end
 
     if @options[:custom_proxy]
-      @redirections << Redirection.new( @options[:iface], 
+      @redirections << Redirection.new( @options[:iface],
                                         'TCP',
                                         80,
-                                        @options[:custom_proxy], 
-                                        @options[:custom_proxy_port] )            
+                                        @options[:custom_proxy],
+                                        @options[:custom_proxy_port] )
     end
 
     if @options[:custom_https_proxy]
-      @redirections << Redirection.new( @options[:iface], 
+      @redirections << Redirection.new( @options[:iface],
                                         'TCP',
                                         443,
-                                        @options[:custom_https_proxy], 
-                                        @options[:custom_https_proxy_port] )            
+                                        @options[:custom_https_proxy],
+                                        @options[:custom_https_proxy_port] )
     end
 
     @redirections.each do |r|
       Logger.warn "Redirecting #{r.protocol} traffic from port #{r.src_port} to #{r.dst_address}:#{r.dst_port}"
 
-      @firewall.add_port_redirection( r.interface, r.protocol, r.src_port, r.dst_address, r.dst_port )      
+      @firewall.add_port_redirection( r.interface, r.protocol, r.src_port, r.dst_address, r.dst_port )
     end
   end
 
@@ -224,7 +223,7 @@ class Context
     @redirections.each do |r|
       Logger.debug "Removing #{r.protocol} port redirect from port #{r.src_port} to #{r.dst_address}:#{r.dst_port}"
 
-      @firewall.del_port_redirection( r.interface, r.protocol, r.src_port, r.dst_address, r.dst_port )      
+      @firewall.del_port_redirection( r.interface, r.protocol, r.src_port, r.dst_address, r.dst_port )
     end
 
     @redirections = []
@@ -262,9 +261,7 @@ class Context
     end
 
     # create HTTP proxy
-    @proxy = Proxy::Proxy.new( @ifconfig[:ip_saddr], @options[:proxy_port], false, @proxy_processor )
-    @proxy.start
-
+    @proxies << Proxy::Proxy.new( @ifconfig[:ip_saddr], @options[:proxy_port], false, @proxy_processor )
     # create HTTPS proxy
     if @options[:proxy_https]
       # We're not acting as a normal HTTPS proxy, thus we're not
@@ -277,29 +274,29 @@ class Context
         @certificate = Proxy::CertStore.from_file @options[:proxy_pem_file]
       end
 
-      @https_proxy = Proxy::Proxy.new( @ifconfig[:ip_saddr], @options[:proxy_https_port], true, @proxy_processor )
-      @https_proxy.start
+      @proxies << Proxy::Proxy.new( @ifconfig[:ip_saddr], @options[:proxy_https_port], true, @proxy_processor )
+    end
+
+    @proxies.each do |proxy|
+      proxy.start
     end
   end
 
   def finalize
     stop_discovery_thread
 
-    if !@spoofer.nil? and @spoofer.length != 0 
+    if !@spoofer.nil? and @spoofer.length != 0
       @spoofer.each do |itr|
         itr.stop
       end
     end
 
-    if !@proxy.nil?
-      @proxy.stop
-      if !@https_proxy.nil?
-        @https_proxy.stop
-      end
+    @proxies.each do |proxy|
+      proxy.stop
     end
-    
+
     disable_port_redirection
-    
+
     if !@firewall.nil?
       @firewall.restore
     end
