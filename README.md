@@ -1,4 +1,4 @@
-#bettercap
+![logo](http://www.bettercap.org/assets/img/navbar-logo.png)
 
 http://www.bettercap.org/
 
