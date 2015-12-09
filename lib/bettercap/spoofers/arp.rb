@@ -51,35 +51,31 @@ class ArpSpoofer < ISpoofer
   end
 
   def start
-    stop() unless @running == false
-
     Logger.info "Starting ARP spoofer ( #{@ctx.options[:half_duplex] ? 'Half' : 'Full'} Duplex ) ..."
 
-    if @forwarding == false
-      Logger.debug 'Enabling packet forwarding.'
-
-      @ctx.firewall.enable_forwarding(true)
-    end
-
+    stop() unless !@running
     @running = true
+
+    @ctx.firewall.enable_forwarding(true) unless @forwarding
+
     @sniff_thread = Thread.new do
       Logger.info 'ARP watcher started ...'
       begin
-      @capture = PacketFu::Capture.new(
-          iface: @ctx.options[:iface],
-          filter: 'arp',
-          start: true
-      )
+        @capture = PacketFu::Capture.new(
+            iface: @ctx.options[:iface],
+            filter: 'arp',
+            start: true
+        )
       rescue  Exception => e
         Logger.error e.message
       end
+
       @capture.stream.each do |p|
         begin
           pkt = PacketFu::Packet.parse p
           # we're only interested in 'who-has' packets
           if pkt.arp_opcode == 1 and pkt.arp_dst_mac.to_s == '00:00:00:00:00:00'
             is_from_us = ( pkt.arp_src_ip.to_s == @ctx.ifconfig[:ip_saddr] )
-
             if !is_from_us
               Logger.info "[ARP] #{pkt.arp_src_ip.to_s} is asking who #{pkt.arp_dst_ip.to_s} is."
 
@@ -122,7 +118,6 @@ class ArpSpoofer < ISpoofer
               next
             else
               Logger.info "  Target MAC    : #{hw}"
-
               target.mac = hw
             end
           end
