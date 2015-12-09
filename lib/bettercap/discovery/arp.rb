@@ -19,46 +19,50 @@ require 'bettercap/context'
 class ArpAgent < BaseAgent
 
   def self.parse( ctx )
-    arp     = Shell.arp
     targets = []
-
-    Logger.debug "ARP:\n#{arp}"
-
-    arp.split("\n").each do |line|
-      m = /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{ctx.ifconfig[:iface]}.*/i.match(line)
-      if !m.nil?
-        if m[1] != ctx.gateway and m[1] != ctx.ifconfig[:ip_saddr] and m[2] != 'ff:ff:ff:ff:ff:ff'
-          if !ctx.options[:ignore].nil? and ctx.options[:ignore].include?( m[1] )
-            Logger.debug "Ignoring #{m[1]} ..."
-          else
-            target = Target.new( m[1], m[2] )
-            targets << target
-            Logger.debug "FOUND  #{target}"
-          end
+    self.parse_cache do |ip,mac|
+      if ip != ctx.gateway and ip != ctx.ifconfig[:ip_saddr]
+        if !ctx.options[:ignore].nil? and ctx.options[:ignore].include?(ip)
+          Logger.debug "Ignoring #{ip} ..."
+        else
+          targets << Target.new( ip, mac )
         end
       end
     end
-
     targets
   end
 
-  def self.find_address( ip )
-    arp = Shell.arp
-    mac = nil
-
-    arp.split("\n").each do |line|
-      m = /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{Context.get.ifconfig[:iface]}.*/i.match(line)
-      if !m.nil?
-        if m[1] == ip and m[2] != 'ff:ff:ff:ff:ff:ff'
-          mac = m[2]
-        end
+  def self.find_address( address )
+    self.parse_cache do |ip,mac|
+      if ip == address
+        return mac
       end
     end
-
-    mac
+    nil
   end
 
   private
+
+  def self.parse_cache
+    arp = Shell.arp
+
+    Logger.debug "ARP CACHE:\n#{arp}"
+
+    arp.split("\n").each do |line|
+      m = self.parse_cache_line(line)
+      if !m.nil?
+        ip = m[1]
+        hw = m[2]
+        if hw != 'ff:ff:ff:ff:ff:ff'
+          yield( ip, hw )
+        end
+      end
+    end
+  end
+
+  def self.parse_cache_line( line )
+    /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{Context.get.ifconfig[:iface]}.*/i.match(line)
+  end
 
   def send_probe( ip )
     pkt = PacketFu::ARPPacket.new
