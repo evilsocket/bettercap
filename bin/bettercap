@@ -23,7 +23,7 @@ begin
   OptionParser.new do |opts|
     opts.banner = "Usage: #{$0} [options]"
     opts.version = BetterCap::VERSION
-    
+
 		opts.on( '-G', '--gateway ADDRESS', 'Manually specify the gateway address, if not specified the current gateway will be retrieved and used. ' ) do |v|
       ctx.options[:gateway] = v
     end
@@ -160,7 +160,7 @@ begin
 
     opts.on('-h', '--help', 'Display the available options.') do
       puts opts
-      puts "\nFor examples & instructions please visit " + "http://bettercap.org/features/".bold
+      puts "\nFor examples & docs please visit " + "http://bettercap.org/docs/".bold
       exit
     end
   end.parse!
@@ -187,7 +187,7 @@ begin
     ctx.gateway = ctx.options[:gateway]
     Logger.info("Targetting manual gateway #{ctx.gateway}")
   end
-  
+
   ctx.update_network
 
   if ctx.options[:target].nil?
@@ -241,15 +241,15 @@ begin
   end
 
   if ctx.options[:custom_proxy]
-    raise BetterCap::Error, 'Invalid custom HTTP upstream proxy address specified.' unless Network.is_ip? ctx.options[:custom_proxy]  
+    raise BetterCap::Error, 'Invalid custom HTTP upstream proxy address specified.' unless Network.is_ip? ctx.options[:custom_proxy]
   end
 
   if ctx.options[:custom_https_proxy]
-    raise BetterCap::Error, 'Invalid custom HTTPS upstream proxy address specified.' unless Network.is_ip? ctx.options[:custom_https_proxy]  
+    raise BetterCap::Error, 'Invalid custom HTTPS upstream proxy address specified.' unless Network.is_ip? ctx.options[:custom_https_proxy]
   end
 
   ctx.enable_port_redirection
-  
+
   if ctx.options[:httpd]
     ctx.httpd = HTTPD::Server.new( ctx.options[:httpd_port], ctx.options[:httpd_path] )
     ctx.httpd.start
