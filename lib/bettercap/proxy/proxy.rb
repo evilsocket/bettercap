@@ -32,7 +32,7 @@ class Proxy
     @running     = false
     @streamer    = Streamer.new processor
     @local_ips   = []
-  
+
     begin
       @local_ips = Socket.ip_address_list.collect { |x| x.ip_address }
     rescue
@@ -93,7 +93,8 @@ class Proxy
       begin
         @pool << @server.accept
       rescue Exception => e
-        Logger.warn "Error while accepting #{@type} connection: #{e.inspect}"
+        Logger.warn("Error while accepting #{@type} connection: #{e.inspect}") \
+        unless !@running
       end
     end
 
@@ -106,7 +107,7 @@ class Proxy
 
   def create_upstream_connection( request )
     sock = TCPSocket.new( request.host, request.port )
-    
+
     if @is_https
       ctx = OpenSSL::SSL::SSLContext.new
       # do we need this? :P ctx.set_params(verify_mode: OpenSSL::SSL::VERIFY_PEER)
