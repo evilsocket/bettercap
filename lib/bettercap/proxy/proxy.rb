@@ -197,13 +197,13 @@ class Proxy
 
     rescue Exception => e
       if request.host
-        Logger.debug "Error while serving #{request.host}#{request.url}: #{e.inspect}"
+        Logger.warn "Error while serving #{request.host}#{request.url}: #{e.inspect}"
         Logger.debug e.backtrace
       end
-    ensure
-      client.close
-      server.close unless server.nil?
     end
+
+    client.close
+    server.close unless server.nil?
   end
 end
 

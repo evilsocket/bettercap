@@ -46,6 +46,8 @@ class Response
     if @headers_done
       @body << line.force_encoding( @charset )
     else
+      Logger.debug "  RESPONSE LINE: '#{line.chomp}'"
+
       # parse the response status
       if @code.nil? and line =~ /^HTTP\/[\d\.]+\s+(.+)/
         @code = $1.chomp
@@ -67,7 +69,7 @@ class Response
 
       end
 
-      @headers << line.chomp      
+      @headers << line.chomp
     end
   end
 
