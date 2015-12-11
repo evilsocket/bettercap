@@ -13,11 +13,11 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 **Platform Specific**
 
 - [ ] *BSD Support.
+- [ ] Windows Support? ( OMG PLZ NO! )
 - [ ] GNU/Linux [Active packet filtering/injection/etc](https://github.com/evilsocket/bettercap/issues/75) ( maybe using [this](https://github.com/gdelugre/ruby-nfqueue) ).
 
 **Maybe**
 
 - [ ] ICMP Redirect ? ( only half duplex and filtered by many firewalls anyway ... dunno ).
 - [ ] DNS Spoofing ( not sure if it actually makes any sense ).
-- [ ] Windows Support? ( OMG PLZ NO! )
 - [ ] sslstrip ( not really sure, currently is quite useless )
