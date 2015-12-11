@@ -37,7 +37,7 @@ class Network
       out = nstat.split(/\n/).select {|n| n =~ /UG/ }
       gw  = nil
       out.each do |line|
-        if line.include?( Context.get.options[:iface] )
+        if line.include?( Context.get.options.iface )
           tmp = line.split[1]
           if is_ip?(tmp)
             gw = tmp
@@ -46,7 +46,7 @@ class Network
         end
       end
 
-      raise BetterCap::Error, "Could not detect the gateway address for interface #{Context.get.options[:iface]}, "\
+      raise BetterCap::Error, "Could not detect the gateway address for interface #{Context.get.options.iface}, "\
                               'make sure you\'ve specified the correct network interface to use and to have the '\
                               'correct network configuration, this could also happen if bettercap '\
                               'is launched from a virtual environment.' unless !gw.nil? and is_ip?(gw)
@@ -66,7 +66,7 @@ class Network
     end
 
     def get_alive_targets( ctx, timeout = 5 )
-      if ctx.options[:arpcache] == false
+      if ctx.options.should_discover_hosts?
         icmp = IcmpAgent.new timeout
         udp  = UdpAgent.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
         arp  = ArpAgent.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]

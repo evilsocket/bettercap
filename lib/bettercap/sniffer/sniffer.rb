@@ -45,17 +45,17 @@ class Sniffer
   private
 
   def self.stream
-    if @@ctx.options[:sniffer_src].nil?
+    if @@ctx.options.sniffer_src.nil?
       @@cap.stream
     else
-      Logger.info "Reading packets from #{@@ctx.options[:sniffer_src]} ..."
+      Logger.info "Reading packets from #{@@ctx.options.sniffer_src} ..."
 
-      PcapFile.file_to_array @@ctx.options[:sniffer_src]
+      PcapFile.file_to_array @@ctx.options.sniffer_src
     end
   end
 
   def self.skip_packet?( pkt )
-    !@@ctx.options[:local] and
+    !@@ctx.options.local and
         ( pkt.ip_saddr == @@ctx.ifconfig[:ip_saddr] or
             pkt.ip_daddr == @@ctx.ifconfig[:ip_saddr] )
   end
@@ -73,7 +73,7 @@ class Sniffer
   def self.append_packet( p )
     begin
       @@pcap.array_to_file(
-          filename: @@ctx.options[:sniffer_pcap],
+          filename: @@ctx.options.sniffer_pcap,
           array: [p],
           append: true ) unless @@pcap.nil?
     rescue Exception => e
@@ -84,16 +84,16 @@ class Sniffer
   def self.setup( ctx )
     @@ctx = ctx
 
-    if !@@ctx.options[:sniffer_pcap].nil?
+    if !@@ctx.options.sniffer_pcap.nil?
       @@pcap = PcapFile.new
-      Logger.warn "Saving packets to #{@@ctx.options[:sniffer_pcap]} ."
+      Logger.warn "Saving packets to #{@@ctx.options.sniffer_pcap} ."
     end
 
-    @@parsers = ParserFactory.load_by_names @@ctx.options[:parsers]
+    @@parsers = ParserFactory.load_by_names @@ctx.options.parsers
 
     @@cap = Capture.new(
-        iface: @@ctx.options[:iface],
-        filter: @@ctx.options[:sniffer_filter],
+        iface: @@ctx.options.iface,
+        filter: @@ctx.options.sniffer_filter,
         start: true
     )
   end

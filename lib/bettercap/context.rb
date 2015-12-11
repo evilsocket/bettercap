@@ -35,57 +35,18 @@ class Context
       Logger.debug e.message
     end
 
-    @options = {
-      gateway: nil,
-      iface: iface,
-      spoofer: 'ARP',
-      half_duplex: false,
-      target: nil,
-      logfile: nil,
-      debug: false,
-      arpcache: false,
-
-      ignore: nil,
-
-      sniffer: false,
-      sniffer_pcap: nil,
-      sniffer_filter: nil,
-      sniffer_src: nil,
-      parsers: ['*'],
-      local: false,
-
-      proxy: false,
-      proxy_https: false,
-      proxy_port: 8080,
-      proxy_https_port: 8083,
-      proxy_pem_file: nil,
-      proxy_module: nil,
-
-      custom_proxy: nil,
-      custom_proxy_port: 8080,
-
-      custom_https_proxy: nil,
-      custom_https_proxy_port: 8083,
-
-      httpd: false,
-      httpd_port: 8081,
-      httpd_path: './',
-
-      check_updates: false
-    }
-
-    @ifconfig        = nil
-    @network         = nil
-    @firewall        = nil
-    @gateway         = nil
-    @targets         = []
-    @proxy_processor = nil
-    @spoofer         = nil
-    @httpd           = nil
-    @certificate     = nil
-    @proxies         = []
-    @redirections    = []
-
+    @options           = Options.new iface
+    @ifconfig          = nil
+    @network           = nil
+    @firewall          = nil
+    @gateway           = nil
+    @targets           = []
+    @proxy_processor   = nil
+    @spoofer           = nil
+    @httpd             = nil
+    @certificate       = nil
+    @proxies           = []
+    @redirections      = []
     @discovery_running = false
     @discovery_thread  = nil
   end
@@ -121,11 +82,11 @@ class Context
 
   def update_network
     @firewall = FirewallFactory.get_firewall
-    @ifconfig = PacketFu::Utils.ifconfig @options[:iface]
+    @ifconfig = PacketFu::Utils.ifconfig @options.iface
     @network  = @ifconfig[:ip4_obj]
     @gateway  = Network.get_gateway if @gateway.nil?
 
-    raise BetterCap::Error, "Could not determine IPv4 address of '#{@options[:iface]}' interface." unless !@network.nil?
+    raise BetterCap::Error, "Could not determine IPv4 address of '#{@options.iface}' interface." unless !@network.nil?
 
     Logger.debug "network=#{@network} gateway=#{@gateway} local_ip=#{@ifconfig[:ip_saddr]}"
     Logger.debug "IFCONFIG: #{@ifconfig.inspect}"
@@ -134,12 +95,12 @@ class Context
   def start_discovery_thread
     @discovery_running = true
     @discovery_thread = Thread.new {
-      Logger.info( 'Network discovery thread started.' ) unless @options[:arpcache]
+      Logger.info( 'Network discovery thread started.' ) unless @options.arpcache
 
       while @discovery_running
         empty_list = false
 
-        if @targets.empty? and !@options[:arpcache]
+        if @targets.empty? and @options.should_discover_hosts?
           empty_list = true
           Logger.info 'Searching for alive targets ...'
         else
@@ -154,7 +115,7 @@ class Context
 
         @targets = Network.get_alive_targets self
 
-        if empty_list and !@options[:arpcache]
+        if empty_list and @options.should_discover_hosts?
           Logger.info "Collected #{@targets.size} total targets."
           @targets.each do |target|
             Logger.info "  #{target}"
@@ -168,7 +129,7 @@ class Context
     @discovery_running = false
 
     if @discovery_thread != nil
-      Logger.info( 'Stopping network discovery thread ...' ) unless @options[:arpcache]
+      Logger.info( 'Stopping network discovery thread ...' ) unless @options.arpcache
 
       begin
         @discovery_thread.exit
@@ -178,40 +139,7 @@ class Context
   end
 
   def enable_port_redirection
-    @redirections = []
-
-    if @options[:proxy]
-      @redirections << Redirection.new( @options[:iface],
-                                        'TCP',
-                                        80,
-                                        @ifconfig[:ip_saddr],
-                                        @options[:proxy_port] )
-    end
-
-    if @options[:proxy_https]
-      @redirections << Redirection.new( @options[:iface],
-                                        'TCP',
-                                        443,
-                                        @ifconfig[:ip_saddr],
-                                        @options[:proxy_https_port] )
-    end
-
-    if @options[:custom_proxy]
-      @redirections << Redirection.new( @options[:iface],
-                                        'TCP',
-                                        80,
-                                        @options[:custom_proxy],
-                                        @options[:custom_proxy_port] )
-    end
-
-    if @options[:custom_https_proxy]
-      @redirections << Redirection.new( @options[:iface],
-                                        'TCP',
-                                        443,
-                                        @options[:custom_https_proxy],
-                                        @options[:custom_https_proxy_port] )
-    end
-
+    @redirections = @options.to_redirections @ifconfig
     @redirections.each do |r|
       Logger.warn "Redirecting #{r.protocol} traffic from port #{r.src_port} to #{r.dst_address}:#{r.dst_port}"
 
@@ -230,12 +158,12 @@ class Context
   end
 
   def create_proxies
-    if not @options[:proxy_module].nil?
-      require @options[:proxy_module]
+    if @options.has_proxy_module?
+      require @options.proxy_module
 
       Proxy::Module.register_modules
 
-      raise BetterCap::Error, "#{@options[:proxy_module]} is not a valid bettercap proxy module." unless !Proxy::Module.modules.empty?
+      raise BetterCap::Error, "#{@options.proxy_module} is not a valid bettercap proxy module." unless !Proxy::Module.modules.empty?
     end
 
     @proxy_processor = Proc.new do |request,response|
@@ -261,20 +189,20 @@ class Context
     end
 
     # create HTTP proxy
-    @proxies << Proxy::Proxy.new( @ifconfig[:ip_saddr], @options[:proxy_port], false, @proxy_processor )
+    @proxies << Proxy::Proxy.new( @ifconfig[:ip_saddr], @options.proxy_port, false, @proxy_processor )
     # create HTTPS proxy
-    if @options[:proxy_https]
+    if @options.proxy_https
       # We're not acting as a normal HTTPS proxy, thus we're not
       # able to handle CONNECT requests, thus we don't know the
       # hostname the client is going to connect to.
       # We can only use a self signed certificate.
-      if @options[:proxy_pem_file].nil?
+      if @options.proxy_pem_file.nil?
         @certificate = Proxy::CertStore.get_selfsigned
       else
-        @certificate = Proxy::CertStore.from_file @options[:proxy_pem_file]
+        @certificate = Proxy::CertStore.from_file @options.proxy_pem_file
       end
 
-      @proxies << Proxy::Proxy.new( @ifconfig[:ip_saddr], @options[:proxy_https_port], true, @proxy_processor )
+      @proxies << Proxy::Proxy.new( @ifconfig[:ip_saddr], @options.proxy_https_port, true, @proxy_processor )
     end
 
     @proxies.each do |proxy|

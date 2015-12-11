@@ -22,7 +22,7 @@ class ArpAgent < BaseAgent
     targets = []
     self.parse_cache do |ip,mac|
       if ip != ctx.gateway and ip != ctx.ifconfig[:ip_saddr]
-        if !ctx.options[:ignore].nil? and ctx.options[:ignore].include?(ip)
+        if ctx.options.ignore_ip?(ip)
           Logger.debug "Ignoring #{ip} ..."
         else
           targets << Target.new( ip, mac )

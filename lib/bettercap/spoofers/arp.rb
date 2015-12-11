@@ -51,7 +51,7 @@ class ArpSpoofer < ISpoofer
   end
 
   def start
-    Logger.info "Starting ARP spoofer ( #{@ctx.options[:half_duplex] ? 'Half' : 'Full'} Duplex ) ..."
+    Logger.info "Starting ARP spoofer ( #{@ctx.options.half_duplex ? 'Half' : 'Full'} Duplex ) ..."
 
     stop() unless !@running
     @running = true
@@ -62,7 +62,7 @@ class ArpSpoofer < ISpoofer
       Logger.info 'ARP watcher started ...'
       begin
         @capture = PacketFu::Capture.new(
-            iface: @ctx.options[:iface],
+            iface: @ctx.options.iface,
             filter: 'arp',
             start: true
         )
@@ -123,7 +123,7 @@ class ArpSpoofer < ISpoofer
           end
 
           send_spoofed_packet( @ctx.gateway, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
-          send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @ctx.gateway, @gw_hw ) unless @ctx.options[:half_duplex]
+          send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @ctx.gateway, @gw_hw ) unless @ctx.options.half_duplex
         end
 
         prev_size = @ctx.targets.size
@@ -152,7 +152,7 @@ class ArpSpoofer < ISpoofer
     @ctx.targets.each do |target|
       if !target.mac.nil?
         send_spoofed_packet( @ctx.gateway, @gw_hw, target.ip, target.mac )
-        send_spoofed_packet( target.ip, target.mac, @ctx.gateway, @gw_hw ) unless @ctx.options[:half_duplex]
+        send_spoofed_packet( target.ip, target.mac, @ctx.gateway, @gw_hw ) unless @ctx.options.half_duplex
       end
     end
     sleep 1
