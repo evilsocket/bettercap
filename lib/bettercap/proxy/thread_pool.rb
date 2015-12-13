@@ -42,9 +42,6 @@ class ThreadPool
 
     @workers = []
 
-    @auto_trim = nil
-    @reaper = nil
-
     @mutex.synchronize do
       @min.times { spawn_thread }
     end
@@ -184,64 +181,6 @@ class ThreadPool
     end
   end
 
-  class AutoTrim
-    def initialize(pool, timeout)
-      @pool = pool
-      @timeout = timeout
-      @running = false
-    end
-
-    def start!
-      @running = true
-
-      @thread = Thread.new do
-        while @running
-          @pool.trim
-          sleep @timeout
-        end
-      end
-    end
-
-    def stop
-      @running = false
-      @thread.wakeup
-    end
-  end
-
-  def auto_trim!(timeout=5)
-    @auto_trim = AutoTrim.new(self, timeout)
-    @auto_trim.start!
-  end
-
-  class Reaper
-    def initialize(pool, timeout)
-      @pool = pool
-      @timeout = timeout
-      @running = false
-    end
-
-    def start!
-      @running = true
-
-      @thread = Thread.new do
-        while @running
-          @pool.reap
-          sleep @timeout
-        end
-      end
-    end
-
-    def stop
-      @running = false
-      @thread.wakeup
-    end
-  end
-
-  def auto_reap!(timeout=5)
-    @reaper = Reaper.new(self, timeout)
-    @reaper.start!
-  end
-
   # Tell all threads in the pool to exit and wait for them to finish.
   #
   def shutdown
@@ -249,9 +188,6 @@ class ThreadPool
       @shutdown = true
       @not_empty.broadcast
       @not_full.broadcast
-
-      @auto_trim.stop if @auto_trim
-      @reaper.stop if @reaper
       # dup workers so that we join them all safely
       @workers.dup
     end
