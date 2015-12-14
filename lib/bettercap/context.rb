@@ -92,6 +92,15 @@ class Context
     Logger.debug "IFCONFIG: #{@ifconfig.inspect}"
   end
 
+  def find_target ip, mac
+    @targets.each do |target|
+      if target.ip == ip && ( mac.nil? || target.mac == mac )
+        return target
+      end
+    end
+    nil
+  end
+
   def start_discovery_thread
     @discovery_running = true
     @discovery_thread = Thread.new {

@@ -18,11 +18,17 @@ class BaseParser
     @name = 'BASE'
   end
 
+  def addr2s( addr )
+    target = Context.get.find_target addr, nil
+    return target.to_s_compact unless target.nil?
+    addr
+  end
+
   def on_packet( pkt )
     s = pkt.to_s
     @filters.each do |filter|
       if s =~ filter
-        Logger.write "[#{pkt.ip_saddr}:#{pkt.tcp_src} > #{pkt.ip_daddr}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
+        Logger.write "[#{addr2s(pkt.ip_saddr)}:#{pkt.tcp_src} > #{addr2s(pkt.ip_daddr)}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
                      "[#{@name}] ".green +
                      pkt.payload.strip.yellow
       end

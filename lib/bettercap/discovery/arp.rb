@@ -25,7 +25,13 @@ class ArpAgent < BaseAgent
         if ctx.options.ignore_ip?(ip)
           Logger.debug "Ignoring #{ip} ..."
         else
-          targets << Target.new( ip, mac )
+          # reuse Target object if it's already a known address
+          known = ctx.find_target ip, mac
+          if known.nil?
+            targets << Target.new( ip, mac )
+          else
+            targets << known
+          end
         end
       end
     end

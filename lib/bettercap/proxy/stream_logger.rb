@@ -14,14 +14,20 @@ require 'bettercap/logger'
 module Proxy
 class StreamLogger
   @@MAX_REQ_SIZE = 50
-  
+
   @@CODE_COLORS  = {
     '2' => :green,
     '3' => :light_black,
     '4' => :yellow,
     '5' => :red
   }
-  
+
+  def self.addr2s( addr )
+    target = Context.get.find_target addr, nil
+    return target.to_s_compact unless target.nil?
+    addr
+  end
+
   def self.log( is_https, client, request, response )
     request_s  = "#{is_https ? 'https' : 'http'}://#{request.host}#{request.url}"
     response_s = "( #{response.content_type} )"
@@ -29,13 +35,12 @@ class StreamLogger
     code       = response.code[0]
 
     if @@CODE_COLORS.has_key? code
-      response_s += " [#{response.code}]".send( @@CODE_COLORS[ code ] )     
+      response_s += " [#{response.code}]".send( @@CODE_COLORS[ code ] )
     else
-      response_s += " [#{response.code}]"      
+      response_s += " [#{response.code}]"
     end
 
-    Logger.write "[#{client}] #{request.verb.light_blue} #{request_s} #{response_s}"
+    Logger.write "[#{self.addr2s(client)}] #{request.verb.light_blue} #{request_s} #{response_s}"
   end
 end
 end
-
