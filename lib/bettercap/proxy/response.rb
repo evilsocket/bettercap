@@ -13,7 +13,7 @@ This project is released under the GPL 3 license.
 module Proxy
 
 class Response
-  attr_reader :content_type, :charset, :content_length, :headers, :code, :headers_done
+  attr_reader :content_type, :charset, :content_length, :chunked, :headers, :code, :headers_done
   attr_accessor :body
 
   def initialize
@@ -24,6 +24,7 @@ class Response
     @code = nil
     @headers = []
     @headers_done = false
+    @chunked = false
   end
 
   def self.from_socket(sock)
@@ -63,13 +64,18 @@ class Response
       elsif line =~ /^Content-Length:\s+(\d+)\s*$/i
         @content_length = $1.to_i
 
+      # check if we have a chunked encoding
+      elsif line =~ /^Transfer-Encoding:\s*chunked.*$/i
+        @chunked = true
+        line = nil
+
       # last line, we're done with the headers
       elsif line.chomp.empty?
         @headers_done = true
 
       end
 
-      @headers << line.chomp
+      @headers << line.chomp unless line.nil?
     end
   end
 

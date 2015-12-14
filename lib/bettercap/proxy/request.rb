@@ -56,7 +56,7 @@ class Request
         @url = "#{uri.path}" + ( uri.query ? "?#{uri.query}" : '' )
       end
 
-      line = "#{@verb} #{@url} HTTP/1.0"
+      line = "#{@verb} #{@url} HTTP/1.1"
 
     # get the host header value
     elsif line =~ /^Host:\s*(.*)$/

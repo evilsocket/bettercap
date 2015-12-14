@@ -3,11 +3,11 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 ---
 
 - [x] Implement `--ignore ADDR,ADDR,ADDR` option to filter out specific addresses from the targets list.
+- [x] HTTP 1.1 chunked response support.
 - [ ] Implement event-driven core plugin infrastructure ( for webui, etc ).
 - [ ] Implement web-ui core plugin.
 - [ ] Ip address to hostname resolution.
 - [ ] Rewrite proxy class using [em-proxy](https://github.com/igrigorik/em-proxy) library.
-- [ ] HTTP 1.1 chunked response support.
 - [ ] HTTP/2 Support.
 - [ ] IPV6 Support.
 

@@ -25,7 +25,34 @@ class Streamer
   def html( request, response, from, to )
     buff = ''
 
-    if response.content_length.nil?
+    if response.chunked
+      Logger.debug "Reading response body using chunked encoding ..."
+
+      begin
+        len = nil
+        total = 0
+
+        while true
+          line = from.readline
+          hexlen = line.slice(/[0-9a-fA-F]+/) or raise "Wrong chunk size line: #{line}"
+          len = hexlen.hex
+          break if len == 0
+          begin
+            Logger.debug "Reading chunk of size #{len} ..."
+            tmp = read( from, len )
+            Logger.debug "Read #{tmp.bytesize}/#{len} chunk."
+            response << tmp
+          ensure
+            total += len
+            from.read 2
+          end
+        end
+
+      rescue Exception => e
+        Logger.debug e
+      end
+      
+    elsif response.content_length.nil?
       Logger.debug "Reading response body using 1024 bytes chunks ..."
 
       loop do
@@ -128,7 +155,7 @@ class Streamer
     buffer = ''
     begin
       while size > 0
-        tmp = consume_stream sd, BUFSIZE
+        tmp = consume_stream sd, [ BUFSIZE, size ].min
         unless tmp.nil? or tmp.bytesize == 0
           buffer << tmp
           size -= tmp.bytesize
