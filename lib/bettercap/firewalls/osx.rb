@@ -31,12 +31,12 @@ class OSXFirewall < IFirewall
     rescue; end
   end
 
-  def add_port_redirection( iface, proto, from, addr, to )
+  def add_port_redirection( r )
     # create the pf config file
     config_file = "/tmp/bettercap_pf_#{Process.pid}.conf"
 
     File.open( config_file, 'a+t' ) do |f|
-      f.write "rdr pass on #{iface} proto #{proto} from any to any port #{from} -> #{addr} port #{to}\n"
+      f.write "rdr pass on #{r.interface} proto #{r.protocol} from any to any port #{r.src_port} -> #{r.dst_address} port #{r.dst_port}\n"
     end
 
     # load the rule
@@ -45,7 +45,7 @@ class OSXFirewall < IFirewall
     enable true
   end
 
-  def del_port_redirection( iface, proto, from, addr, to )
+  def del_port_redirection( r )
     # FIXME: This should search for multiple rules inside the
     # file and remove only this one.
 

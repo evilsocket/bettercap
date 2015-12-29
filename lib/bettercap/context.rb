@@ -79,7 +79,7 @@ class Context
     @redirections.each do |r|
       Logger.warn "Redirecting #{r.protocol} traffic from port #{r.src_port} to #{r.dst_address}:#{r.dst_port}"
 
-      @firewall.add_port_redirection( r.interface, r.protocol, r.src_port, r.dst_address, r.dst_port )
+      @firewall.add_port_redirection( r )
     end
   end
 
@@ -87,7 +87,7 @@ class Context
     @redirections.each do |r|
       Logger.debug "Removing #{r.protocol} port redirect from port #{r.src_port} to #{r.dst_address}:#{r.dst_port}"
 
-      @firewall.del_port_redirection( r.interface, r.protocol, r.src_port, r.dst_address, r.dst_port )
+      @firewall.del_port_redirection( r )
     end
 
     @redirections = []

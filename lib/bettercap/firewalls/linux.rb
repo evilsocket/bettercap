@@ -25,20 +25,20 @@ class LinuxFirewall < IFirewall
     shell.execute("echo #{enabled ? 0 : 1} > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts")
   end
 
-  def add_port_redirection( iface, proto, from, addr, to )
+  def add_port_redirection( r )
     # post route
     shell.execute('iptables -t nat -I POSTROUTING -s 0/0 -j MASQUERADE')
     # accept all
     shell.execute('iptables -P FORWARD ACCEPT')
     # add redirection
-    shell.execute("iptables -t nat -A PREROUTING -i #{iface} -p #{proto} --dport #{from} -j DNAT --to #{addr}:#{to}")
+    shell.execute("iptables -t nat -A PREROUTING -i #{r.interface} -p #{r.protocol} --dport #{r.src_port} -j DNAT --to #{r.dst_address}:#{r.dst_port}")
   end
 
-  def del_port_redirection( iface, proto, from, addr, to )
+  def del_port_redirection( r )
     # remove post route
     shell.execute('iptables -t nat -D POSTROUTING -s 0/0 -j MASQUERADE')
     # remove redirection
-    shell.execute("iptables -t nat -D PREROUTING -i #{iface} -p #{proto} --dport #{from} -j DNAT --to #{addr}:#{to}")
+    shell.execute("iptables -t nat -D PREROUTING -i #{r.interface} -p #{r.protocol} --dport #{r.src_port} -j DNAT --to #{r.dst_address}:#{r.dst_port}")
   end
 
   private

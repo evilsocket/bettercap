@@ -22,11 +22,11 @@ class IFirewall
     not_implemented_method!
   end
 
-  def add_port_redirection( iface, proto, from, addr, to )
+  def add_port_redirection( r )
     not_implemented_method!
   end
 
-  def del_port_redirection( iface, proto, from, addr, to )
+  def del_port_redirection( r )
     not_implemented_method!
   end
 
