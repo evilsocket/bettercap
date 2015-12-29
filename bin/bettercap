@@ -18,46 +18,50 @@ begin
   puts BetterCap::BANNER.green.bold
   puts "\n\n\n"
 
-  ctx = Context.get
+  # Create global context, parse command line arguments and perform basic
+  # error checking.
+  ctx = Options.parse!
 
-  Options.parse! ctx
-
+  # Load firewall instance, network interface informations and detect the
+  # gateway address.
   ctx.update_network
 
+  # Start targets auto discovery if needed.
   if ctx.options.target.nil?
     Logger.info( "Targeting the whole subnet #{ctx.ifconfig[:ip4_obj].to_range} ..." ) unless ctx.options.has_spoofer?
-
     ctx.discovery.start
   else
     ctx.targets = ctx.options.to_targets
   end
 
+  # Start network spoofers if enabled.
   ctx.spoofer = ctx.options.to_spoofers
   ctx.spoofer.each do |spoofer|
     spoofer.start
   end
 
+  # Start proxies and setup port redirection.
   if ctx.options.proxy
     if ctx.options.has_http_sniffer_enabled?
       Logger.warn "WARNING: Both HTTP transparent proxy and URL parser are enabled, you're gonna see duplicated logs."
     end
-
     ctx.create_proxies
   end
 
   ctx.enable_port_redirection
 
+  # Start local HTTP server.
   if ctx.options.httpd
     ctx.httpd = HTTPD::Server.new( ctx.options.httpd_port, ctx.options.httpd_path )
     ctx.httpd.start
   end
 
+  # Start network sniffer.
   if ctx.options.sniffer
     Sniffer.start ctx
   else
-    unless ctx.options.has_spoofer?
-      Logger.warn 'WARNING: Sniffer module was NOT enabled ( -X argument ), this will cause the MITM to run but no data to be collected.'
-    end
+    Logger.warn 'WARNING: Sniffer module was NOT enabled ( -X argument ), this '\
+                'will cause the MITM to run but no data to be collected.' unless ctx.options.has_spoofer?
 
     loop do
       sleep 1

@@ -80,8 +80,10 @@ class Options
     @check_updates = false
   end
 
-  def self.parse!( ctx )
+  def self.parse!
     raise BetterCap::Error, 'This software must run as root.' unless Process.uid == 0
+
+    ctx = Context.get
 
     OptionParser.new do |opts|
       opts.banner = "Usage: #{$0} [options]"
@@ -243,6 +245,8 @@ class Options
       ctx.gateway = ctx.options.gateway
       Logger.debug("Targetting manually specified gateway #{ctx.gateway}")
     end
+
+    ctx
   end
 
   def should_discover_hosts?
