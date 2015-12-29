@@ -44,10 +44,10 @@ class Context
     @proxies         = []
     @redirections    = []
     @discovery       = Discovery.new self
+    @firewall        = FirewallFactory.get_firewall
   end
 
   def update_network
-    @firewall = FirewallFactory.get_firewall
     @ifconfig = PacketFu::Utils.ifconfig @options.iface
     @gateway  = Network.get_gateway if @gateway.nil?
 

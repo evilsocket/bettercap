@@ -25,6 +25,7 @@ begin
   # Load firewall instance, network interface informations and detect the
   # gateway address.
   ctx.update_network
+  ctx.spoofer = ctx.options.to_spoofers
 
   # Start targets auto discovery if needed.
   if ctx.options.target.nil?

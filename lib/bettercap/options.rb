@@ -250,8 +250,6 @@ class Options
       ctx.targets = ctx.options.to_targets
     end
 
-    ctx.spoofer = ctx.options.to_spoofers
-
     ctx
   end
 
