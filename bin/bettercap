@@ -25,7 +25,7 @@ begin
   ctx.update_network
 
   if ctx.options.target.nil?
-    Logger.info( "Targeting the whole subnet #{ctx.network.to_range} ..." ) unless ctx.options.has_spoofer?
+    Logger.info( "Targeting the whole subnet #{ctx.ifconfig[:ip4_obj].to_range} ..." ) unless ctx.options.has_spoofer?
 
     ctx.discovery.start
   else

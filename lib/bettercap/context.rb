@@ -14,7 +14,7 @@ This project is released under the GPL 3 license.
 require 'bettercap/error'
 
 class Context
-  attr_accessor :options, :ifconfig, :network, :firewall, :gateway,
+  attr_accessor :options, :ifconfig, :firewall, :gateway,
                 :targets, :discovery, :spoofer, :httpd,
                 :certificate
 
@@ -34,7 +34,6 @@ class Context
 
     @options         = Options.new iface
     @ifconfig        = nil
-    @network         = nil
     @firewall        = nil
     @gateway         = nil
     @targets         = []
@@ -50,18 +49,17 @@ class Context
   def update_network
     @firewall = FirewallFactory.get_firewall
     @ifconfig = PacketFu::Utils.ifconfig @options.iface
-    @network  = @ifconfig[:ip4_obj]
     @gateway  = Network.get_gateway if @gateway.nil?
 
     raise BetterCap::Error, "Could not determine IPv4 address of '#{@options.iface}', make sure this interface "\
-                            'is active and connected.' if @network.nil?
+                            'is active and connected.' if @ifconfig[:ip4_obj].nil?
 
     raise BetterCap::Error, "Could not detect the gateway address for interface #{@options.iface}, "\
                             'make sure you\'ve specified the correct network interface to use and to have the '\
                             'correct network configuration, this could also happen if bettercap '\
                             'is launched from a virtual environment.' if @gateway.nil? or !Network.is_ip?(@gateway)
 
-    Logger.debug "network=#{@network} gateway=#{@gateway} local_ip=#{@ifconfig[:ip_saddr]}"
+    Logger.debug "network=#{@ifconfig[:ip4_obj]} gateway=#{@gateway} local_ip=#{@ifconfig[:ip_saddr]}"
     Logger.debug "IFCONFIG: #{@ifconfig.inspect}"
   end
 
