@@ -243,9 +243,9 @@ class Options
     Logger.logfile       = ctx.options.logfile
 
     unless ctx.options.gateway.nil?
-      raise BetterCap::Error, "Invalid gateway" if !Network.is_ip?(ctx.options.gateway)
+      raise BetterCap::Error, "The specified gateway '#{ctx.options.gateway}' is not a valid IPv4 address." unless Network.is_ip?(ctx.options.gateway)
       ctx.gateway = ctx.options.gateway
-      Logger.info("Targetting manual gateway #{ctx.gateway}")
+      Logger.debug("Targetting manually specified gateway #{ctx.gateway}")
     end
   end
 

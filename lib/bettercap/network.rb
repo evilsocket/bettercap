@@ -45,11 +45,6 @@ class Network
           end
         end
       end
-
-      raise BetterCap::Error, "Could not detect the gateway address for interface #{Context.get.options.iface}, "\
-                              'make sure you\'ve specified the correct network interface to use and to have the '\
-                              'correct network configuration, this could also happen if bettercap '\
-                              'is launched from a virtual environment.' unless !gw.nil? and is_ip?(gw)
       gw
     end
 

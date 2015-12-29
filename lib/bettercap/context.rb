@@ -86,7 +86,13 @@ class Context
     @network  = @ifconfig[:ip4_obj]
     @gateway  = Network.get_gateway if @gateway.nil?
 
-    raise BetterCap::Error, "Could not determine IPv4 address of '#{@options.iface}' interface." unless !@network.nil?
+    raise BetterCap::Error, "Could not determine IPv4 address of '#{@options.iface}', make sure this interface "\
+                            'is active and connected.' if @network.nil?
+
+    raise BetterCap::Error, "Could not detect the gateway address for interface #{@options.iface}, "\
+                            'make sure you\'ve specified the correct network interface to use and to have the '\
+                            'correct network configuration, this could also happen if bettercap '\
+                            'is launched from a virtual environment.' if @gateway.nil? or !Network.is_ip?(@gateway)
 
     Logger.debug "network=#{@network} gateway=#{@gateway} local_ip=#{@ifconfig[:ip_saddr]}"
     Logger.debug "IFCONFIG: #{@ifconfig.inspect}"
