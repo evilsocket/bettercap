@@ -11,10 +11,7 @@ This project is released under the GPL 3 license.
 =end
 
 # this class holds global states & data
-require 'bettercap/version'
 require 'bettercap/error'
-require 'net/http'
-require 'json'
 
 class Context
   attr_accessor :options, :ifconfig, :network, :firewall, :gateway,
@@ -48,35 +45,6 @@ class Context
     @proxies         = []
     @redirections    = []
     @discovery       = Discovery.new self
-  end
-
-  def check_updates(error_policy = ->{ raise })
-    ver = get_latest_version
-
-    case ver
-    when BetterCap::VERSION
-      Logger.info 'You are running the latest version.'
-    else
-      Logger.warn "New version '#{ver}' available!"
-    end
-  rescue Exception => e
-    error_policy.call(e)
-  end
-
-  def get_latest_version
-    Logger.info 'Checking for updates ...'
-
-    api = URI('https://rubygems.org/api/v1/versions/bettercap/latest.json')
-    response = Net::HTTP.get_response(api)
-
-    case response
-    when Net::HTTPSuccess
-      json = JSON.parse(response.body)
-    else
-      raise response.message
-    end
-
-    return json['version']
   end
 
   def update_network

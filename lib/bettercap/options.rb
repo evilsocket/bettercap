@@ -229,11 +229,7 @@ class Options
     end.parse!
 
     if ctx.options.check_updates
-      error_policy = lambda { |e|
-        Logger.error("Could not check for udpates: #{e.message}")
-      }
-
-      ctx.check_updates(error_policy)
+      UpdateChecker.check
       exit
     end
 
