@@ -38,24 +38,15 @@ class Discovery
     Logger.info( 'Network discovery thread started.' ) unless @ctx.options.arpcache
 
     while @running
-      empty_list = false
+      empty_list = @ctx.targets.empty?
 
-      if @ctx.targets.empty? and @ctx.options.should_discover_hosts?
-        empty_list = true
+      if @ctx.options.should_discover_hosts?
         Logger.info 'Searching for alive targets ...'
-      else
-        # make sure we don't stress the logging system
-        10.times do
-          sleep 1
-          if !@running
-            break
-          end
-        end
       end
 
-      @ctx.targets = Network.get_alive_targets ctx
+      @ctx.targets = Network.get_alive_targets @ctx
 
-      if empty_list and @ctx.options.should_discover_hosts?
+      if empty_list
         Logger.info "Collected #{@ctx.targets.size} total targets."
         @ctx.targets.each do |target|
           Logger.info "  #{target}"
