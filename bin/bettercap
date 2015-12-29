@@ -27,7 +27,7 @@ begin
   if ctx.options.target.nil?
     Logger.info( "Targeting the whole subnet #{ctx.network.to_range} ..." ) unless ctx.options.has_spoofer?
 
-    ctx.start_discovery_thread
+    ctx.discovery.start
   else
     ctx.targets = ctx.options.to_targets
   end

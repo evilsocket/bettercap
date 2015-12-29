@@ -18,7 +18,7 @@ require 'json'
 
 class Context
   attr_accessor :options, :ifconfig, :network, :firewall, :gateway,
-                :targets, :spoofer, :httpd,
+                :targets, :discovery, :spoofer, :httpd,
                 :certificate
 
   @@instance = nil
@@ -35,20 +35,19 @@ class Context
       Logger.debug e.message
     end
 
-    @options           = Options.new iface
-    @ifconfig          = nil
-    @network           = nil
-    @firewall          = nil
-    @gateway           = nil
-    @targets           = []
-    @proxy_processor   = nil
-    @spoofer           = nil
-    @httpd             = nil
-    @certificate       = nil
-    @proxies           = []
-    @redirections      = []
-    @discovery_running = false
-    @discovery_thread  = nil
+    @options         = Options.new iface
+    @ifconfig        = nil
+    @network         = nil
+    @firewall        = nil
+    @gateway         = nil
+    @targets         = []
+    @proxy_processor = nil
+    @spoofer         = nil
+    @httpd           = nil
+    @certificate     = nil
+    @proxies         = []
+    @redirections    = []
+    @discovery       = Discovery.new self
   end
 
   def check_updates(error_policy = ->{ raise })
@@ -105,52 +104,6 @@ class Context
       end
     end
     nil
-  end
-
-  def start_discovery_thread
-    @discovery_running = true
-    @discovery_thread = Thread.new {
-      Logger.info( 'Network discovery thread started.' ) unless @options.arpcache
-
-      while @discovery_running
-        empty_list = false
-
-        if @targets.empty? and @options.should_discover_hosts?
-          empty_list = true
-          Logger.info 'Searching for alive targets ...'
-        else
-          # make sure we don't stress the logging system
-          10.times do
-            sleep 1
-            if !@discovery_running
-              break
-            end
-          end
-        end
-
-        @targets = Network.get_alive_targets self
-
-        if empty_list and @options.should_discover_hosts?
-          Logger.info "Collected #{@targets.size} total targets."
-          @targets.each do |target|
-            Logger.info "  #{target}"
-          end
-        end
-      end
-    }
-  end
-
-  def stop_discovery_thread
-    @discovery_running = false
-
-    if @discovery_thread != nil
-      Logger.info( 'Stopping network discovery thread ...' ) unless @options.arpcache
-
-      begin
-        @discovery_thread.exit
-      rescue
-      end
-    end
   end
 
   def enable_port_redirection
@@ -226,7 +179,7 @@ class Context
   end
 
   def finalize
-    stop_discovery_thread
+    @discovery.stop
 
     if !@spoofer.nil? and @spoofer.length != 0
       @spoofer.each do |itr|

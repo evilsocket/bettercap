@@ -26,6 +26,7 @@ Config = RbConfig
 
 require 'bettercap/error'
 require 'bettercap/options'
+require 'bettercap/discovery'
 require 'bettercap/context'
 require 'bettercap/monkey/packetfu/utils'
 require 'bettercap/factories/firewall_factory'
