@@ -30,12 +30,9 @@ begin
   if ctx.options.target.nil?
     Logger.info( "Targeting the whole subnet #{ctx.ifconfig[:ip4_obj].to_range} ..." ) unless ctx.options.has_spoofer?
     ctx.discovery.start
-  else
-    ctx.targets = ctx.options.to_targets
   end
 
-  # Start network spoofers if enabled.
-  ctx.spoofer = ctx.options.to_spoofers
+  # Start network spoofers if any.
   ctx.spoofer.each do |spoofer|
     spoofer.start
   end

@@ -246,6 +246,12 @@ class Options
       Logger.debug("Targetting manually specified gateway #{ctx.gateway}")
     end
 
+    unless ctx.options.target.nil?
+      ctx.targets = ctx.options.to_targets
+    end
+
+    ctx.spoofer = ctx.options.to_spoofers
+
     ctx
   end
 
