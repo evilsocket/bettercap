@@ -7,7 +7,7 @@ Gem::Specification.new do |gem|
   gem.description = %q{A complete, modular, portable and easily extensible MITM framework.}
   gem.summary = %q{A complete, modular, portable and easily extensible MITM framework.}
   gem.required_ruby_version = '>= 1.9'
-  
+
 
   gem.authors = ['Simone Margaritelli']
   gem.email = %q{evilsocket@gmail.com}
@@ -20,7 +20,11 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency( 'minitest' )
 
-  gem.files = `git ls-files`.split("\n")
+  gem.files = Dir.glob("*.md") +
+              Dir.glob("Rakefile") +
+              Dir.glob("lib/**/*") +
+              Dir.glob("bin/**/*") +
+              Dir.glob("test/**/*")
   gem.require_paths = ["lib"]
 
   gem.executables   = %w(bettercap)
