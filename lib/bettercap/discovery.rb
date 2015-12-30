@@ -35,13 +35,13 @@ class Discovery
   private
 
   def worker
-    Logger.info( 'Network discovery thread started.' ) unless @ctx.options.arpcache
+    Logger.debug( 'Network discovery thread started.' ) unless @ctx.options.arpcache
 
     while @running
       empty_list = @ctx.targets.empty?
 
       if @ctx.options.should_discover_hosts?
-        Logger.info 'Searching for alive targets ...'
+        Logger.info 'Searching for targets ...' if empty_list
       end
 
       @ctx.targets = Network.get_alive_targets @ctx
