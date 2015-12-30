@@ -250,6 +250,13 @@ class Options
       ctx.targets = ctx.options.to_targets
     end
 
+    # Load firewall instance, network interface informations and detect the
+    # gateway address.
+    ctx.update!
+
+    # Spoofers need the context network data to be initialized.
+    ctx.spoofer = ctx.options.to_spoofers
+
     ctx
   end
 
@@ -262,7 +269,7 @@ class Options
   end
 
   def has_spoofer?
-    @spoofer == 'NONE' or @spoofer == 'none'
+    @spoofer != 'NONE' and @spoofer != 'none'
   end
 
   def has_http_sniffer_enabled?

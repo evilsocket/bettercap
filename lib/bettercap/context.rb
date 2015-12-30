@@ -47,7 +47,7 @@ class Context
     @firewall        = FirewallFactory.get_firewall
   end
 
-  def update_network
+  def update!
     @ifconfig = PacketFu::Utils.ifconfig @options.iface
     @gateway  = Network.get_gateway if @gateway.nil?
 
@@ -72,23 +72,12 @@ class Context
     nil
   end
 
-  def enable_port_redirection
+  def enable_port_redirection!
     @redirections = @options.to_redirections @ifconfig
     @redirections.each do |r|
       Logger.warn "Redirecting #{r.protocol} traffic from port #{r.src_port} to #{r.dst_address}:#{r.dst_port}"
-
       @firewall.add_port_redirection( r )
     end
-  end
-
-  def disable_port_redirection
-    @redirections.each do |r|
-      Logger.debug "Removing #{r.protocol} port redirect from port #{r.src_port} to #{r.dst_address}:#{r.dst_port}"
-
-      @firewall.del_port_redirection( r )
-    end
-
-    @redirections = []
   end
 
   def create_proxies
@@ -145,26 +134,29 @@ class Context
   end
 
   def finalize
+    Logger.info 'Shutting down, hang on ...'
+
+    Logger.debug 'Stopping target discovery manager ...'
     @discovery.stop
 
-    if !@spoofer.nil? and @spoofer.length != 0
-      @spoofer.each do |itr|
-        itr.stop
-      end
+    Logger.debug 'Stopping spoofers ...'
+    @spoofer.each do |spoofer|
+      spoofer.stop
     end
 
+    Logger.debug 'Stopping proxies ...'
     @proxies.each do |proxy|
       proxy.stop
     end
 
-    disable_port_redirection
-
-    if !@firewall.nil?
-      @firewall.restore
+    Logger.debug 'Disabling port redirections ...'
+    @redirections.each do |r|
+      @firewall.del_port_redirection( r )
     end
 
-    if !@httpd.nil?
-      @httpd.stop
-    end
+    Logger.debug 'Restoring firewall state ...'
+    @firewall.restore
+
+    @httpd.stop unless @httpd.nil?
   end
 end

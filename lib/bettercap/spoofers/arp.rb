@@ -150,9 +150,11 @@ class ArpSpoofer < ISpoofer
     Logger.info "Restoring ARP table of #{@ctx.targets.size} targets ..."
 
     @ctx.targets.each do |target|
-      if !target.mac.nil?
-        send_spoofed_packet( @ctx.gateway, @gw_hw, target.ip, target.mac )
-        send_spoofed_packet( target.ip, target.mac, @ctx.gateway, @gw_hw ) unless @ctx.options.half_duplex
+      unless target.mac.nil?
+        begin
+          send_spoofed_packet( @ctx.gateway, @gw_hw, target.ip, target.mac )
+          send_spoofed_packet( target.ip, target.mac, @ctx.gateway, @gw_hw ) unless @ctx.options.half_duplex
+        rescue; end
       end
     end
     sleep 1

@@ -22,11 +22,6 @@ begin
   # error checking.
   ctx = Options.parse!
 
-  # Load firewall instance, network interface informations and detect the
-  # gateway address.
-  ctx.update_network
-  ctx.spoofer = ctx.options.to_spoofers
-
   # Start targets auto discovery if needed.
   if ctx.options.target.nil?
     Logger.info( "Targeting the whole subnet #{ctx.ifconfig[:ip4_obj].to_range} ..." ) unless ctx.options.has_spoofer?
@@ -46,7 +41,7 @@ begin
     ctx.create_proxies
   end
 
-  ctx.enable_port_redirection
+  ctx.enable_port_redirection!
 
   # Start local HTTP server.
   if ctx.options.httpd
