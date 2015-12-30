@@ -44,7 +44,7 @@ class Discovery
         Logger.info 'Searching for targets ...' if empty_list
       end
 
-      @ctx.targets = Network.get_alive_targets @ctx
+      @ctx.targets = Network.get_alive_targets(@ctx).sort_by { |t| t.sortable_ip }
 
       if empty_list
         Logger.info "Collected #{@ctx.targets.size} total targets."

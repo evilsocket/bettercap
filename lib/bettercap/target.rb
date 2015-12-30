@@ -24,22 +24,25 @@ class Target
 
     def initialize( ip, mac=nil )
       @ip       = ip
-      @mac      = mac
-      @vendor   = Target.lookup_vendor(mac) if not mac.nil?
+      @mac      = normalized_mac mac unless mac.nil?
+      @vendor   = Target.lookup_vendor(@mac) unless mac.nil?
       @hostname = nil
       @resolver = Thread.new { resolve! }
     end
 
+    def sortable_ip
+      @ip.split('.').inject(0) {|total,value| (total << 8 ) + value.to_i}
+    end
+
     def mac=(value)
-      @mac = value
+      @mac = normalized_mac value
       @vendor = Target.lookup_vendor(@mac) if not @mac.nil?
     end
 
     def to_s
-      s = @ip
-      s += " ( #{@hostname} )" unless @hostname.nil?
-      s += " : #{@mac}"
-      s += " ( #{@vendor} )" unless @vendor.nil?
+      s = sprintf( '%-15s : %-17s', @ip, @mac )
+      s += " / #{@hostname}" unless @hostname.nil?
+      s += if @vendor.nil? then " ( ??? )" else " ( #{@vendor} )" end
       s
     end
 
@@ -52,6 +55,10 @@ class Target
     end
 
 private
+
+    def normalized_mac(v)
+      v.split(':').map { |e| if e.size == 2 then e.upcase else "0#{e.upcase}" end }.join(':')
+    end
 
     def resolve!
       resp, sock = nil, nil
