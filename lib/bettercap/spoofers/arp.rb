@@ -52,7 +52,7 @@ class ArpSpoofer < ISpoofer
   def start
     Logger.info "Starting ARP spoofer ( #{@ctx.options.half_duplex ? 'Half' : 'Full'} Duplex ) ..."
 
-    stop() unless !@running
+    stop() if @running
     @running = true
 
     @ctx.firewall.enable_forwarding(true) unless @forwarding

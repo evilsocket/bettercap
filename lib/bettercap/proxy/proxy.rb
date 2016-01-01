@@ -93,8 +93,7 @@ class Proxy
       begin
         @pool << @server.accept
       rescue Exception => e
-        Logger.warn("Error while accepting #{@type} connection: #{e.inspect}") \
-        unless !@running
+        Logger.warn("Error while accepting #{@type} connection: #{e.inspect}") if @running
       end
     end
 

@@ -87,7 +87,7 @@ class Context
 
       Proxy::Module.register_modules
 
-      raise BetterCap::Error, "#{@options.proxy_module} is not a valid bettercap proxy module." unless !Proxy::Module.modules.empty?
+      raise BetterCap::Error, "#{@options.proxy_module} is not a valid bettercap proxy module." if Proxy::Module.modules.empty?
     end
 
     @proxy_processor = Proc.new do |request,response|
