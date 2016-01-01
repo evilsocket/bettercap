@@ -11,11 +11,12 @@ This project is released under the GPL 3 license.
 =end
 module Logger
   class << self
-    def init( debug, logfile )
+    def init( debug, logfile, silent )
       @@debug   = debug
       @@logfile = logfile
       @@queue   = Queue.new
       @@thread  = Thread.new { worker }
+      @@silent  = silent
     end
 
     def error(message)
@@ -23,7 +24,7 @@ module Logger
     end
 
     def info(message)
-      @@queue.push formatted_message(message, 'I')
+      @@queue.push( formatted_message(message, 'I') ) unless @@silent
     end
 
     def warn(message)
@@ -31,13 +32,13 @@ module Logger
     end
 
     def debug(message)
-      if @@debug
+      if @@debug and not @@silent
         @@queue.push formatted_message(message, 'D').light_black
       end
     end
 
     def raw(message)
-      @@queue.push message
+      @@queue.push( message ) unless @@silent
     end
 
     private

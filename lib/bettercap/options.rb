@@ -17,6 +17,7 @@ class Options
                 :half_duplex,
                 :target,
                 :logfile,
+                :silent,
                 :debug,
                 :arpcache,
                 :ignore,
@@ -48,6 +49,7 @@ class Options
     @half_duplex = false
     @target = nil
     @logfile = nil
+    @silent = false
     @debug = false
     @arpcache = false
 
@@ -144,6 +146,10 @@ class Options
         ctx.options.parsers = ParserFactory.from_cmdline(v)
       end
 
+      opts.on( '--silent', 'Suppress every message which is not an error or a warning, default to false.' ) do
+        ctx.options.silent = true
+      end
+
       opts.on( '--no-discovery', 'Do not actively search for hosts, just use the current ARP cache, default to false.' ) do
         ctx.options.arpcache = true
       end
@@ -228,7 +234,7 @@ class Options
       end
     end.parse!
 
-    Logger.init( ctx.options.debug, ctx.options.logfile )
+    Logger.init( ctx.options.debug, ctx.options.logfile, ctx.options.silent )
 
     Logger.warn "You are running an unstable/beta version of this software, please" \
                 " update to a stable one if available." if BetterCap::VERSION =~ /[\d\.+]b/
