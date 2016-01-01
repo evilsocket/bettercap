@@ -54,6 +54,10 @@ class Target
       end
     end
 
+    def equals?(ip, mac)
+      ( @ip == ip && ( mac.nil? || @mac == normalized_mac(mac) ) )
+    end
+
 private
 
     def normalized_mac(v)

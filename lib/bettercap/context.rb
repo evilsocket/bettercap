@@ -66,7 +66,7 @@ class Context
 
   def find_target ip, mac
     @targets.each do |target|
-      if target.ip == ip && ( mac.nil? || target.mac == mac )
+      if target.equals?(ip,mac)
         return target
       end
     end
@@ -136,7 +136,7 @@ class Context
 
   def finalize
     @running = false
-    
+
     Logger.info 'Shutting down, hang on ...'
 
     Logger.debug 'Stopping target discovery manager ...'
