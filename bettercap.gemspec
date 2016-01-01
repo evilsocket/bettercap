@@ -18,13 +18,11 @@ Gem::Specification.new do |gem|
   gem.add_dependency( 'pcaprub', '~> 0.12.0' )
   gem.add_dependency( 'network_interface', '~> 0.0.1' )
 
-  gem.add_development_dependency( 'minitest' )
-
   gem.files = Dir.glob("*.md") +
               Dir.glob("Rakefile") +
               Dir.glob("lib/**/*") +
-              Dir.glob("bin/**/*") +
-              Dir.glob("test/**/*")
+              Dir.glob("bin/**/*")
+
   gem.require_paths = ["lib"]
 
   gem.executables   = %w(bettercap)
