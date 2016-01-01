@@ -18,14 +18,21 @@ require 'json'
 class UpdateChecker
   def self.check
     ver = self.get_latest_version
-    case ver
-    when BetterCap::VERSION
-      Logger.info 'You are running the latest version.'
-    else
+    if self.vton( BetterCap::VERSION ) < self.vton( ver )
       Logger.warn "New version '#{ver}' available!"
+    else
+      Logger.info 'You are running the latest version.'
     end
   rescue Exception => e
     Logger.error("Error '#{e.class}' while checking for updates: #{e.message}")
+  end
+
+  def self.vton v
+    vi = 0.0
+    v.split('.').reverse.each_with_index do |e,i|
+      vi += ( e.to_i * 10**i ) - ( if e =~ /[\d+]b/ then 0.5 else 0 end )
+    end
+    vi
   end
 
   def self.get_latest_version

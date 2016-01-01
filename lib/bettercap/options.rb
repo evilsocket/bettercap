@@ -228,6 +228,9 @@ class Options
       end
     end.parse!
 
+    Logger.warn "You are running an unstable/beta version of this software, please" \
+                " update to a stable one if available." if BetterCap::VERSION =~ /[\d\.+]b/
+
     if ctx.options.check_updates
       UpdateChecker.check
       exit
