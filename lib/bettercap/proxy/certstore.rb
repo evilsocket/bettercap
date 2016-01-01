@@ -18,7 +18,7 @@ module Proxy
     @@frompems = {}
 
     def self.from_file( filename )
-      if !@@frompems.has_key? filename
+      unless @@frompems.has_key? filename
         Logger.info "Loading self signed HTTPS certificate from '#{filename}' ..."
 
         pem = File.read filename
@@ -30,7 +30,7 @@ module Proxy
     end
 
     def self.get_selfsigned( subject = '/C=US/ST=California/L=Mountain View/O=Google Inc/CN=www.google.com' )
-      if !@@selfsigned.has_key? subject
+      unless @@selfsigned.has_key? subject
         Logger.info "Generating self signed HTTPS certificate for subject '#{subject}' ..."
 
         key = OpenSSL::PKey::RSA.new(2048)

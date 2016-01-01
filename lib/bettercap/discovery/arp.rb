@@ -56,7 +56,7 @@ class ArpAgent < BaseAgent
 
     arp.split("\n").each do |line|
       m = self.parse_cache_line(line)
-      if !m.nil?
+      unless m.nil?
         ip = m[1]
         hw = m[2]
         if hw != 'ff:ff:ff:ff:ff:ff'

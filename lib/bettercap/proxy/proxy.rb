@@ -121,7 +121,7 @@ class Proxy
   end
 
   def get_client_details( client )
-    if !@is_https
+    unless @is_https
       client_port, client_ip = Socket.unpack_sockaddr_in(client.getpeername)
     else
       _, client_port, _, client_ip = client.peeraddr

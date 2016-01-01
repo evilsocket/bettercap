@@ -87,7 +87,7 @@ class Sniffer
   def self.setup( ctx )
     @@ctx = ctx
 
-    if !@@ctx.options.sniffer_pcap.nil?
+    unless @@ctx.options.sniffer_pcap.nil?
       @@pcap = PcapFile.new
       Logger.warn "Saving packets to #{@@ctx.options.sniffer_pcap} ."
     end
