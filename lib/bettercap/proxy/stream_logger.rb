@@ -40,7 +40,7 @@ class StreamLogger
       response_s += " [#{response.code}]"
     end
 
-    Logger.write "[#{self.addr2s(client)}] #{request.verb.light_blue} #{request_s} #{response_s}"
+    Logger.raw "[#{self.addr2s(client)}] #{request.verb.light_blue} #{request_s} #{response_s}"
   end
 end
 end

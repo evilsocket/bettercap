@@ -11,42 +11,48 @@ This project is released under the GPL 3 license.
 =end
 module Logger
   class << self
-    attr_accessor :logfile, :debug_enabled
-
-    @@semaphore = Mutex.new
+    def init( debug, logfile )
+      @@debug   = debug
+      @@logfile = logfile
+      @@queue   = Queue.new
+      @@thread  = Thread.new { worker }
+    end
 
     def error(message)
-      write(formatted_message(message, 'E').red)
+      @@queue.push formatted_message(message, 'E').red
     end
 
     def info(message)
-      write(formatted_message(message, 'I'))
+      @@queue.push formatted_message(message, 'I')
     end
 
     def warn(message)
-      write(formatted_message(message, 'W').yellow)
+      @@queue.push formatted_message(message, 'W').yellow
     end
 
     def debug(message)
-      if @debug_enabled
-        write(formatted_message(message, 'D').light_black)
+      if @@debug
+        @@queue.push formatted_message(message, 'D').light_black
       end
     end
 
-    def write(message)
-      # make sure that logging is thread safe
-      @@semaphore.synchronize {
-        puts message
-
-        if !@logfile.nil?
-          f = File.open( @logfile, 'a+t' )
-          f.puts( message.gsub( /\e\[(\d+)(;\d+)*m/, '') + "\n")
-          f.close
-        end
-      }
+    def raw(message)
+      @@queue.push message
     end
 
     private
+
+    def worker
+      loop do
+        message = @@queue.pop
+        puts message
+        unless @@logfile.nil?
+          f = File.open( @@logfile, 'a+t' )
+          f.puts( message.gsub( /\e\[(\d+)(;\d+)*m/, '') + "\n")
+          f.close
+        end
+      end
+    end
 
     def formatted_message(message, message_type)
       "[#{message_type}] #{message}"

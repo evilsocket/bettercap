@@ -28,7 +28,7 @@ class HttpsParser < BaseParser
           end
 
           if @@prev.nil? or @@prev != hostname
-            Logger.write "[#{addr2s(pkt.ip_saddr)}:#{pkt.tcp_src} > #{addr2s(pkt.ip_daddr)}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
+            Logger.raw "[#{addr2s(pkt.ip_saddr)}:#{pkt.tcp_src} > #{addr2s(pkt.ip_daddr)}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
                          '[HTTPS] '.green +
                          "https://#{hostname}/".yellow
 

@@ -62,7 +62,7 @@ begin
   end
 
 rescue SystemExit, Interrupt
-  Logger.write "\n"
+  Logger.raw "\n"
 
 rescue BetterCap::Error => e
   Logger.error e.message

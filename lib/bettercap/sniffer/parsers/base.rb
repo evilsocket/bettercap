@@ -28,7 +28,7 @@ class BaseParser
     s = pkt.to_s
     @filters.each do |filter|
       if s =~ filter
-        Logger.write "[#{addr2s(pkt.ip_saddr)}:#{pkt.tcp_src} > #{addr2s(pkt.ip_daddr)}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
+        Logger.raw "[#{addr2s(pkt.ip_saddr)}:#{pkt.tcp_src} > #{addr2s(pkt.ip_daddr)}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
                      "[#{@name}] ".green +
                      pkt.payload.strip.yellow
       end

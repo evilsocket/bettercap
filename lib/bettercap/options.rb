@@ -228,6 +228,8 @@ class Options
       end
     end.parse!
 
+    Logger.init( ctx.options.debug, ctx.options.logfile )
+
     Logger.warn "You are running an unstable/beta version of this software, please" \
                 " update to a stable one if available." if BetterCap::VERSION =~ /[\d\.+]b/
 
@@ -238,9 +240,6 @@ class Options
 
     raise BetterCap::Error, 'This software must run as root.' unless Process.uid == 0
     raise BetterCap::Error, 'No default interface found, please specify one with the -I argument.' if ctx.options.iface.nil?
-
-    Logger.debug_enabled = true unless !ctx.options.debug
-    Logger.logfile       = ctx.options.logfile
 
     unless ctx.options.gateway.nil?
       raise BetterCap::Error, "The specified gateway '#{ctx.options.gateway}' is not a valid IPv4 address." unless Network.is_ip?(ctx.options.gateway)

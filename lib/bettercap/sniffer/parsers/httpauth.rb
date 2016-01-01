@@ -31,11 +31,11 @@ class HttpauthParser < BaseParser
         decoded = Base64.decode64(encoded)
         user, pass = decoded.split(':')
 
-        Logger.write "[#{addr2s(pkt.ip_saddr)}:#{pkt.tcp_src} > #{addr2s(pkt.ip_daddr)}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
+        Logger.raw "[#{addr2s(pkt.ip_saddr)}:#{pkt.tcp_src} > #{addr2s(pkt.ip_daddr)}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
           '[HTTP BASIC AUTH]'.green + " http://#{hostname}#{path} - username=#{user} password=#{pass}".yellow
 
       elsif line =~ /Authorization:\s*Digest\s+(.+)/i
-         Logger.write "[#{addr2s(pkt.ip_saddr)}:#{pkt.tcp_src} > #{addr2s(pkt.ip_daddr)}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
+         Logger.raw "[#{addr2s(pkt.ip_saddr)}:#{pkt.tcp_src} > #{addr2s(pkt.ip_daddr)}:#{pkt.tcp_dst} #{pkt.proto.last}] " +
           '[HTTP DIGEST AUTH]'.green + " http://#{hostname}#{path}\n#{$1}".yellow
 
       end

@@ -30,7 +30,7 @@ class NtlmssParser < BaseParser
         s = pkt.to_s
         if s =~ /NTLMSSP\x00\x03\x00\x00\x00.+/
             # TODO: Parse NTLMSSP packet.
-            Logger.write "[#{addr2s(pkt.ip_saddr)} > #{addr2s(pkt.ip_daddr)} #{pkt.proto.last}] " +
+            Logger.raw "[#{addr2s(pkt.ip_saddr)} > #{addr2s(pkt.ip_daddr)} #{pkt.proto.last}] " +
                          '[NTLMSS] '.green +
                          bin2hex( pkt.payload ).yellow
         end
