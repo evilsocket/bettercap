@@ -19,7 +19,7 @@ require 'colorize'
 class ArpSpoofer < ISpoofer
   def initialize
     @ctx          = Context.get
-    @gw_hw        = nil
+    @gateway      = nil
     @forwarding   = @ctx.firewall.forwarding_enabled?
     @spoof_thread = nil
     @sniff_thread = nil
@@ -27,12 +27,13 @@ class ArpSpoofer < ISpoofer
     @running      = false
 
     Logger.info "Getting gateway #{@ctx.gateway} MAC address ..."
-    @gw_hw = Network.get_hw_address( @ctx.ifconfig, @ctx.gateway )
-    if @gw_hw.nil?
-      raise BetterCap::Error, "Couldn't determine router MAC"
-    end
 
-    Logger.info "  Gateway : #{@ctx.gateway} ( #{@gw_hw} )"
+    hw = Network.get_hw_address( @ctx.ifconfig, @ctx.gateway )
+    raise BetterCap::Error, "Couldn't determine router MAC" if hw.nil?
+
+    @gateway = Target.new( @ctx.gateway, hw )
+
+    Logger.info "  #{@gateway}"
   end
 
   def send_spoofed_packet( saddr, smac, daddr, dmac )
@@ -120,8 +121,8 @@ class ArpSpoofer < ISpoofer
             end
           end
 
-          send_spoofed_packet( @ctx.gateway, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
-          send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @ctx.gateway, @gw_hw ) unless @ctx.options.half_duplex
+          send_spoofed_packet( @gateway.ip, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
+          send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @gateway.ip, @gateway.mac ) unless @ctx.options.half_duplex
         end
 
         prev_size = @ctx.targets.size
@@ -150,8 +151,8 @@ class ArpSpoofer < ISpoofer
     @ctx.targets.each do |target|
       unless target.mac.nil?
         begin
-          send_spoofed_packet( @ctx.gateway, @gw_hw, target.ip, target.mac )
-          send_spoofed_packet( target.ip, target.mac, @ctx.gateway, @gw_hw ) unless @ctx.options.half_duplex
+          send_spoofed_packet( @gateway.ip, @gateway.mac, target.ip, target.mac )
+          send_spoofed_packet( target.ip, target.mac, @gateway.ip, @gateway.mac ) unless @ctx.options.half_duplex
         rescue; end
       end
     end
