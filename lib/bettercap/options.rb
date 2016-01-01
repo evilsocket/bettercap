@@ -81,8 +81,6 @@ class Options
   end
 
   def self.parse!
-    raise BetterCap::Error, 'This software must run as root.' unless Process.uid == 0
-
     ctx = Context.get
 
     OptionParser.new do |opts|
@@ -235,7 +233,8 @@ class Options
       exit
     end
 
-    raise BetterCap::Error, 'No default interface found, please specify one with the -I argument.' unless !ctx.options.iface.nil?
+    raise BetterCap::Error, 'This software must run as root.' unless Process.uid == 0
+    raise BetterCap::Error, 'No default interface found, please specify one with the -I argument.' if ctx.options.iface.nil?
 
     Logger.debug_enabled = true unless !ctx.options.debug
     Logger.logfile       = ctx.options.logfile
