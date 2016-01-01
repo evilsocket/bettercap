@@ -6,7 +6,8 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [x] HTTP 1.1 chunked response support.
 - [x] Ip address to hostname resolution.
 - [ ] Wrap every class with `module BetterCap` and refactor old code.
-- [ ] Use StreamLogger for both Proxy and Sniffer traffic. 
+- [ ] Use StreamLogger for both Proxy and Sniffer traffic.
+- [ ] Implement `--mkcert FILENAME` option to create custom HTTPS `crt` files.
 - [ ] Implement event-driven core plugin infrastructure ( for webui, etc ).
 - [ ] Implement web-ui core plugin.
 - [ ] Rewrite proxy class using [em-proxy](https://github.com/igrigorik/em-proxy) library.
