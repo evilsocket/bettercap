@@ -38,7 +38,7 @@ module Logger
     end
 
     def raw(message)
-      @@queue.push( message ) unless @@silent
+      @@queue.push( message )
     end
 
     private
