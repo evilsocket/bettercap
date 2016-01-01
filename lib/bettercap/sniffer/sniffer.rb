@@ -23,21 +23,24 @@ class Sniffer
   @@cap     = nil
 
   def self.start( ctx )
-    Logger.info 'Starting sniffer ...'
+    Thread.new do
+      Logger.info 'Starting sniffer ...'
 
-    setup( ctx )
+      setup( ctx )
 
-    self.stream.each do |p|
-      begin
-        parsed = Packet.parse p
-      rescue Exception => e
-        parsed = nil
-        Logger.debug e.message
-      end
+      self.stream.each do |p|
+        break unless @@ctx.running
+        begin
+          parsed = Packet.parse p
+        rescue Exception => e
+          parsed = nil
+          Logger.debug e.message
+        end
 
-      if not parsed.nil? and parsed.is_ip? and !skip_packet?(parsed)
-        append_packet p
-        parse_packet parsed
+        if not parsed.nil? and parsed.is_ip? and !skip_packet?(parsed)
+          append_packet p
+          parse_packet parsed
+        end
       end
     end
   end

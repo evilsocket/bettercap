@@ -46,7 +46,7 @@ class Discovery
 
       @ctx.targets = Network.get_alive_targets(@ctx).sort_by { |t| t.sortable_ip }
 
-      if empty_list
+      if empty_list and not @ctx.targets.empty?
         Logger.info "Collected #{@ctx.targets.size} total targets."
         @ctx.targets.each do |target|
           Logger.info "  #{target}"

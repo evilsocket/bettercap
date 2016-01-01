@@ -26,8 +26,6 @@ class ArpSpoofer < ISpoofer
     @capture      = nil
     @running      = false
 
-    Logger.debug 'ARP SPOOFER SELECTED'
-
     Logger.info "Getting gateway #{@ctx.gateway} MAC address ..."
     @gw_hw = Network.get_hw_address( @ctx.ifconfig, @ctx.gateway )
     if @gw_hw.nil?

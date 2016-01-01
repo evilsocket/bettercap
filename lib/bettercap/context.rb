@@ -16,7 +16,7 @@ require 'bettercap/error'
 class Context
   attr_accessor :options, :ifconfig, :firewall, :gateway,
                 :targets, :discovery, :spoofer, :httpd,
-                :certificate
+                :certificate, :running
 
   @@instance = nil
 
@@ -32,6 +32,7 @@ class Context
       Logger.debug e.message
     end
 
+    @running         = true
     @options         = Options.new iface
     @ifconfig        = nil
     @firewall        = nil
@@ -134,6 +135,8 @@ class Context
   end
 
   def finalize
+    @running = false
+    
     Logger.info 'Shutting down, hang on ...'
 
     Logger.debug 'Stopping target discovery manager ...'

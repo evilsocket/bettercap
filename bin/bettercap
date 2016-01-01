@@ -55,10 +55,10 @@ begin
   else
     Logger.warn 'WARNING: Sniffer module was NOT enabled ( -X argument ), this '\
                 'will cause the MITM to run but no data to be collected.' unless ctx.options.has_spoofer?
+  end
 
-    loop do
-      sleep 1
-    end
+  loop do
+    sleep 10
   end
 
 rescue SystemExit, Interrupt
