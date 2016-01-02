@@ -138,7 +138,8 @@ class Context
   def finalize
     @running = false
 
-    Logger.info 'Shutting down, hang on ...'
+    # Logger is silent if @running == false
+    puts "\nShutting down, hang on ...\n"
 
     Logger.debug 'Stopping target discovery manager ...'
     @discovery.stop

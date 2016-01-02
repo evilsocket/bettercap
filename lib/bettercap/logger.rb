@@ -23,6 +23,7 @@ module Logger
       @@logfile = logfile
       @@thread  = Thread.new { worker }
       @@silent  = silent
+      @@ctx     = Context.get
     end
 
     def error(message)
@@ -52,11 +53,13 @@ module Logger
     def worker
       loop do
         message = @@queue.pop
-        puts message
-        unless @@logfile.nil?
-          f = File.open( @@logfile, 'a+t' )
-          f.puts( message.gsub( /\e\[(\d+)(;\d+)*m/, '') + "\n")
-          f.close
+        if @@ctx.running
+          puts message
+          unless @@logfile.nil?
+            f = File.open( @@logfile, 'a+t' )
+            f.puts( message.gsub( /\e\[(\d+)(;\d+)*m/, '') + "\n")
+            f.close
+          end
         end
       end
     end
