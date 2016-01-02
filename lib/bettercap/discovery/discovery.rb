@@ -9,6 +9,7 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
+module BetterCap
 class Discovery
   def initialize( ctx )
     @ctx     = ctx
@@ -48,10 +49,16 @@ class Discovery
 
       if empty_list and not @ctx.targets.empty?
         Logger.info "Collected #{@ctx.targets.size} total targets."
+
+        msg = "\n"
         @ctx.targets.each do |target|
-          Logger.info "  #{target}"
+          msg += "  #{target}\n"
         end
+        Logger.raw msg
       end
+
+      sleep(5) if @ctx.options.arpcache
     end
   end
+end
 end

@@ -15,6 +15,7 @@ require 'bettercap/logger'
 require 'net/http'
 require 'json'
 
+module BetterCap
 class UpdateChecker
   def self.check
     ver = self.get_latest_version
@@ -50,4 +51,5 @@ class UpdateChecker
 
     return json['version']
   end
+end
 end

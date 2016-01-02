@@ -11,6 +11,7 @@ This project is released under the GPL 3 license.
 =end
 require 'bettercap/error'
 
+module BetterCap
 class SpooferFactory
   class << self
     def available
@@ -30,7 +31,7 @@ class SpooferFactory
 
       require_relative "../spoofers/#{name}"
 
-      Kernel.const_get("#{name.capitalize}Spoofer").new
+      Kernel.const_get("BetterCap::#{name.capitalize}Spoofer").new
     end
 
     private
@@ -39,4 +40,5 @@ class SpooferFactory
       available.include?(name)
     end
   end
+end
 end

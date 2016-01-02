@@ -9,7 +9,7 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-
+module BetterCap
 class Options
   attr_accessor :gateway,
                 :iface,
@@ -379,4 +379,5 @@ class Options
 
     redirections
   end
+end
 end

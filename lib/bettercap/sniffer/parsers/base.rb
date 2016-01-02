@@ -12,6 +12,7 @@ This project is released under the GPL 3 license.
 require 'bettercap/logger'
 require 'colorize'
 
+module BetterCap
 class BaseParser
   def initialize
     @filters = []
@@ -34,4 +35,5 @@ class BaseParser
       end
     end
   end
+end
 end

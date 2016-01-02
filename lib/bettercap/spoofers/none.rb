@@ -12,6 +12,7 @@ This project is released under the GPL 3 license.
 require 'bettercap/base/ispoofer'
 require 'bettercap/logger'
 
+module BetterCap
 class NoneSpoofer < ISpoofer
   def initialize
     Logger.warn 'Spoofing disabled.'
@@ -20,4 +21,5 @@ class NoneSpoofer < ISpoofer
   def start; end
 
   def stop; end
+end
 end

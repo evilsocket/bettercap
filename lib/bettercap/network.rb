@@ -11,15 +11,7 @@ This project is released under the GPL 3 license.
 =end
 require 'thread'
 
-require 'bettercap/error'
-require 'bettercap/logger'
-require 'bettercap/shell'
-require 'bettercap/target'
-require 'bettercap/factories/firewall_factory'
-require 'bettercap/discovery/icmp'
-require 'bettercap/discovery/udp'
-require 'bettercap/discovery/arp'
-
+module BetterCap
 class Network
     class << self
     def is_ip?(ip)
@@ -140,4 +132,5 @@ class Network
       end
     end
   end
+end
 end

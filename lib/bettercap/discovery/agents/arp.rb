@@ -9,15 +9,10 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require 'bettercap/logger'
-require 'bettercap/shell'
-require 'bettercap/target'
-require 'bettercap/discovery/base'
-require 'bettercap/context'
 
 # Parse the ARP table searching for new hosts.
+module BetterCap
 class ArpAgent < BaseAgent
-
   def self.parse( ctx )
     targets = []
     self.parse_cache do |ip,mac|
@@ -50,11 +45,7 @@ class ArpAgent < BaseAgent
   private
 
   def self.parse_cache
-    arp = Shell.arp
-
-    Logger.debug "ARP CACHE:\n#{arp}"
-
-    arp.split("\n").each do |line|
+    Shell.arp.split("\n").each do |line|
       m = self.parse_cache_line(line)
       unless m.nil?
         ip = m[1]
@@ -81,4 +72,5 @@ class ArpAgent < BaseAgent
 
     pkt.to_w( @ifconfig[:iface] )
   end
+end
 end

@@ -13,6 +13,7 @@ require 'bettercap/sniffer/parsers/base'
 require 'colorize'
 require 'base64'
 
+module BetterCap
 class HttpauthParser < BaseParser
   def on_packet( pkt )
     lines = pkt.to_s.split("\n")
@@ -41,4 +42,5 @@ class HttpauthParser < BaseParser
       end
     end
   end
+end
 end

@@ -9,6 +9,7 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
+module BetterCap
 module Logger
   class << self
     @@queue   = Queue.new
@@ -64,4 +65,5 @@ module Logger
       "[#{message_type}] #{message}"
     end
   end
+end
 end

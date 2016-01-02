@@ -16,6 +16,7 @@ require 'bettercap/network'
 require 'bettercap/logger'
 require 'colorize'
 
+module BetterCap
 class ArpSpoofer < ISpoofer
   def initialize
     @ctx          = Context.get
@@ -158,4 +159,5 @@ class ArpSpoofer < ISpoofer
     end
     sleep 1
   end
+end
 end

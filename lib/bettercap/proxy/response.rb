@@ -10,6 +10,7 @@ This project is released under the GPL 3 license.
 
 =end
 
+module BetterCap
 module Proxy
 
 class Response
@@ -102,4 +103,5 @@ class Response
   end
 end
 
+end
 end

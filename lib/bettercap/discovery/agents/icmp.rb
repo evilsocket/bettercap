@@ -9,11 +9,9 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require 'bettercap/logger'
-require 'bettercap/shell'
-require 'bettercap/factories/firewall_factory'
 
 # Send a broadcast ping trying to filling the ARP table.
+module BetterCap
 class IcmpAgent
   def initialize( timeout = 5 )
     @thread = Thread.new {
@@ -34,4 +32,5 @@ class IcmpAgent
       Logger.debug "IcmpAgent.wait: #{e.message}"
     end
   end
+end
 end

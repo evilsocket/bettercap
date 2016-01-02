@@ -16,6 +16,7 @@ require 'uri'
 require 'bettercap/logger'
 require 'bettercap/network'
 
+module BetterCap
 module Proxy
 
 class Proxy
@@ -206,5 +207,5 @@ class Proxy
   end
 end
 
-
+end
 end

@@ -11,8 +11,8 @@ This project is released under the GPL 3 license.
 =end
 require 'bettercap/logger'
 
+module BetterCap
 module Proxy
-
 class Module
   @@modules = []
 
@@ -35,5 +35,5 @@ class Module
     end
   end
 end
-
+end
 end

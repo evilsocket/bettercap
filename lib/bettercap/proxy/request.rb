@@ -10,8 +10,8 @@ This project is released under the GPL 3 license.
 
 =end
 
+module BetterCap
 module Proxy
-
 class Request
   attr_reader :lines, :verb, :url, :host, :port, :content_length
 
@@ -94,5 +94,5 @@ class Request
       @lines.join("\n") + "\n"
     end
   end
-
+end
 end

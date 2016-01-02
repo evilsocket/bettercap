@@ -12,6 +12,7 @@ This project is released under the GPL 3 license.
 require 'bettercap/sniffer/parsers/base'
 require 'colorize'
 
+module BetterCap
 class UrlParser < BaseParser
     def on_packet( pkt )
         s = pkt.to_s
@@ -25,4 +26,5 @@ class UrlParser < BaseParser
             end
         end
     end
+end
 end

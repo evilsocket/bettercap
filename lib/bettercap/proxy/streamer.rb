@@ -11,6 +11,7 @@ This project is released under the GPL 3 license.
 =end
 require 'bettercap/logger'
 
+module BetterCap
 module Proxy
 class Streamer
   def initialize( processor )
@@ -51,7 +52,7 @@ class Streamer
       rescue Exception => e
         Logger.debug e
       end
-      
+
     elsif response.content_length.nil?
       Logger.debug "Reading response body using 1024 bytes chunks ..."
 
@@ -167,5 +168,6 @@ class Streamer
     buffer
   end
 
+end
 end
 end

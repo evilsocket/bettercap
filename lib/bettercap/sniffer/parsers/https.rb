@@ -13,6 +13,7 @@ require 'bettercap/sniffer/parsers/base'
 require 'colorize'
 require 'resolv'
 
+module BetterCap
 class HttpsParser < BaseParser
   @@prev = nil
 
@@ -39,4 +40,5 @@ class HttpsParser < BaseParser
     rescue
     end
   end
+end
 end

@@ -13,6 +13,7 @@ This project is released under the GPL 3 license.
 # this class holds global states & data
 require 'bettercap/error'
 
+module BetterCap
 class Context
   attr_accessor :options, :ifconfig, :firewall, :gateway,
                 :targets, :discovery, :spoofer, :httpd,
@@ -162,4 +163,5 @@ class Context
 
     @httpd.stop unless @httpd.nil?
   end
+end
 end

@@ -9,6 +9,7 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
+module BetterCap
 class IFirewall
   def initialize
     @frwd_initial_state = forwarding_enabled?
@@ -41,4 +42,5 @@ private
   def not_implemented_method!
     raise NotImplementedError, 'IFirewall: Unimplemented method!'
   end
+end
 end

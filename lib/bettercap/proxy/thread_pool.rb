@@ -12,6 +12,7 @@ This project is released under the GPL 3 license.
 require 'thread'
 
 # Tnx to Puma ThreadPool!
+module BetterCap
 module Proxy
 class ThreadPool
 
@@ -62,10 +63,10 @@ class ThreadPool
   #
   # Must be called with @mutex held!
   #
-  def spawn_thread    
+  def spawn_thread
     @spawned += 1
 
-    th = Thread.new do      
+    th = Thread.new do
       todo  = @todo
       block = @block
       mutex = @mutex
@@ -197,5 +198,6 @@ class ThreadPool
     @spawned = 0
     @workers = []
   end
+end
 end
 end

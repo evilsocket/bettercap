@@ -13,6 +13,7 @@ This project is released under the GPL 3 license.
 require 'bettercap/error'
 require 'bettercap/logger'
 
+module BetterCap
 class ParserFactory
   @@path = File.dirname(__FILE__) + '/../sniffer/parsers/'
 
@@ -47,11 +48,11 @@ class ParserFactory
 
           require_relative "#{@@path}#{file}"
 
-          loaded << Kernel.const_get("#{cname.capitalize}Parser").new
+          loaded << Kernel.const_get("BetterCap::#{cname.capitalize}Parser").new
         end
       end
       loaded
     end
   end
 end
-
+end

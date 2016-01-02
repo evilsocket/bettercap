@@ -13,6 +13,7 @@ require 'bettercap/error'
 require 'bettercap/firewalls/osx'
 require 'bettercap/firewalls/linux'
 
+module BetterCap
 class FirewallFactory
   @@instance = nil
 
@@ -33,4 +34,5 @@ class FirewallFactory
   def FirewallFactory.clear_firewall
     @@instance = nil
   end
+end
 end

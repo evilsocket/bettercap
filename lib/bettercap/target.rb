@@ -12,6 +12,7 @@ This project is released under the GPL 3 license.
 require 'bettercap/logger'
 require 'socket'
 
+module BetterCap
 class Target
     attr_accessor :ip, :mac, :vendor, :hostname
 
@@ -102,4 +103,5 @@ private
 
       @@prefixes[ mac.split(':')[0,3].join('').upcase ]
     end
+end
 end

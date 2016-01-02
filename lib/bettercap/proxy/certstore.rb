@@ -12,6 +12,7 @@ This project is released under the GPL 3 license.
 require 'bettercap/logger'
 require 'openssl'
 
+module BetterCap
 module Proxy
   class CertStore
     @@selfsigned = {}
@@ -63,5 +64,5 @@ module Proxy
       @@selfsigned[subject]
     end
   end
-
+end
 end

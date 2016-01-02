@@ -13,8 +13,8 @@ require 'webrick'
 
 require 'bettercap/logger'
 
+module BetterCap
 module HTTPD
-
 class Server
   def initialize( port = 8081, path = './' )
     @port = port
@@ -41,6 +41,5 @@ class Server
     @thread.join
   end
 end
-
 end
-
+end

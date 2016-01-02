@@ -12,6 +12,7 @@ This project is released under the GPL 3 license.
 require 'bettercap/sniffer/parsers/base'
 require 'colorize'
 
+module BetterCap
 class NtlmssParser < BaseParser
     def bin2hex( data )
         hex = ''
@@ -35,4 +36,5 @@ class NtlmssParser < BaseParser
                          bin2hex( pkt.payload ).yellow
         end
     end
+end
 end

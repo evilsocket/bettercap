@@ -20,11 +20,11 @@ begin
 
   # Create global context, parse command line arguments and perform basic
   # error checking.
-  ctx = Options.parse!
+  ctx = BetterCap::Options.parse!
 
   # Start targets auto discovery if needed.
   if ctx.options.target.nil?
-    Logger.info( "Targeting the whole subnet #{ctx.ifconfig[:ip4_obj].to_range} ..." ) unless ctx.options.has_spoofer?
+    BetterCap::Logger.info( "Targeting the whole subnet #{ctx.ifconfig[:ip4_obj].to_range} ..." ) unless ctx.options.has_spoofer?
     ctx.discovery.start
   end
 
@@ -36,7 +36,7 @@ begin
   # Start proxies and setup port redirection.
   if ctx.options.proxy
     if ctx.options.has_http_sniffer_enabled?
-      Logger.warn "WARNING: Both HTTP transparent proxy and URL parser are enabled, you're gonna see duplicated logs."
+      BetterCap::Logger.warn "WARNING: Both HTTP transparent proxy and URL parser are enabled, you're gonna see duplicated logs."
     end
     ctx.create_proxies
   end
@@ -45,16 +45,16 @@ begin
 
   # Start local HTTP server.
   if ctx.options.httpd
-    ctx.httpd = HTTPD::Server.new( ctx.options.httpd_port, ctx.options.httpd_path )
+    ctx.httpd = BetterCap::HTTPD::Server.new( ctx.options.httpd_port, ctx.options.httpd_path )
     ctx.httpd.start
   end
 
   # Start network sniffer.
   if ctx.options.sniffer
-    Sniffer.start ctx
+    BetterCap::Sniffer.start ctx
   else
-    Logger.warn 'WARNING: Sniffer module was NOT enabled ( -X argument ), this '\
-                'will cause the MITM to run but no data to be collected.' unless ctx.options.has_spoofer?
+    BetterCap::Logger.warn 'WARNING: Sniffer module was NOT enabled ( -X argument ), this '\
+                           'will cause the MITM to run but no data to be collected.' unless ctx.options.has_spoofer?
   end
 
   loop do
@@ -62,14 +62,14 @@ begin
   end
 
 rescue SystemExit, Interrupt
-  Logger.raw "\n"
+  BetterCap::Logger.raw "\n"
 
 rescue BetterCap::Error => e
-  Logger.error e.message
+  BetterCap::Logger.error e.message
 
 rescue Exception => e
-  Logger.error e.message
-  Logger.error e.backtrace.join("\n")
+  BetterCap::Logger.error e.message
+  BetterCap::Logger.error e.backtrace.join("\n")
 
 ensure
   ctx.finalize unless ctx.nil?

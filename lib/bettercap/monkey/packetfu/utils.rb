@@ -23,9 +23,9 @@ module PacketFu
       ret = {}
       iface = iface.to_s.scan(/[0-9A-Za-z]/).join
 
-      Logger.debug "ifconfig #{iface}"
-      
-      ifconfig_data = Shell.ifconfig(iface)
+      BetterCap::Logger.debug "ifconfig #{iface}"
+
+      ifconfig_data = BetterCap::Shell.ifconfig(iface)
       if ifconfig_data =~ /#{iface}/i
         ifconfig_data = ifconfig_data.split(/[\s]*\n[\s]*/)
       else
@@ -45,7 +45,7 @@ module PacketFu
     private
 
     def self.linux_ifconfig(iface='eth0',ifconfig_data)
-      Logger.debug "Linux ifconfig #{iface}:\n#{ifconfig_data}"
+      BetterCap::Logger.debug "Linux ifconfig #{iface}:\n#{ifconfig_data}"
 
       ret = {}
       real_iface = ifconfig_data.first
@@ -81,7 +81,7 @@ module PacketFu
     end
 
     def self.darwin_ifconfig(iface='eth0',ifconfig_data)
-      Logger.debug "OSX ifconfig #{iface}:\n#{ifconfig_data}"
+      BetterCap::Logger.debug "OSX ifconfig #{iface}:\n#{ifconfig_data}"
 
       ret = {}
       real_iface = ifconfig_data.first

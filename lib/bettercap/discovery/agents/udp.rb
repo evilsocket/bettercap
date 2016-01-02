@@ -9,9 +9,9 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require 'bettercap/discovery/base'
 
 # Send UDP probes trying to filling the ARP table.
+module BetterCap
 class UdpAgent < BaseAgent
   private
 
@@ -36,4 +36,4 @@ class UdpAgent < BaseAgent
     # TODO: Parse response for hostname?
   end
 end
-
+end

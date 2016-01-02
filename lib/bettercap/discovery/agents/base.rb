@@ -9,9 +9,9 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require 'bettercap/logger'
 
 # Base class for discovery agents.
+module BetterCap
 class BaseAgent
   def initialize( ifconfig, gw_ip, local_ip )
     @local_ip = local_ip
@@ -35,7 +35,7 @@ class BaseAgent
     @workers = (0...4).map do
       Thread.new do
         begin
-          while ip = @queue.pop(true) 
+          while ip = @queue.pop(true)
             loop do
               Logger.debug "#{self.class.name} : Probing #{ip} ..."
 
@@ -44,7 +44,7 @@ class BaseAgent
 
                 break
               rescue Exception => e
-                Logger.debug "#{self.class.name}#send_probe : #{ip} -> #{e.message}"          
+                Logger.debug "#{self.class.name}#send_probe : #{ip} -> #{e.message}"
 
                 # If we've got an error message such as:
                 #   (cannot open BPF device) /dev/bpf0: Too many open files
@@ -80,4 +80,4 @@ class BaseAgent
     Logger.warn "#{self.class.name} not implemented!"
   end
 end
-
+end

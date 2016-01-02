@@ -5,7 +5,7 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [x] Implement `--ignore ADDR,ADDR,ADDR` option to filter out specific addresses from the targets list.
 - [x] HTTP 1.1 chunked response support.
 - [x] Ip address to hostname resolution.
-- [ ] Wrap every class with `module BetterCap` and refactor old code.
+- [x] Wrap every class with `module BetterCap` and refactor old code.
 - [ ] Use StreamLogger for both Proxy and Sniffer traffic.
 - [ ] Implement `--mkcert FILENAME` option to create custom HTTPS `crt` files.
 - [ ] Implement event-driven core plugin infrastructure ( for webui, etc ).

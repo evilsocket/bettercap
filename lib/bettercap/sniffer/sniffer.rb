@@ -14,6 +14,7 @@ require 'bettercap/factories/parser_factory'
 require 'colorize'
 require 'packetfu'
 
+module BetterCap
 class Sniffer
   include PacketFu
 
@@ -100,4 +101,5 @@ class Sniffer
         start: true
     )
   end
+end
 end

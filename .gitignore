@@ -10,3 +10,4 @@ test_https_proxy.rb
 test_chunked.rb
 mkchangelog.rb
 .tags*
+.DS_Store

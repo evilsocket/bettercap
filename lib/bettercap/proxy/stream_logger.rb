@@ -11,6 +11,7 @@ This project is released under the GPL 3 license.
 =end
 require 'bettercap/logger'
 
+module BetterCap
 module Proxy
 class StreamLogger
   @@MAX_REQ_SIZE = 50
@@ -42,5 +43,6 @@ class StreamLogger
 
     Logger.raw "[#{self.addr2s(client)}] #{request.verb.light_blue} #{request_s} #{response_s}"
   end
+end
 end
 end
