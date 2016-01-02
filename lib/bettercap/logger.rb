@@ -11,10 +11,15 @@ This project is released under the GPL 3 license.
 =end
 module Logger
   class << self
+    @@queue   = Queue.new
+    @@debug   = false
+    @@silent  = false
+    @@logfile = nil
+    @@thread  = nil
+
     def init( debug, logfile, silent )
       @@debug   = debug
       @@logfile = logfile
-      @@queue   = Queue.new
       @@thread  = Thread.new { worker }
       @@silent  = silent
     end
