@@ -27,7 +27,7 @@ class Target
       @mac      = normalized_mac mac unless mac.nil?
       @vendor   = Target.lookup_vendor(@mac) unless mac.nil?
       @hostname = nil
-      @resolver = Thread.new { resolve! }
+      @resolver = Thread.new { resolve! } unless Context.get.options.no_target_nbns
     end
 
     def sortable_ip

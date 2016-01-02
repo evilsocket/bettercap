@@ -40,7 +40,8 @@ class Options
                 :httpd,
                 :httpd_port,
                 :httpd_path,
-                :check_updates
+                :check_updates,
+                :no_target_nbns
 
   def initialize( iface )
     @gateway = nil
@@ -52,6 +53,7 @@ class Options
     @silent = false
     @debug = false
     @arpcache = false
+    @no_target_nbns = false
 
     @ignore = nil
 
@@ -156,6 +158,10 @@ class Options
 
       opts.on( '--no-spoofing', 'Disable spoofing, alias for --spoofer NONE.' ) do
         ctx.options.spoofer = 'NONE'
+      end
+
+      opts.on( '--no-target-nbns', 'Disable target NBNS hostname resolution.' ) do
+        ctx.options.no_target_nbns = true
       end
 
       opts.on( '--half-duplex', 'Enable half-duplex MITM, this will make bettercap work in those cases when the router is not vulnerable.' ) do
