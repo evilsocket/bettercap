@@ -26,6 +26,10 @@ begin
   if ctx.options.target.nil?
     BetterCap::Logger.info( "Targeting the whole subnet #{ctx.ifconfig[:ip4_obj].to_range} ..." ) unless ctx.options.has_spoofer?
     ctx.discovery.start
+    # give some time to the discovery thread to spawn its workers,
+    # this will prevent 'Too many open files' errors to delay host
+    # discovery.
+    sleep 1.5
   end
 
   # Start network spoofers if any.
