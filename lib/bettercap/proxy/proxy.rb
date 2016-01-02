@@ -179,7 +179,7 @@ class Proxy
         response = Response.from_socket server
 
         if response.textual?
-          StreamLogger.log( @is_https, client_ip, request, response )
+          StreamLogger.log_http( @is_https, client_ip, request, response )
 
           Logger.debug 'Detected textual response'
 
