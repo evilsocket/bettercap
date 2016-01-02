@@ -21,7 +21,7 @@ Once you've gone through this list, open an issue and please give us as much as 
 
 Also, you should attach to the issue a debug log that you can generate with:
 
-    sudo bettercap [arguments you are using for testing] --debug --log=debug.log
+    [sudo|rvmsudo] bettercap [arguments you are using for testing] --debug --log=debug.log
 
 Wait for the error to happen then close bettercap and paste the **debug.log** file inside the issue.
 
