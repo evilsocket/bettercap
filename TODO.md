@@ -8,7 +8,6 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [x] Wrap every class with `module BetterCap` and refactor old code.
 - [x] Use StreamLogger for both Proxy and Sniffer traffic.
 - [x] Implement `--custom-parser REGEX` option.
-- [ ] Implement `--mkcert FILENAME` option to create custom HTTPS `crt` files.
 - [ ] Implement event-driven core plugin infrastructure ( for webui, etc ).
 - [ ] Implement web-ui core plugin.
 - [ ] Rewrite proxy class using [em-proxy](https://github.com/igrigorik/em-proxy) library.
@@ -26,3 +25,4 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [ ] ICMP Redirect ? ( only half duplex and filtered by many firewalls anyway ... dunno ).
 - [ ] DNS Spoofing ( not sure if it actually makes any sense ).
 - [ ] sslstrip ( not really sure, currently is quite useless )
+- [ ] Implement `--mkcert FILENAME` option to create custom HTTPS `crt` files.
