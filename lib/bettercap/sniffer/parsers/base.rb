@@ -20,7 +20,7 @@ class BaseParser
     s = pkt.to_s
     @filters.each do |filter|
       if s =~ filter
-        StreamLogger.log_raw( pkt, name, pkt.payload )
+        StreamLogger.log_raw( pkt, @name, pkt.payload )
       end
     end
   end

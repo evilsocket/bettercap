@@ -26,6 +26,7 @@ class Options
                 :sniffer_filter,
                 :sniffer_src,
                 :parsers,
+                :custom_parser,
                 :local,
                 :proxy,
                 :proxy_https,
@@ -62,6 +63,7 @@ class Options
     @sniffer_filter = nil
     @sniffer_src = nil
     @parsers = ['*']
+    @custom_parser = nil
     @local = false
 
     @proxy = false
@@ -146,6 +148,12 @@ class Options
       opts.on( '-P', '--parsers PARSERS', 'Comma separated list of packet parsers to enable, "*" for all ( NOTE: Will set -X to true ), available: ' + ParserFactory.available.join(', ') + ' - default: *' ) do |v|
         ctx.options.sniffer = true
         ctx.options.parsers = ParserFactory.from_cmdline(v)
+      end
+
+      opts.on( '--custom-parser EXPRESSION', 'Use a custom regular expression in order to capture and show sniffed data ( NOTE: Will set -X to true ).' ) do |v|
+        ctx.options.sniffer       = true
+        ctx.options.parsers       = ['CUSTOM']
+        ctx.options.custom_parser = Regexp.new(v)
       end
 
       opts.on( '--silent', 'Suppress every message which is not an error or a warning, default to false.' ) do

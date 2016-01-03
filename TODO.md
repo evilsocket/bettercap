@@ -7,7 +7,7 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [x] Ip address to hostname resolution.
 - [x] Wrap every class with `module BetterCap` and refactor old code.
 - [x] Use StreamLogger for both Proxy and Sniffer traffic.
-- [ ] Implement `--custom-parser REGEX` option.
+- [x] Implement `--custom-parser REGEX` option.
 - [ ] Implement `--mkcert FILENAME` option to create custom HTTPS `crt` files.
 - [ ] Implement event-driven core plugin infrastructure ( for webui, etc ).
 - [ ] Implement web-ui core plugin.

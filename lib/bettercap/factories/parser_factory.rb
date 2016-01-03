@@ -21,7 +21,7 @@ class ParserFactory
     def available
       avail = []
       Dir.foreach( @@path ) do |file|
-        if file =~ /.rb/ and file != 'base.rb'
+        if file =~ /.rb/ and file != 'base.rb' and file != 'custom.rb'
           avail << file.gsub('.rb','').upcase
         end
       end
@@ -39,7 +39,7 @@ class ParserFactory
       list
     end
 
-    def ParserFactory.load_by_names(parsers)
+    def load_by_names(parsers)
       loaded = []
       Dir.foreach( @@path ) do |file|
         cname = file.gsub('.rb','').upcase
@@ -52,6 +52,11 @@ class ParserFactory
         end
       end
       loaded
+    end
+
+    def load_custom(expression)
+      require_relative "#{@@path}custom.rb"
+      [ BetterCap::CustomParser.new(expression) ]
     end
   end
 end

@@ -93,7 +93,11 @@ class Sniffer
       Logger.warn "Saving packets to #{@@ctx.options.sniffer_pcap} ."
     end
 
-    @@parsers = ParserFactory.load_by_names @@ctx.options.parsers
+    if @@ctx.options.custom_parser.nil?
+      @@parsers = ParserFactory.load_by_names @@ctx.options.parsers
+    else
+      @@parsers = ParserFactory.load_custom @@ctx.options.custom_parser
+    end
 
     @@cap = Capture.new(
         iface: @@ctx.options.iface,
