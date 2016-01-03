@@ -14,7 +14,7 @@ require 'socket'
 
 module BetterCap
 class Target
-    attr_accessor :ip, :mac, :vendor, :hostname
+    attr_accessor :ip, :mac, :vendor, :hostname, :ip_refresh
 
     NBNS_TIMEOUT = 30
     NBNS_PORT    = 137
@@ -24,11 +24,19 @@ class Target
     @@prefixes = nil
 
     def initialize( ip, mac=nil )
-      @ip       = ip
-      @mac      = normalized_mac mac unless mac.nil?
+      if Network.is_ip?(ip)
+        @ip = ip
+        @ip_refresh = false
+      else
+        @ip         = nil
+        mac         = ip
+        @ip_refresh = true
+      end
+
+      @mac      = Target.normalized_mac(mac) unless mac.nil?
       @vendor   = Target.lookup_vendor(@mac) unless mac.nil?
       @hostname = nil
-      @resolver = Thread.new { resolve! } unless Context.get.options.no_target_nbns
+      @resolver = Thread.new { resolve! } unless Context.get.options.no_target_nbns or @ip.nil?
     end
 
     def sortable_ip
@@ -36,12 +44,12 @@ class Target
     end
 
     def mac=(value)
-      @mac = normalized_mac value
+      @mac = Target.normalized_mac(value)
       @vendor = Target.lookup_vendor(@mac) if not @mac.nil?
     end
 
     def to_s
-      s = sprintf( '%-15s : %-17s', @ip, @mac )
+      s = sprintf( '%-15s : %-17s', if @ip.nil? then '???' else @ip end, @mac )
       s += " / #{@hostname}" unless @hostname.nil?
       s += if @vendor.nil? then " ( ??? )" else " ( #{@vendor} )" end
       s
@@ -56,14 +64,23 @@ class Target
     end
 
     def equals?(ip, mac)
-      ( @ip == ip && ( mac.nil? || @mac == normalized_mac(mac) ) )
+      # compare by ip
+      if mac.nil?
+        return ( @ip == ip )
+      # compare by mac
+      elsif !@mac.nil? and ( @mac == mac )
+        Logger.info "Found IP #{ip} for target #{@mac}!"
+        @ip = ip
+        return true
+      end
+      false
+    end
+
+    def self.normalized_mac(v)
+      v.split(':').map { |e| if e.size == 2 then e.upcase else "0#{e.upcase}" end }.join(':')
     end
 
 private
-
-    def normalized_mac(v)
-      v.split(':').map { |e| if e.size == 2 then e.upcase else "0#{e.upcase}" end }.join(':')
-    end
 
     def resolve!
       resp, sock = nil, nil

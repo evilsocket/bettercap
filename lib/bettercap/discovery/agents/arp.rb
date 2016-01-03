@@ -42,6 +42,15 @@ class ArpAgent < BaseAgent
     nil
   end
 
+  def self.find_mac( address )
+    self.parse_cache do |ip,mac|
+      if mac == address
+        return ip
+      end
+    end
+    nil
+  end
+
   private
 
   def self.parse_cache
@@ -49,8 +58,8 @@ class ArpAgent < BaseAgent
       m = self.parse_cache_line(line)
       unless m.nil?
         ip = m[1]
-        hw = m[2]
-        if hw != 'ff:ff:ff:ff:ff:ff'
+        hw = Target.normalized_mac( m[2] )
+        if hw != 'FF:FF:FF:FF:FF:FF'
           yield( ip, hw )
         end
       end

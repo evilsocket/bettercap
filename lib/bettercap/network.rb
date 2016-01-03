@@ -21,6 +21,10 @@ class Network
       false
     end
 
+    def is_mac?(mac)
+      ( /^[a-f0-9]{1,2}\:[a-f0-9]{1,2}\:[a-f0-9]{1,2}\:[a-f0-9]{1,2}\:[a-f0-9]{1,2}\:[a-f0-9]{1,2}$/i =~ mac.to_s )
+    end
+
     def get_gateway
       nstat = Shell.execute('netstat -nr')
 
@@ -66,6 +70,11 @@ class Network
       end
 
       ArpAgent.parse ctx
+    end
+
+    def get_ip_address( iface, mac, attempts = 2 )
+      # TODO: Implement active probing.
+      ArpAgent.find_mac( mac )
     end
 
 =begin

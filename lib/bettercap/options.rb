@@ -329,13 +329,13 @@ class Options
 
   def to_targets
     targets = @target.split(",")
-    valid_targets = targets.select { |target| Network.is_ip?(target) }
+    valid_targets = targets.select { |target| Network.is_ip?(target) or Network.is_mac?(target) }
 
-    raise BetterCap::Error, "Invalid target" if valid_targets.empty?
+    raise BetterCap::Error, "Invalid target specified." if valid_targets.empty?
 
     invalid_targets = targets - valid_targets
     invalid_targets.each do |target|
-      Logger.warn "Invalid target #{target}"
+      Logger.warn "Invalid target specified: #{target}"
     end
 
     valid_targets.map { |target| Target.new(target) }
