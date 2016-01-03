@@ -58,13 +58,7 @@ class Network
 
     def get_alive_targets( ctx, timeout = 5 )
       if ctx.options.should_discover_hosts?
-        icmp = IcmpAgent.new timeout
-        udp  = UdpAgent.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
-        arp  = ArpAgent.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
-
-        icmp.wait
-        arp.wait
-        udp.wait
+        start_agents( ctx, timeout )
       else
         Logger.debug 'Using current ARP cache.'
       end
@@ -72,9 +66,13 @@ class Network
       ArpAgent.parse ctx
     end
 
-    def get_ip_address( iface, mac, attempts = 2 )
-      # TODO: Implement active probing.
-      ArpAgent.find_mac( mac )
+    def get_ip_address( ctx, mac, timeout = 5 )
+      ip = ArpAgent.find_mac( mac )
+      if ip.nil?
+        start_agents( ctx, timeout )
+        ip = ArpAgent.find_mac( mac )
+      end
+      ip
     end
 
 =begin
@@ -132,6 +130,16 @@ class Network
     end
 
     private
+
+    def start_agents( ctx, timeout )
+      icmp = IcmpAgent.new timeout
+      udp  = UdpAgent.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
+      arp  = ArpAgent.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
+
+      icmp.wait
+      arp.wait
+      udp.wait
+    end
 
     def get_mac_from_capture( cap, ip_address )
       cap.stream.each do |p|

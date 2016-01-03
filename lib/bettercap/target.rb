@@ -69,7 +69,7 @@ class Target
         return ( @ip == ip )
       # compare by mac
       elsif !@mac.nil? and ( @mac == mac )
-        Logger.info "Found IP #{ip} for target #{@mac}!"
+        Logger.info "Found IP #{ip} for target #{@mac}!" if @ip.nil?
         @ip = ip
         return true
       end

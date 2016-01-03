@@ -120,7 +120,7 @@ class ArpSpoofer < ISpoofer
             end
           # target was specified by MAC address
           elsif target.ip_refresh
-            ip = Network.get_ip_address( @ctx.ifconfig, target.mac )
+            ip = Network.get_ip_address( @ctx, target.mac )
             if ip.nil?
               Logger.warn "Couldn't determine target #{target.mac} IP!"
               next
