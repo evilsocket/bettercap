@@ -48,6 +48,12 @@ module Logger
       @@queue.push( message )
     end
 
+    def wait!
+      while not @@queue.empty?
+        sleep 0.3
+      end
+    end
+
     private
 
     def worker

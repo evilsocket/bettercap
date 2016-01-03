@@ -69,6 +69,7 @@ rescue SystemExit, Interrupt
   BetterCap::Logger.raw "\n"
 
 rescue BetterCap::Error => e
+
   BetterCap::Logger.error e.message
 
 rescue Exception => e
@@ -76,5 +77,8 @@ rescue Exception => e
   BetterCap::Logger.error e.backtrace.join("\n")
 
 ensure
+  # Make sure all the messages on the logger queue are printed.
+  BetterCap::Logger.wait!
+
   ctx.finalize unless ctx.nil?
 end
