@@ -15,7 +15,6 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [ ] Implement web-ui core plugin.
 - [ ] Rewrite proxy class using [em-proxy](https://github.com/igrigorik/em-proxy) library.
 - [ ] HTTP/2 Support.
-- [ ] IPV6 Support.
 
 **Platform Specific**
 
@@ -29,3 +28,4 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [ ] DNS Spoofing ( not sure if it actually makes any sense ).
 - [ ] sslstrip ( not really sure, currently is quite useless )
 - [ ] Implement `--mkcert FILENAME` option to create custom HTTPS `crt` files.
+- [ ] IPV6 Support.
