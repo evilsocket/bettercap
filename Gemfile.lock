@@ -1,16 +1,17 @@
 PATH
   remote: .
   specs:
-    bettercap (1.1.3)
+    bettercap (1.1.11b)
       colorize (~> 0.7.5)
+      network_interface (~> 0.0.1)
       packetfu (~> 1.1.10)
       pcaprub (~> 0.12.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    colorize (0.7.7)
-    minitest (5.7.0)
+    colorize (0.7.5)
+    network_interface (0.0.1)
     packetfu (1.1.10)
     pcaprub (0.12.0)
 
@@ -19,7 +20,6 @@ PLATFORMS
 
 DEPENDENCIES
   bettercap!
-  minitest
 
 BUNDLED WITH
-   1.10.3
+   1.11.2

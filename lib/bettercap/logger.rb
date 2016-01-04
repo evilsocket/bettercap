@@ -12,6 +12,7 @@ This project is released under the GPL 3 license.
 module BetterCap
 module Logger
   class << self
+    @@ctx     = nil
     @@queue   = Queue.new
     @@debug   = false
     @@silent  = false
@@ -50,7 +51,11 @@ module Logger
 
     def wait!
       while not @@queue.empty?
-        sleep 0.3
+        if @@thread.nil?
+          emit @@queue.pop
+        else
+          sleep 0.3
+        end
       end
     end
 
@@ -59,14 +64,18 @@ module Logger
     def worker
       loop do
         message = @@queue.pop
-        if @@ctx.running
-          puts message
-          unless @@logfile.nil?
-            f = File.open( @@logfile, 'a+t' )
-            f.puts( message.gsub( /\e\[(\d+)(;\d+)*m/, '') + "\n")
-            f.close
-          end
+        if @@ctx.nil? or @@ctx.running
+          emit message
         end
+      end
+    end
+
+    def emit(message)
+      puts message
+      unless @@logfile.nil?
+        f = File.open( @@logfile, 'a+t' )
+        f.puts( message.gsub( /\e\[(\d+)(;\d+)*m/, '') + "\n")
+        f.close
       end
     end
 
