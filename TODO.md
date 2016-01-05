@@ -9,7 +9,7 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [x] Use StreamLogger for both Proxy and Sniffer traffic.
 - [x] Implement `--custom-parser REGEX` option.
 - [x] Let `-T|--target` [support MAC addresses](https://github.com/evilsocket/bettercap/issues/82).
-- [ ] Fix modules structure by folder.
+- [x] Fix modules structure by folder.
 - [ ] Document classes with RDoc.
 - [ ] Implement event-driven core plugin infrastructure ( for webui, etc ).
 - [ ] Implement web-ui core plugin.

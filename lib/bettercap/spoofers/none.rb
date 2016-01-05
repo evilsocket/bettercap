@@ -9,11 +9,12 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require 'bettercap/base/ispoofer'
+require 'bettercap/spoofers/base'
 require 'bettercap/logger'
 
 module BetterCap
-class NoneSpoofer < ISpoofer
+module Spoofers
+class None < Base
   def initialize
     Logger.warn 'Spoofing disabled.'
   end
@@ -21,5 +22,6 @@ class NoneSpoofer < ISpoofer
   def start; end
 
   def stop; end
+end
 end
 end

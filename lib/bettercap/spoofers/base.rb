@@ -10,7 +10,8 @@ This project is released under the GPL 3 license.
 
 =end
 module BetterCap
-class ISpoofer
+module Spoofers
+class Base
   def initialize
     not_implemented_method!
   end
@@ -26,7 +27,8 @@ class ISpoofer
 private
 
   def not_implemented_method!
-    raise NotImplementedError, 'ISpoofer: Unimplemented method!'
+    raise NotImplementedError, 'Spoofers::Base: Unimplemented method!'
   end
+end
 end
 end

@@ -9,12 +9,12 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require 'bettercap/base/ifirewall'
+require 'bettercap/firewalls/base'
 require 'bettercap/shell'
 
 module BetterCap
 module Firewalls
-class OSX < IFirewall
+class OSX < Base
   def enable_forwarding(enabled)
     shell.execute("sysctl -w net.inet.ip.forwarding=#{enabled ? 1 : 0}")
   end

@@ -18,7 +18,7 @@ class Spoofer
     def available
       avail = []
       Dir.foreach( File.dirname(__FILE__) + '/../spoofers/') do |file|
-        if file =~ /.rb/
+        if file =~ /.rb/ and file != 'base.rb'
           avail << file.gsub('.rb','').upcase
         end
       end
@@ -32,7 +32,7 @@ class Spoofer
 
       require_relative "../spoofers/#{name}"
 
-      Kernel.const_get("BetterCap::#{name.capitalize}Spoofer").new
+      Kernel.const_get("BetterCap::Spoofers::#{name.capitalize}").new
     end
 
     private

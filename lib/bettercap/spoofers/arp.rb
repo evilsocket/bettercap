@@ -9,15 +9,16 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
+require 'bettercap/spoofers/base'
 require 'bettercap/error'
 require 'bettercap/context'
-require 'bettercap/base/ispoofer'
 require 'bettercap/network'
 require 'bettercap/logger'
 require 'colorize'
 
 module BetterCap
-class ArpSpoofer < ISpoofer
+module Spoofers
+class Arp < Base
   def initialize
     @ctx          = Context.get
     @gateway      = nil
@@ -167,5 +168,6 @@ class ArpSpoofer < ISpoofer
     end
     sleep 1
   end
+end
 end
 end

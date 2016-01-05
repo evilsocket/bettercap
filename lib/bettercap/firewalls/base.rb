@@ -10,7 +10,8 @@ This project is released under the GPL 3 license.
 
 =end
 module BetterCap
-class IFirewall
+module Firewalls
+class Base
   def initialize
     @frwd_initial_state = forwarding_enabled?
   end
@@ -40,7 +41,8 @@ class IFirewall
 private
 
   def not_implemented_method!
-    raise NotImplementedError, 'IFirewall: Unimplemented method!'
+    raise NotImplementedError, 'Firewalls::Base: Unimplemented method!'
   end
+end
 end
 end
