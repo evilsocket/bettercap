@@ -17,7 +17,7 @@ module Agents
 class Icmp
   def initialize( timeout = 5 )
     @thread = ::Thread.new {
-      FirewallFactory.get_firewall.enable_icmp_bcast(true)
+      Factories::Firewall.get.enable_icmp_bcast(true)
 
       if RUBY_PLATFORM =~ /darwin/
         ping = Shell.execute("ping -i #{timeout} -c 2 255.255.255.255")

@@ -46,7 +46,7 @@ class Context
     @proxies         = []
     @redirections    = []
     @discovery       = Discovery::Thread.new self
-    @firewall        = FirewallFactory.get_firewall
+    @firewall        = Factories::Firewall.get
   end
 
   def update!

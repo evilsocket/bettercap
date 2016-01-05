@@ -14,10 +14,11 @@ require 'bettercap/firewalls/osx'
 require 'bettercap/firewalls/linux'
 
 module BetterCap
-class FirewallFactory
+module Factories
+class Firewall
   @@instance = nil
 
-  def self.get_firewall
+  def self.get
     return @@instance unless @@instance.nil?
 
     if RUBY_PLATFORM =~ /darwin/
@@ -31,8 +32,9 @@ class FirewallFactory
     @@instance
   end
 
-  def FirewallFactory.clear_firewall
+  def self.clear
     @@instance = nil
   end
+end
 end
 end

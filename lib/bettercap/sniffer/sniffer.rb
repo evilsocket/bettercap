@@ -10,7 +10,6 @@ This project is released under the GPL 3 license.
 
 =end
 require 'bettercap/logger'
-require 'bettercap/factories/parser_factory'
 require 'colorize'
 require 'packetfu'
 
@@ -94,9 +93,9 @@ class Sniffer
     end
 
     if @@ctx.options.custom_parser.nil?
-      @@parsers = ParserFactory.load_by_names @@ctx.options.parsers
+      @@parsers = Factories::Parser.load_by_names @@ctx.options.parsers
     else
-      @@parsers = ParserFactory.load_custom @@ctx.options.custom_parser
+      @@parsers = Factories::Parser.load_custom @@ctx.options.custom_parser
     end
 
     @@cap = Capture.new(

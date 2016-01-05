@@ -12,7 +12,8 @@ This project is released under the GPL 3 license.
 require 'bettercap/error'
 
 module BetterCap
-class SpooferFactory
+module Factories
+class Spoofer
   class << self
     def available
       avail = []
@@ -40,5 +41,6 @@ class SpooferFactory
       available.include?(name)
     end
   end
+end
 end
 end

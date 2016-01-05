@@ -14,7 +14,8 @@ require 'bettercap/error'
 require 'bettercap/logger'
 
 module BetterCap
-class ParserFactory
+module Factories
+class Parser
   @@path = File.dirname(__FILE__) + '/../sniffer/parsers/'
 
   class << self
@@ -59,5 +60,6 @@ class ParserFactory
       [ BetterCap::CustomParser.new(expression) ]
     end
   end
+end
 end
 end
