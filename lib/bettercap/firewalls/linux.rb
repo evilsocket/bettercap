@@ -14,39 +14,41 @@ require 'bettercap/shell'
 
 module BetterCap
 module Firewalls
+# Linux firewall class.
 class Linux < Base
+  # If +enabled+ is true will enable packet forwarding, otherwise it will
+  # disable it.
   def enable_forwarding(enabled)
-    shell.execute("echo #{enabled ? 1 : 0} > /proc/sys/net/ipv4/ip_forward")
+    Shell.execute("echo #{enabled ? 1 : 0} > /proc/sys/net/ipv4/ip_forward")
   end
 
+  # Return true if packet forwarding is currently enabled, otherwise false.
   def forwarding_enabled?
-    shell.execute('cat /proc/sys/net/ipv4/ip_forward').strip == '1'
+    Shell.execute('cat /proc/sys/net/ipv4/ip_forward').strip == '1'
   end
 
+  # If +enabled+ is true will enable packet icmp_echo_ignore_broadcasts, otherwise it will
+  # disable it.
   def enable_icmp_bcast(enabled)
-    shell.execute("echo #{enabled ? 0 : 1} > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts")
+    Shell.execute("echo #{enabled ? 0 : 1} > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts")
   end
 
+  # Apply the +r+ BetterCap::Firewalls::Redirection port redirection object.
   def add_port_redirection( r )
     # post route
-    shell.execute('iptables -t nat -I POSTROUTING -s 0/0 -j MASQUERADE')
+    Shell.execute('iptables -t nat -I POSTROUTING -s 0/0 -j MASQUERADE')
     # accept all
-    shell.execute('iptables -P FORWARD ACCEPT')
+    Shell.execute('iptables -P FORWARD ACCEPT')
     # add redirection
-    shell.execute("iptables -t nat -A PREROUTING -i #{r.interface} -p #{r.protocol} --dport #{r.src_port} -j DNAT --to #{r.dst_address}:#{r.dst_port}")
+    Shell.execute("iptables -t nat -A PREROUTING -i #{r.interface} -p #{r.protocol} --dport #{r.src_port} -j DNAT --to #{r.dst_address}:#{r.dst_port}")
   end
 
+  # Remove the +r+ BetterCap::Firewalls::Redirection port redirection object.
   def del_port_redirection( r )
     # remove post route
-    shell.execute('iptables -t nat -D POSTROUTING -s 0/0 -j MASQUERADE')
+    Shell.execute('iptables -t nat -D POSTROUTING -s 0/0 -j MASQUERADE')
     # remove redirection
-    shell.execute("iptables -t nat -D PREROUTING -i #{r.interface} -p #{r.protocol} --dport #{r.src_port} -j DNAT --to #{r.dst_address}:#{r.dst_port}")
-  end
-
-  private
-
-  def shell
-    Shell
+    Shell.execute("iptables -t nat -D PREROUTING -i #{r.interface} -p #{r.protocol} --dport #{r.src_port} -j DNAT --to #{r.dst_address}:#{r.dst_port}")
   end
 end
 end

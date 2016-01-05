@@ -12,11 +12,26 @@ This project is released under the GPL 3 license.
 
 module BetterCap
 module Proxy
-
+# HTTP response parser.
 class Response
-  attr_reader :content_type, :charset, :content_length, :chunked, :headers, :code, :headers_done
+  # Response content type.
+  attr_reader :content_type
+  # Response charset, default to UTF-8.
+  attr_reader :charset
+  # Response content length.
+  attr_reader :content_length
+  # True if this is a chunked encoded response, otherwise false.
+  attr_reader :chunked
+  # A list of response headers.
+  attr_reader :headers
+  # Response status code.
+  attr_reader :code
+  # True if the parser finished to parse the headers, otherwise false.
+  attr_reader :headers_done
+  # Response body.
   attr_accessor :body
 
+  # Initialize this response object state.
   def initialize
     @content_type = nil
     @charset = 'UTF-8'
@@ -28,6 +43,8 @@ class Response
     @chunked = false
   end
 
+  # Read lines from the +sock+ socket until all headers are correctly parsed
+  # and return a BetterCap::Proxy::Response instance.
   def self.from_socket(sock)
     response = Response.new
 
@@ -43,6 +60,7 @@ class Response
     response
   end
 
+  # Parse a single response +line+.
   def <<(line)
     # we already parsed the heders, collect response body
     if @headers_done
@@ -80,10 +98,13 @@ class Response
     end
   end
 
+  # Return true if the response content type is textual, otherwise false.
   def textual?
     @content_type and ( @content_type =~ /^text\/.+/ or @content_type =~ /^application\/.+/ )
   end
 
+  # Return a string representation of this response object, patching the
+  # Content-Length header if the #body was modified.
   def to_s
     if textual?
       @headers.map! do |header|

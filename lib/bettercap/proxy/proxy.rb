@@ -18,8 +18,11 @@ require 'bettercap/network'
 
 module BetterCap
 module Proxy
-
+# Transparent proxy class.
 class Proxy
+  # Initialize the transparent proxy, making it listen on +address+:+port+ and
+  # use the specified +processor+ routine for each request.
+  # If +is_https+ is true a HTTPS proxy will be created, otherwise a HTTP one.
   def initialize( address, port, is_https, processor )
     @socket      = nil
     @address     = address
@@ -49,6 +52,7 @@ class Proxy
     end
   end
 
+  # Start this proxy instance.
   def start
     begin
       @server = @socket = TCPServer.new( @address, @port )
@@ -70,6 +74,7 @@ class Proxy
     end
   end
 
+  # Stop this proxy instance.
   def stop
     begin
       Logger.info "Stopping #{@type} proxy ..."

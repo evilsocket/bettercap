@@ -14,7 +14,10 @@ This project is released under the GPL 3 license.
 module BetterCap
 module Discovery
 module Agents
+# Base class for BetterCap::Discovery::Agents.
 class Base
+  # Initialize the agent using the +ifconfig+ network inteface informations,
+  # the +gw_ip+ gateway ip address and +local_ip+ local interface IP address.
   def initialize( ifconfig, gw_ip, local_ip )
     @local_ip = local_ip
     @ifconfig = ifconfig
@@ -68,6 +71,7 @@ class Base
     end
   end
 
+  # Wait for all the probes to be sent by this agent.
   def wait
     begin
       @workers.map(&:join)

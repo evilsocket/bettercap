@@ -8,10 +8,11 @@ This project is released under the GPL 3 license.
 require 'bettercap/error'
 
 module BetterCap
+# Class responsible of executing various shell commands.
 module Shell
   class << self
-
-    #return the output of command
+    # Execute +command+ and return its output.
+    # Raise +BetterCap::Error+ if the return code is not 0.
     def execute(command)
       r = ''
       10.times do
@@ -29,14 +30,15 @@ module Shell
       r
     end
 
+    # Get the +iface+ network interface configuration.
     def ifconfig(iface = '')
       self.execute( "LANG=en && ifconfig #{iface}" )
     end
 
+    # Get the ARP table cached on this computer.
     def arp
       self.execute( 'LANG=en && arp -a -n' )
     end
-
   end
 end
 end

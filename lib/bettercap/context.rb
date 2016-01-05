@@ -10,21 +10,44 @@ This project is released under the GPL 3 license.
 
 =end
 
-# this class holds global states & data
 require 'bettercap/error'
 
 module BetterCap
+# This class holds global states and data, moreover it exposes high level
+# methods to manipulate the program behaviour.
 class Context
-  attr_accessor :options, :ifconfig, :firewall, :gateway,
-                :targets, :discovery, :spoofer, :httpd,
-                :certificate, :running
+  # Instance of BetterCap::Options class.
+  attr_accessor :options
+  # A dictionary containing information about the selected network interface.
+  attr_accessor :ifconfig
+  # Instance of the current BetterCap::Firewalls class.
+  attr_accessor :firewall
+  # Network gateway IP address.
+  attr_accessor :gateway
+  # A list of BetterCap::Target objects which is periodically updated.
+  attr_accessor :targets
+  # Instance of BetterCap::Discovery::Thread class.
+  attr_accessor :discovery
+  # A list of BetterCap::Spoofers class instances.
+  attr_accessor :spoofer
+  # Instance of BetterCap::HTTPD::Server class.
+  attr_accessor :httpd
+  # Instance of OpenSSL::X509::Certificate class used
+  # for the HTTPS transparent proxy.
+  attr_accessor :certificate
+  # Set to true if the program is running, to false if a shutdown was
+  # scheduled by the user which pressed CTRL+C
+  attr_accessor :running
 
   @@instance = nil
 
+  # Return the global instance of the program Context, if the instance
+  # was not yet created it will be initialized and returned.
   def self.get
     @@instance ||= self.new
   end
 
+  # Initialize the global context object.
   def initialize
     begin
       iface = Pcap.lookupdev
@@ -49,6 +72,7 @@ class Context
     @firewall        = Factories::Firewall.get
   end
 
+  # Update the Context state parsing network related informations.
   def update!
     @ifconfig = PacketFu::Utils.ifconfig @options.iface
     @gateway  = Network.get_gateway if @gateway.nil?
@@ -65,6 +89,8 @@ class Context
     Logger.debug "IFCONFIG: #{@ifconfig.inspect}"
   end
 
+  # Find a target given its +ip+ and +mac+ addresses inside the #targets
+  # list, if not found return nil.
   def find_target ip, mac
     @targets.each do |target|
       if target.equals?(ip,mac)
@@ -74,6 +100,7 @@ class Context
     nil
   end
 
+  # Apply needed BetterCap::Firewalls::Redirection objects.
   def enable_port_redirection!
     @redirections = @options.to_redirections @ifconfig
     @redirections.each do |r|
@@ -82,6 +109,8 @@ class Context
     end
   end
 
+  # Initialize the needed transparent proxies and the processor routined which
+  # is needed in order to run proxy modules.
   def create_proxies
     if @options.has_proxy_module?
       require @options.proxy_module
@@ -135,6 +164,7 @@ class Context
     end
   end
 
+  # Stop every running daemon that was started and reset system state.
   def finalize
     @running = false
 

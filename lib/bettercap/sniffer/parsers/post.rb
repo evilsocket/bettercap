@@ -14,6 +14,7 @@ require 'colorize'
 
 module BetterCap
 module Parsers
+# HTTP POST requests parser.
 class Post < Base
   def on_packet( pkt )
     s = pkt.to_s

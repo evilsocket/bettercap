@@ -13,11 +13,12 @@ require 'bettercap/sniffer/parsers/base'
 
 module BetterCap
 module Parsers
+# IRC protocol parser.
 class Irc < Base
-    def initialize
-        @filters = [ /NICK\s+.+/, /NS IDENTIFY\s+.+/, /nickserv :identify\s+.+/ ]
-        @name = 'IRC'
-    end
+  def initialize
+    @filters = [ /NICK\s+.+/, /NS IDENTIFY\s+.+/, /nickserv :identify\s+.+/ ]
+    @name = 'IRC'
+  end
 end
 end
 end

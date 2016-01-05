@@ -13,11 +13,12 @@ require 'bettercap/sniffer/parsers/base'
 
 module BetterCap
 module Parsers
+# FTP authentication parser.
 class Ftp < Base
-    def initialize
-        @filters = [ /(USER|PASS)\s+.+/ ]
-        @name = 'FTP'
-    end
+  def initialize
+    @filters = [ /(USER|PASS)\s+.+/ ]
+    @name = 'FTP'
+  end
 end
 end
 end

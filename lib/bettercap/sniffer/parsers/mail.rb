@@ -13,11 +13,12 @@ require 'bettercap/sniffer/parsers/base'
 
 module BetterCap
 module Parsers
+# POP/IMAP authentication parser.  
 class Mail < Base
-    def initialize
-        @filters = [ /(\d+ )?(auth|authenticate) ([a-z\-_0-9]+)/i ]
-        @name = 'MAIL'
-    end
+  def initialize
+    @filters = [ /(\d+ )?(auth|authenticate) ([a-z\-_0-9]+)/i ]
+    @name = 'MAIL'
+  end
 end
 end
 end

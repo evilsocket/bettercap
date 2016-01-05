@@ -10,6 +10,7 @@ This project is released under the GPL 3 license.
 
 =end
 module BetterCap
+# Class responsible for console and file logging.
 module Logger
   class << self
     @@ctx     = nil
@@ -19,6 +20,11 @@ module Logger
     @@logfile = nil
     @@thread  = nil
 
+    # Initialize the logging system.
+    # If +debug+ is true, debug logging will be enabled.
+    # If +logfile+ is not nil, every message will be saved to that file.
+    # If +silent+ is true, all messages will be suppressed if they're not errors
+    # or warnings.
     def init( debug, logfile, silent )
       @@debug   = debug
       @@logfile = logfile
@@ -27,28 +33,34 @@ module Logger
       @@ctx     = Context.get
     end
 
+    # Log an error +message+.
     def error(message)
       @@queue.push formatted_message(message, 'E').red
     end
 
+    # Log an information +message+.
     def info(message)
       @@queue.push( formatted_message(message, 'I') ) unless @@silent
     end
 
+    # Log a warning +message+.
     def warn(message)
       @@queue.push formatted_message(message, 'W').yellow
     end
 
+    # Log a debug +message+.
     def debug(message)
       if @@debug and not @@silent
         @@queue.push formatted_message(message, 'D').light_black
       end
     end
 
+    # Log a +message+ as it is.
     def raw(message)
       @@queue.push( message )
     end
 
+    # Wait for the messages queue to be empty.
     def wait!
       while not @@queue.empty?
         if @@thread.nil?

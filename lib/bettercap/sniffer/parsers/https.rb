@@ -15,6 +15,7 @@ require 'resolv'
 
 module BetterCap
 module Parsers
+# HTTPS connections parser.    
 class Https < Base
   @@prev = nil
 

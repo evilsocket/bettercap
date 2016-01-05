@@ -14,6 +14,7 @@ This project is released under the GPL 3 license.
 module BetterCap
 module Discovery
 module Agents
+# Class responsible to send UDP probe packets to each possible IP on the network.
 class Udp < Base
   private
 

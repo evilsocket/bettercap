@@ -12,6 +12,7 @@ This project is released under the GPL 3 license.
 require 'bettercap/logger'
 
 module BetterCap
+# Raw or http streams pretty logging.
 class StreamLogger
   @@MAX_REQ_SIZE = 50
 
@@ -22,6 +23,8 @@ class StreamLogger
     '5' => :red
   }
 
+  # Search for the +addr+ IP address inside the list of collected targets and return
+  # its compact string representation ( @see BetterCap::Target#to_s_compact ).
   def self.addr2s( addr )
     ctx = Context.get
 
@@ -33,6 +36,7 @@ class StreamLogger
     addr
   end
 
+  # Log a raw packet ( +pkt+ ) data +payload+ using the specified +label+.
   def self.log_raw( pkt, label, payload )
     nl    = if label.include?"\n" then "\n" else " " end
     label = label.strip
@@ -40,6 +44,8 @@ class StreamLogger
                "[#{label.green}]#{nl}#{payload.strip.yellow}" )
   end
 
+  # Log a HTTP ( HTTPS if +is_https+ is true ) stream performed by the +client+
+  # with the +request+ and +response+ most important informations.
   def self.log_http( is_https, client, request, response )
     request_s  = "#{is_https ? 'https' : 'http'}://#{request.host}#{request.url}"
     response_s = "( #{response.content_type} )"

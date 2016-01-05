@@ -10,7 +10,7 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [x] Implement `--custom-parser REGEX` option.
 - [x] Let `-T|--target` [support MAC addresses](https://github.com/evilsocket/bettercap/issues/82).
 - [x] Fix modules structure by folder.
-- [ ] Document classes with RDoc.
+- [x] Document classes with RDoc.
 - [ ] Implement event-driven core plugin infrastructure ( for webui, etc ).
 - [ ] Implement web-ui core plugin.
 - [ ] Rewrite proxy class using [em-proxy](https://github.com/igrigorik/em-proxy) library.

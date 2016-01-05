@@ -11,9 +11,10 @@ This project is released under the GPL 3 license.
 =end
 require 'thread'
 
-# Tnx to Puma ThreadPool!
 module BetterCap
 module Proxy
+# Thread pool class used by the BetterCap::Proxy::Proxy.
+# Tnx to Puma ThreadPool!
 class ThreadPool
 
   # Maintain a minimum of +min+ and maximum of +max+ threads
@@ -21,7 +22,6 @@ class ThreadPool
   #
   # The block passed is the work that will be performed in each
   # thread.
-  #
   def initialize(min, max, *extra, &block)
     @not_empty = ConditionVariable.new
     @not_full = ConditionVariable.new
@@ -46,12 +46,10 @@ class ThreadPool
     @mutex.synchronize do
       @min.times { spawn_thread }
     end
-
-    @clean_thread_locals = false
   end
 
-  attr_reader :spawned, :trim_requested
-  attr_accessor :clean_thread_locals
+  # Number of spawned threads in the pool.
+  attr_reader :spawned
 
   # How many objects have yet to be processed by the pool?
   #
@@ -103,12 +101,6 @@ class ThreadPool
         end
 
         break unless continue
-
-        if @clean_thread_locals
-          Thread.current.keys.each do |key|
-            Thread.current[key] = nil unless key == :__recursive_key__
-          end
-        end
 
         begin
           block.call(work, *extra)

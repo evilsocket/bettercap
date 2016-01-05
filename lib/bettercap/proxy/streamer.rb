@@ -13,16 +13,25 @@ require 'bettercap/logger'
 
 module BetterCap
 module Proxy
+# Handle data streaming between clients and servers for the BetterCap::Proxy::Proxy.
 class Streamer
+  # Default buffer size for data streaming.
+  BUFSIZE = 1024 * 16
+
+  # Initialize the class with the given +processor+ routine.
   def initialize( processor )
     @processor = processor
   end
 
+  # Redirect the +client+ to a funny video.
   def rickroll( client )
     client.write "HTTP/1.1 302 Found\n"
     client.write "Location: https://www.youtube.com/watch?v=dQw4w9WgXcQ\n\n"
   end
 
+  # Perform HTML streaming for the given +request+, applying the #processor
+  # to the +response+.
+  # +from+ and +to+ are the two TCP endpoints.
   def html( request, response, from, to )
     buff = ''
 
@@ -79,12 +88,13 @@ class Streamer
     to.write response.to_s
   end
 
-
+  # Perform binary streaming using the +opts+ dictionary.
+  # If response|request object is available inside +opts+ and a content length
+  # as well use it to speed up data streaming with precise data size
+  # +from+ and +to+ are the two TCP endpoints.
   def binary( from, to, opts = {} )
     total_size = 0
 
-    # if response|request object is available and a content length as well
-    # use it to speed up data streaming with precise data size
     if not opts[:response].nil?
       to.write opts[:response].to_s
 
@@ -126,8 +136,6 @@ class Streamer
   end
 
   private
-
-  BUFSIZE = 1024 * 16
 
   def consume_stream io, size
     read_timeout = 60.0

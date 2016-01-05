@@ -14,6 +14,8 @@ require 'colorize'
 require 'packetfu'
 
 module BetterCap
+# Class responsible of loading BetterCap::Parsers instances and performing
+# network packet sniffing and dumping.
 class Sniffer
   include PacketFu
 
@@ -22,6 +24,9 @@ class Sniffer
   @@pcap    = nil
   @@cap     = nil
 
+  # Start a new thread that will sniff packets from the network and pass
+  # each one of them to the BetterCap::Parsers instances loaded inside the
+  # +ctx+ BetterCap::Context instance.
   def self.start( ctx )
     Thread.new do
       Logger.info 'Starting sniffer ...'

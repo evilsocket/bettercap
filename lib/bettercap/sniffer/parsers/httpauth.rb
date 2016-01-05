@@ -15,6 +15,7 @@ require 'base64'
 
 module BetterCap
 module Parsers
+# HTTP basic and digest authentication parser.  
 class Httpauth < Base
   def on_packet( pkt )
     lines = pkt.to_s.split("\n")

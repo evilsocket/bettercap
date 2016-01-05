@@ -9,41 +9,79 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-module BetterCap
-class Options
-  attr_accessor :gateway,
-                :iface,
-                :spoofer,
-                :half_duplex,
-                :target,
-                :logfile,
-                :silent,
-                :debug,
-                :arpcache,
-                :ignore,
-                :sniffer,
-                :sniffer_pcap,
-                :sniffer_filter,
-                :sniffer_src,
-                :parsers,
-                :custom_parser,
-                :local,
-                :proxy,
-                :proxy_https,
-                :proxy_port,
-                :proxy_https_port,
-                :proxy_pem_file,
-                :proxy_module,
-                :custom_proxy,
-                :custom_proxy_port,
-                :custom_https_proxy,
-                :custom_https_proxy_port,
-                :httpd,
-                :httpd_port,
-                :httpd_path,
-                :check_updates,
-                :no_target_nbns
 
+module BetterCap
+# Parse command line arguments, set options and initialize +Context+
+# accordingly.
+class Options
+  # Gateway IP address.
+  attr_accessor :gateway
+  # Network interface.
+  attr_accessor :iface
+  # Name of the spoofer to use.
+  attr_accessor :spoofer
+  # If true half duplex mode is enabled.
+  attr_accessor :half_duplex
+  # Comma separated list of targets.
+  attr_accessor :target
+  # Log file name.
+  attr_accessor :logfile
+  # If true will suppress every log message which is not an error or a warning.
+  attr_accessor :silent
+  # If true will enable debug messages.
+  attr_accessor :debug
+  # If true will disable active network discovery, the program will just use
+  # the current ARP cache.
+  attr_accessor :arpcache
+  # Comma separated list of ip addresses to ignore.
+  attr_accessor :ignore
+  # If true the BetterCap::Sniffer will be enabled.
+  attr_accessor :sniffer
+  # PCAP file name to save captured packets to.
+  attr_accessor :sniffer_pcap
+  # BPF filter to apply to sniffed packets.
+  attr_accessor :sniffer_filter
+  # Input PCAP file, if specified the BetterCap::Sniffer will read packets
+  # from it instead of the network.
+  attr_accessor :sniffer_src
+  # Comma separated list of BetterCap::Parsers to enable.
+  attr_accessor :parsers
+  # Regular expression to use with the BetterCap::Parsers::Custom parser.
+  attr_accessor :custom_parser
+  # If true, bettercap will sniff packets from the local interface as well.
+  attr_accessor :local
+  # If true, HTTP transparent proxy will be enabled.
+  attr_accessor :proxy
+  # If true, HTTPS transparent proxy will be enabled.
+  attr_accessor :proxy_https
+  # HTTP proxy port.
+  attr_accessor :proxy_port
+  # HTTPS proxy port.
+  attr_accessor :proxy_https_port
+  # File name of the PEM certificate to use for the HTTPS proxy.
+  attr_accessor :proxy_pem_file
+  # File name of the transparent proxy module to load.
+  attr_accessor :proxy_module
+  # Custom HTTP transparent proxy address.
+  attr_accessor :custom_proxy
+  # Custom HTTP transparent proxy port.
+  attr_accessor :custom_proxy_port
+  # Custom HTTPS transparent proxy address.
+  attr_accessor :custom_https_proxy
+  # Custom HTTPS transparent proxy port.
+  attr_accessor :custom_https_proxy_port
+  # If true, BetterCap::HTTPD::Server will be enabled.
+  attr_accessor :httpd
+  # The port to bind BetterCap::HTTPD::Server to.
+  attr_accessor :httpd_port
+  # Web root of the BetterCap::HTTPD::Server.
+  attr_accessor :httpd_path
+  # If true, bettercap will check for updates then exit.
+  attr_accessor :check_updates
+  # If true, targets NBNS hostname resolution won't be performed.
+  attr_accessor :no_target_nbns
+
+  # Create a BetterCap::Options class instance using the specified network interface.
   def initialize( iface )
     @gateway = nil
     @iface = iface
@@ -86,6 +124,9 @@ class Options
     @check_updates = false
   end
 
+  # Initialize the BetterCap::Context, parse command line arguments and update program
+  # state accordingly.
+  # Will rise a BetterCap::Error if errors occurred.
   def self.parse!
     ctx = Context.get
 
@@ -281,26 +322,33 @@ class Options
     ctx
   end
 
+  # Return true if active host discovery is enabled, otherwise false.
   def should_discover_hosts?
     !@arpcache
   end
 
+  # Return true if a proxy module was specified, otherwise false.
   def has_proxy_module?
     !@proxy_module.nil?
   end
 
+  # Return true if a spoofer module was specified, otherwise false.
   def has_spoofer?
     @spoofer != 'NONE' and @spoofer != 'none'
   end
 
+  # Return true if the BetterCap::Parsers::URL is enabled, otherwise false.
   def has_http_sniffer_enabled?
     @sniffer and ( @parsers.include?'*' or @parsers.include?'URL' )
   end
 
+  # Return true if the +ip+ address needs to be ignored, otherwise false.
   def ignore_ip?(ip)
     !@ignore.nil? and @ignore.include?(ip)
   end
 
+  # Setter for the #ignore attribute, will raise a BetterCap::Error if one
+  # or more invalid IP addresses are specified.
   def ignore=(value)
     @ignore = value.split(",")
     valid = @ignore.select { |target| Network.is_ip?(target) }
@@ -317,16 +365,22 @@ class Options
     Logger.warn "Ignoring #{valid.join(", ")} ."
   end
 
+  # Setter for the #custom_proxy attribute, will raise a BetterCap::Error if
+  # +value+ is not a valid IP address.
   def custom_proxy=(value)
     @custom_proxy = value
     raise BetterCap::Error, 'Invalid custom HTTP upstream proxy address specified.' unless Network.is_ip? @custom_proxy
   end
 
+  # Setter for the #custom_https_proxy attribute, will raise a BetterCap::Error if
+  # +value+ is not a valid IP address.
   def custom_https_proxy=(value)
     @custom_https_proxy = value
     raise BetterCap::Error, 'Invalid custom HTTPS upstream proxy address specified.' unless Network.is_ip? @custom_https_proxy
   end
 
+  # Split specified targets and parse them ( either as IP or MAC ), will raise a
+  # BetterCap::Error if one or more invalid addresses are specified.
   def to_targets
     targets = @target.split(",")
     valid_targets = targets.select { |target| Network.is_ip?(target) or Network.is_mac?(target) }
@@ -341,6 +395,8 @@ class Options
     valid_targets.map { |target| Target.new(target) }
   end
 
+  # Parse spoofers and return a list of BetterCap::Spoofers objects. Raise a
+  # BetterCap::Error if an invalid spoofer name was specified.
   def to_spoofers
     spoofers = []
     spoofer_modules_names = @spoofer.split(",")
@@ -350,11 +406,13 @@ class Options
     spoofers
   end
 
+  # Create a list of BetterCap::Firewalls::Redirection objects which are needed
+  # given the specified command line arguments.
   def to_redirections ifconfig
     redirections = []
 
     if @proxy
-      redirections << Redirection.new( @iface,
+      redirections << Firewalls::Redirection.new( @iface,
                                        'TCP',
                                        80,
                                        ifconfig[:ip_saddr],
@@ -362,7 +420,7 @@ class Options
     end
 
     if @proxy_https
-      redirections << Redirection.new( @iface,
+      redirections << Firewalls::Redirection.new( @iface,
                                        'TCP',
                                        443,
                                        ifconfig[:ip_saddr],
@@ -370,7 +428,7 @@ class Options
     end
 
     if @custom_proxy
-      redirections << Redirection.new( @iface,
+      redirections << Firewalls::Redirection.new( @iface,
                                        'TCP',
                                        80,
                                        @custom_proxy,
@@ -378,7 +436,7 @@ class Options
     end
 
     if @custom_https_proxy
-      redirections << Redirection.new( @iface,
+      redirections << Firewalls::Redirection.new( @iface,
                                        'TCP',
                                        443,
                                        @custom_https_proxy,

@@ -16,7 +16,11 @@ require 'net/http'
 require 'json'
 
 module BetterCap
+# This class is responsible for fetching the latest version of
+# bettercap and check if a new one is available.
 class UpdateChecker
+  # Check if a new version is available, printing the results
+  # in human readable form.
   def self.check
     ver = self.get_latest_version
     if self.vton( BetterCap::VERSION ) < self.vton( ver )
@@ -28,6 +32,7 @@ class UpdateChecker
     Logger.error("Error '#{e.class}' while checking for updates: #{e.message}")
   end
 
+  # Convert a version string +v+ to a number to be used for comparation.
   def self.vton v
     vi = 0.0
     v.split('.').reverse.each_with_index do |e,i|
@@ -36,6 +41,7 @@ class UpdateChecker
     vi
   end
 
+  # Fetch the latest program version from rubygems.org API.
   def self.get_latest_version
     Logger.info 'Checking for updates ...'
 

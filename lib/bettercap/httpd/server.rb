@@ -15,7 +15,10 @@ require 'bettercap/logger'
 
 module BetterCap
 module HTTPD
+# Simple HTTP server class used to serve static assets when needed.
 class Server
+  # Initialize the HTTP server with the specified tcp +port+ using
+  # +path+ as the document root.
   def initialize( port = 8081, path = './' )
     @port = port
     @path = path
@@ -27,6 +30,7 @@ class Server
     )
   end
 
+  # Start the server.
   def start
     Logger.info "Starting HTTPD on port #{@port} and path #{@path} ..."
     @thread = Thread.new {
@@ -34,6 +38,7 @@ class Server
     }
   end
 
+  # Stop the server.
   def stop
     Logger.info 'Stopping HTTPD ...'
 

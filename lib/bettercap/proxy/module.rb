@@ -13,18 +13,20 @@ require 'bettercap/logger'
 
 module BetterCap
 module Proxy
+# Base class for transparent proxy modules.
 class Module
   @@modules = []
-
+  # Return a list of registered modules.
   def self.modules
     @@modules
   end
 
-  # we're enabled by default, yo!
+  # Return true if the module is enabled, otherwise false.
   def enabled?
     true
   end
 
+  # Register available proxy modules into the system.
   def self.register_modules
     Object.constants.each do |klass|
       const = Kernel.const_get(klass)

@@ -12,9 +12,22 @@ This project is released under the GPL 3 license.
 
 module BetterCap
 module Proxy
+# HTTP request parser.
 class Request
-  attr_reader :lines, :verb, :url, :host, :port, :content_length
+  # Patched request lines.
+  attr_reader :lines
+  # HTTP verb.
+  attr_reader :verb
+  # Request URL.
+  attr_reader :url
+  # Hostname.
+  attr_reader :host
+  # Request port.
+  attr_reader :port
+  # Content length.
+  attr_reader :content_length
 
+  # Initialize this object setting #port to +default_port+.
   def initialize( default_port = 80 )
     @lines  = []
     @verb   = nil
@@ -24,6 +37,8 @@ class Request
     @content_length = 0
   end
 
+  # Read lines from the +sock+ socket and parse them.
+  # Will raise an exception if the #hostname can not be parsed.
   def read(sock)
     # read the first line
     self << sock.readline
@@ -40,6 +55,7 @@ class Request
     raise "Couldn't extract host from the request." unless @host
   end
 
+  # Parse a single request line, patch it if needed and append it to #lines.
   def <<(line)
     line = line.chomp
 
@@ -57,7 +73,6 @@ class Request
       end
 
       line = "#{@verb} #{@url} HTTP/1.1"
-
     # get the host header value
     elsif line =~ /^Host:\s*(.*)$/
       @host = $1
@@ -65,34 +80,31 @@ class Request
         @host = $1
         @port = $2.to_i
       end
-
     # parse content length, this will speed up data streaming
     elsif line =~ /^Content-Length:\s+(\d+)\s*$/i
       @content_length = $1.to_i
-
     # we don't want to have hundreds of threads running
     elsif line =~ /^Connection: keep-alive/i
       line = 'Connection: close'
-
     elsif line =~ /^Proxy-Connection: (.+)/i
       line = "Connection: #{$1}"
-
     # disable gzip, chunked, etc encodings
     elsif line =~ /^Accept-Encoding:.*/i
       line = 'Accept-Encoding: identity'
-
     end
 
-      @lines << line
-    end
-
-    def post?
-      @verb == 'POST'
-    end
-
-    def to_s
-      @lines.join("\n") + "\n"
-    end
+    @lines << line
   end
+
+  # Return true if this is a POST request, otherwise false.
+  def post?
+    @verb == 'POST'
+  end
+
+  # Return a string representation of the HTTP request.
+  def to_s
+    @lines.join("\n") + "\n"
+  end
+end
 end
 end

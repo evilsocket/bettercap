@@ -14,6 +14,7 @@ require 'colorize'
 
 module BetterCap
 module Parsers
+# HTTP GET requests parser.  
 class Url < Base
   def on_packet( pkt )
     s = pkt.to_s

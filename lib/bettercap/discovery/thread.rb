@@ -11,18 +11,22 @@ This project is released under the GPL 3 license.
 =end
 module BetterCap
 module Discovery
+# Class responsible to actively discover targets on the network.
 class Thread
+  # Initialize the class using the +ctx+ BetterCap::Context instance.
   def initialize( ctx )
     @ctx     = ctx
     @running = false
     @thread  = nil
   end
 
+  # Start the active network discovery thread.
   def start
     @running = true
     @thread  = ::Thread.new { worker }
   end
 
+  # Stop the active network discovery thread.
   def stop
     @running = false
     if @thread != nil

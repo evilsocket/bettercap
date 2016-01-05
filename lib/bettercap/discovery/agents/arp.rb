@@ -14,7 +14,12 @@ This project is released under the GPL 3 license.
 module BetterCap
 module Discovery
 module Agents
+# Class responsible to parse ARP cache and send ARP probes to each
+# possible IP on the network.
 class Arp < Base
+  # Parse the current ARP cache and return a list of BetterCap::Target
+  # objects which are found inside it, using the +ctx+ BetterCap::Context
+  # instance.
   def self.parse( ctx )
     targets = []
     self.parse_cache do |ip,mac|
@@ -35,6 +40,8 @@ class Arp < Base
     targets
   end
 
+  # Parse the ARP cache searching for the given IP +address+ and return its
+  # MAC if found, otherwise nil.
   def self.find_address( address )
     self.parse_cache do |ip,mac|
       if ip == address
@@ -44,6 +51,8 @@ class Arp < Base
     nil
   end
 
+  # Parse the ARP cache searching for the given MAC +address+ and return its
+  # IP if found, otherwise nil.
   def self.find_mac( address )
     self.parse_cache do |ip,mac|
       if mac == address

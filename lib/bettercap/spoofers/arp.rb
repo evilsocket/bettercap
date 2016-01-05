@@ -18,7 +18,9 @@ require 'colorize'
 
 module BetterCap
 module Spoofers
+# This class is responsible of performing ARP spoofing on the network.
 class Arp < Base
+  # Initialize the BetterCap::Spoofers::Arp object.
   def initialize
     @ctx          = Context.get
     @gateway      = nil
@@ -38,6 +40,9 @@ class Arp < Base
     Logger.info "  #{@gateway}"
   end
 
+  # Send a spoofed ARP reply to the target identified by the +daddr+ IP address
+  # and +dmac+ MAC address, spoofing the +saddr+ IP address and +smac+ MAC
+  # address as the source device.
   def send_spoofed_packet( saddr, smac, daddr, dmac )
     pkt = PacketFu::ARPPacket.new
     pkt.eth_saddr = smac
@@ -51,6 +56,7 @@ class Arp < Base
     pkt.to_w(@ctx.ifconfig[:iface])
   end
 
+  # Start the ARP spoofing.
   def start
     Logger.info "Starting ARP spoofer ( #{@ctx.options.half_duplex ? 'Half' : 'Full'} Duplex ) ..."
 
@@ -142,6 +148,7 @@ class Arp < Base
     end
   end
 
+  # Stop the ARP spoofing, reset firewall state and restore targets ARP table.
   def stop
     raise 'ARP spoofer is not running' unless @running
 
