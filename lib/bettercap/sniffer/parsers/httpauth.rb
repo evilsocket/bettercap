@@ -14,7 +14,8 @@ require 'colorize'
 require 'base64'
 
 module BetterCap
-class HttpauthParser < BaseParser
+module Parsers
+class Httpauth < Base
   def on_packet( pkt )
     lines = pkt.to_s.split("\n")
     hostname = nil
@@ -39,5 +40,6 @@ class HttpauthParser < BaseParser
       end
     end
   end
+end
 end
 end

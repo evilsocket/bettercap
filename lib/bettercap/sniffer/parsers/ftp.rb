@@ -12,10 +12,12 @@ This project is released under the GPL 3 license.
 require 'bettercap/sniffer/parsers/base'
 
 module BetterCap
-class FtpParser < BaseParser
+module Parsers
+class Ftp < Base
     def initialize
         @filters = [ /(USER|PASS)\s+.+/ ]
         @name = 'FTP'
     end
+end
 end
 end

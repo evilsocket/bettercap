@@ -12,7 +12,8 @@ This project is released under the GPL 3 license.
 require 'bettercap/sniffer/parsers/base'
 
 module BetterCap
-class CustomParser < BaseParser
+module Parsers
+class Custom < Base
   def initialize( filter )
     @filters = [ filter ]
     @name    = 'DATA'

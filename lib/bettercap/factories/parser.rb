@@ -49,7 +49,7 @@ class Parser
 
           require_relative "#{@@path}#{file}"
 
-          loaded << Kernel.const_get("BetterCap::#{cname.capitalize}Parser").new
+          loaded << Kernel.const_get("BetterCap::Parsers::#{cname.capitalize}").new
         end
       end
       loaded
@@ -57,7 +57,7 @@ class Parser
 
     def load_custom(expression)
       require_relative "#{@@path}custom.rb"
-      [ BetterCap::CustomParser.new(expression) ]
+      [ BetterCap::Parsers::Custom.new(expression) ]
     end
   end
 end

@@ -13,12 +13,14 @@ require 'bettercap/sniffer/parsers/base'
 require 'colorize'
 
 module BetterCap
-class PostParser < BaseParser
+module Parsers
+class Post < Base
   def on_packet( pkt )
     s = pkt.to_s
     if s =~ /POST\s+[^\s]+\s+HTTP.+/
       StreamLogger.log_raw( pkt, "POST\n", pkt.payload )
     end
   end
+end
 end
 end

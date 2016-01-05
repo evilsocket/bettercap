@@ -13,7 +13,8 @@ require 'bettercap/sniffer/parsers/base'
 require 'colorize'
 
 module BetterCap
-class NtlmssParser < BaseParser
+module Parsers
+class Ntlmss < Base
     def bin2hex( data )
         hex = ''
         data.each_byte do |byte|
@@ -34,5 +35,6 @@ class NtlmssParser < BaseParser
             StreamLogger.log_raw( pkt, 'NTLMSS', bin2hex( pkt.payload ) )
         end
     end
+end
 end
 end

@@ -14,7 +14,8 @@ require 'colorize'
 require 'resolv'
 
 module BetterCap
-class HttpsParser < BaseParser
+module Parsers
+class Https < Base
   @@prev = nil
 
   def on_packet( pkt )
@@ -37,5 +38,6 @@ class HttpsParser < BaseParser
     rescue
     end
   end
+end
 end
 end

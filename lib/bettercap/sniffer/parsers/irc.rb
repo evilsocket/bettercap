@@ -12,10 +12,12 @@ This project is released under the GPL 3 license.
 require 'bettercap/sniffer/parsers/base'
 
 module BetterCap
-class IrcParser < BaseParser
+module Parsers
+class Irc < Base
     def initialize
         @filters = [ /NICK\s+.+/, /NS IDENTIFY\s+.+/, /nickserv :identify\s+.+/ ]
         @name = 'IRC'
     end
+end
 end
 end

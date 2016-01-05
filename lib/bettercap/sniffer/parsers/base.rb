@@ -10,7 +10,8 @@ This project is released under the GPL 3 license.
 
 =end
 module BetterCap
-class BaseParser
+module Parsers
+class Base
   def initialize
     @filters = []
     @name = 'BASE'
@@ -24,5 +25,6 @@ class BaseParser
       end
     end
   end
+end
 end
 end

@@ -13,7 +13,8 @@ require 'bettercap/sniffer/parsers/base'
 require 'colorize'
 
 module BetterCap
-class UrlParser < BaseParser
+module Parsers
+class Url < Base
   def on_packet( pkt )
     s = pkt.to_s
     if s =~ /GET\s+([^\s]+)\s+HTTP.+Host:\s+([^\s]+).+/m
@@ -24,5 +25,6 @@ class UrlParser < BaseParser
       end
     end
   end
+end
 end
 end
