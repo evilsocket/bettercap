@@ -10,6 +10,7 @@ This project is released under the GPL 3 license.
 
 =end
 module BetterCap
+module Firewalls
 class Redirection
   attr_reader :interface, :protocol, :src_port, :dst_address, :dst_port
 
@@ -20,5 +21,6 @@ class Redirection
     @dst_address = dst_address
     @dst_port    = dst_port
   end
+end
 end
 end

@@ -22,9 +22,9 @@ class Firewall
     return @@instance unless @@instance.nil?
 
     if RUBY_PLATFORM =~ /darwin/
-      @@instance = OSXFirewall.new
+      @@instance = Firewalls::OSX.new
     elsif RUBY_PLATFORM =~ /linux/
-      @@instance = LinuxFirewall.new
+      @@instance = Firewalls::Linux.new
     else
       raise BetterCap::Error, 'Unsupported operating system'
     end

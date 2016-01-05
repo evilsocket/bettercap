@@ -13,7 +13,8 @@ require 'bettercap/base/ifirewall'
 require 'bettercap/shell'
 
 module BetterCap
-class OSXFirewall < IFirewall
+module Firewalls
+class OSX < IFirewall
   def enable_forwarding(enabled)
     shell.execute("sysctl -w net.inet.ip.forwarding=#{enabled ? 1 : 0}")
   end
@@ -66,5 +67,6 @@ class OSXFirewall < IFirewall
   def shell
     Shell
   end
+end
 end
 end

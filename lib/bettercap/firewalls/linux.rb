@@ -13,7 +13,8 @@ require 'bettercap/base/ifirewall'
 require 'bettercap/shell'
 
 module BetterCap
-class LinuxFirewall < IFirewall
+module Firewalls
+class Linux < IFirewall
   def enable_forwarding(enabled)
     shell.execute("echo #{enabled ? 1 : 0} > /proc/sys/net/ipv4/ip_forward")
   end
@@ -47,5 +48,6 @@ class LinuxFirewall < IFirewall
   def shell
     Shell
   end
+end
 end
 end
