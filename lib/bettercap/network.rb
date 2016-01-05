@@ -63,14 +63,14 @@ class Network
         Logger.debug 'Using current ARP cache.'
       end
 
-      ArpAgent.parse ctx
+      Discovery::Agents::Arp.parse ctx
     end
 
     def get_ip_address( ctx, mac, timeout = 5 )
-      ip = ArpAgent.find_mac( mac )
+      ip = Discovery::Agents::Arp.find_mac( mac )
       if ip.nil?
         start_agents( ctx, timeout )
-        ip = ArpAgent.find_mac( mac )
+        ip = Discovery::Agents::Arp.find_mac( mac )
       end
       ip
     end
@@ -87,7 +87,7 @@ class Network
   won't catch anything, instead we're using cap.stream.each.
 =end
     def get_hw_address( iface, ip_address, attempts = 2 )
-      hw_address = ArpAgent.find_address( ip_address )
+      hw_address = Discovery::Agents::Arp.find_address( ip_address )
 
       if hw_address.nil?
         attempts.times do
@@ -132,9 +132,9 @@ class Network
     private
 
     def start_agents( ctx, timeout )
-      icmp = IcmpAgent.new timeout
-      udp  = UdpAgent.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
-      arp  = ArpAgent.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
+      icmp = Discovery::Agents::Icmp.new timeout
+      udp  = Discovery::Agents::Udp.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
+      arp  = Discovery::Agents::Arp.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
 
       icmp.wait
       arp.wait

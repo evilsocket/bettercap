@@ -12,7 +12,9 @@ This project is released under the GPL 3 license.
 
 # Parse the ARP table searching for new hosts.
 module BetterCap
-class ArpAgent < BaseAgent
+module Discovery
+module Agents
+class Arp < Base
   def self.parse( ctx )
     targets = []
     self.parse_cache do |ip,mac|
@@ -81,5 +83,7 @@ class ArpAgent < BaseAgent
 
     pkt.to_w( @ifconfig[:iface] )
   end
+end
+end
 end
 end

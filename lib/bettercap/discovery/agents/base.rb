@@ -12,7 +12,9 @@ This project is released under the GPL 3 license.
 
 # Base class for discovery agents.
 module BetterCap
-class BaseAgent
+module Discovery
+module Agents
+class Base
   def initialize( ifconfig, gw_ip, local_ip )
     @local_ip = local_ip
     @ifconfig = ifconfig
@@ -33,7 +35,7 @@ class BaseAgent
 
     # spawn the workers! ( tnx to https://blog.engineyard.com/2014/ruby-thread-pool )
     @workers = (0...4).map do
-      Thread.new do
+      ::Thread.new do
         begin
           while ip = @queue.pop(true)
             loop do
@@ -79,5 +81,7 @@ class BaseAgent
   def send_probe( ip )
     Logger.warn "#{self.class.name} not implemented!"
   end
+end
+end
 end
 end

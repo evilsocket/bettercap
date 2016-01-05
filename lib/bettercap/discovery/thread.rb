@@ -10,7 +10,8 @@ This project is released under the GPL 3 license.
 
 =end
 module BetterCap
-class Discovery
+module Discovery
+class Thread
   def initialize( ctx )
     @ctx     = ctx
     @running = false
@@ -19,7 +20,7 @@ class Discovery
 
   def start
     @running = true
-    @thread  = Thread.new { worker }
+    @thread  = ::Thread.new { worker }
   end
 
   def stop
@@ -60,5 +61,6 @@ class Discovery
       sleep(5) if @ctx.options.arpcache
     end
   end
+end
 end
 end

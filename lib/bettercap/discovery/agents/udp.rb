@@ -12,7 +12,9 @@ This project is released under the GPL 3 license.
 
 # Send UDP probes trying to filling the ARP table.
 module BetterCap
-class UdpAgent < BaseAgent
+module Discovery
+module Agents
+class Udp < Base
   private
 
   def send_probe( ip )
@@ -35,5 +37,7 @@ class UdpAgent < BaseAgent
     sd = nil
     # TODO: Parse response for hostname?
   end
+end
+end
 end
 end

@@ -12,9 +12,11 @@ This project is released under the GPL 3 license.
 
 # Send a broadcast ping trying to filling the ARP table.
 module BetterCap
-class IcmpAgent
+module Discovery
+module Agents
+class Icmp
   def initialize( timeout = 5 )
-    @thread = Thread.new {
+    @thread = ::Thread.new {
       FirewallFactory.get_firewall.enable_icmp_bcast(true)
 
       if RUBY_PLATFORM =~ /darwin/
@@ -32,5 +34,7 @@ class IcmpAgent
       Logger.debug "IcmpAgent.wait: #{e.message}"
     end
   end
+end
+end
 end
 end

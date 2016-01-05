@@ -45,7 +45,7 @@ class Context
     @certificate     = nil
     @proxies         = []
     @redirections    = []
-    @discovery       = Discovery.new self
+    @discovery       = Discovery::Thread.new self
     @firewall        = FirewallFactory.get_firewall
   end
 
