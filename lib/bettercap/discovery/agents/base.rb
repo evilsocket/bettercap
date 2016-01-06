@@ -16,11 +16,10 @@ module Discovery
 module Agents
 # Base class for BetterCap::Discovery::Agents.
 class Base
-  # Initialize the agent using the +ifconfig+ network inteface informations,
-  # the +gw_ip+ gateway ip address and +local_ip+ local interface IP address.
-  def initialize( ifconfig, gw_ip, local_ip )
-    @local_ip = local_ip
-    @ifconfig = ifconfig
+  # Initialize the agent using the +ctx+ BetterCap::Context instance.
+  def initialize( ctx )
+    @ifconfig = ctx.ifconfig
+    @local_ip = @ifconfig[:ip_saddr]
     @queue    = Queue.new
 
     net = ip = @ifconfig[:ip4_obj]
@@ -29,7 +28,7 @@ class Base
     while net.include?ip
       # rescanning the gateway could cause an issue when the
       # gateway itself has multiple interfaces ( LAN, WAN ... )
-      if ip != gw_ip and ip != local_ip
+      if ip != ctx.gateway and ip != local_ip
         @queue.push ip
       end
 

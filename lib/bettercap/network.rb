@@ -63,9 +63,9 @@ class << self
 
   # Return a list of BetterCap::Target objects found on the network, given a
   # BetterCap::Context ( +ctx+ ) and a +timeout+ in seconds for the operation.
-  def get_alive_targets( ctx, timeout = 5 )
+  def get_alive_targets( ctx )
     if ctx.options.should_discover_hosts?
-      start_agents( ctx, timeout )
+      start_agents( ctx )
     else
       Logger.debug 'Using current ARP cache.'
     end
@@ -74,11 +74,11 @@ class << self
   end
 
   # Return the IP address associated with the +mac+ hardware address using the
-  # given BetterCap::Context ( +ctx+ ) and a +timeout+ in seconds for the operation.
-  def get_ip_address( ctx, mac, timeout = 5 )
+  # given BetterCap::Context ( +ctx+ ).
+  def get_ip_address( ctx, mac )
     ip = Discovery::Agents::Arp.find_mac( mac )
     if ip.nil?
-      start_agents( ctx, timeout )
+      start_agents( ctx )
       ip = Discovery::Agents::Arp.find_mac( mac )
     end
     ip
@@ -130,25 +130,27 @@ class << self
     hw_address
   end
 
-    private
+  private
 
-    def start_agents( ctx, timeout )
-      icmp = Discovery::Agents::Icmp.new timeout
-      udp  = Discovery::Agents::Udp.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
-      arp  = Discovery::Agents::Arp.new ctx.ifconfig, ctx.gateway, ctx.ifconfig[:ip_saddr]
+  AGENT_NAMES = [ 'Icmp', 'Udp', 'Arp' ]
 
-      icmp.wait
-      arp.wait
-      udp.wait
+  def start_agents( ctx )
+    agents = []
+    AGENT_NAMES.each do |name|
+      agents << Kernel.const_get("Discovery::Agents::#{name}").new( ctx )
     end
-
-    def get_mac_from_capture( cap, ip_address )
-      cap.stream.each do |p|
-        arp_response = PacketFu::Packet.parse(p)
-        target_mac = arp_response.arp_saddr_mac if arp_response.arp_saddr_ip == ip_address
-        break target_mac unless target_mac.nil?
-      end
+    agents.each do |agent|
+      agent.wait
     end
+  end
+
+  def get_mac_from_capture( cap, ip_address )
+    cap.stream.each do |p|
+      arp_response = PacketFu::Packet.parse(p)
+      target_mac = arp_response.arp_saddr_mac if arp_response.arp_saddr_ip == ip_address
+      break target_mac unless target_mac.nil?
+    end
+  end
 
 end
 end

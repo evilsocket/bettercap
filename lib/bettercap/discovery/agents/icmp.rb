@@ -17,16 +17,16 @@ module Agents
 # Class responsible to do a ping-sweep on the network.
 class Icmp
   # Create a thread which will perform a ping-sweep on the network in order
-  # to populate the ARP cache with active targets, with a +timeout+ seconds
+  # to populate the ARP cache with active targets, with a +ctx.timeout+ seconds
   # timeout.
-  def initialize( timeout = 5 )
+  def initialize( ctx )
     @thread = ::Thread.new {
       Factories::Firewall.get.enable_icmp_bcast(true)
       # TODO: Use the real broadcast address for this network.
       if RUBY_PLATFORM =~ /darwin/
-        ping = Shell.execute("ping -i #{timeout} -c 2 255.255.255.255")
+        ping = Shell.execute("ping -i #{ctx.timeout} -c 2 255.255.255.255")
       elsif RUBY_PLATFORM =~ /linux/
-        ping = Shell.execute("ping -i #{timeout} -c 2 -b 255.255.255.255 2> /dev/null")
+        ping = Shell.execute("ping -i #{ctx.timeout} -c 2 -b 255.255.255.255 2> /dev/null")
       end
     }
   end
@@ -36,7 +36,7 @@ class Icmp
     begin
       @thread.join
     rescue Exception => e
-      Logger.debug "IcmpAgent.wait: #{e.message}"
+      Logger.debug "Discovery::Agents::Icmp.wait: #{e.message}"
     end
   end
 end

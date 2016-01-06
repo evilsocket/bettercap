@@ -38,6 +38,8 @@ class Context
   # Set to true if the program is running, to false if a shutdown was
   # scheduled by the user which pressed CTRL+C
   attr_accessor :running
+  # Timeout for discovery operations.
+  attr_reader   :timeout
 
   @@instance = nil
 
@@ -57,6 +59,7 @@ class Context
     end
 
     @running         = true
+    @timeout         = 5
     @options         = Options.new iface
     @ifconfig        = nil
     @firewall        = nil
