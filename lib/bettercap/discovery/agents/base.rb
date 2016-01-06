@@ -40,9 +40,7 @@ class Base
       ::Thread.new do
         begin
           while ip = @queue.pop(true)
-            loop do
-              Logger.debug "#{self.class.name} : Probing #{ip} ..."
-
+            loop do              
               begin
                 send_probe ip.to_s
 
