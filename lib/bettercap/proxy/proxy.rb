@@ -82,7 +82,7 @@ class Proxy
       if @socket and @running
         @running = false
         @socket.close
-        @pool.shutdown
+        @pool.shutdown false
       end
     rescue
     end

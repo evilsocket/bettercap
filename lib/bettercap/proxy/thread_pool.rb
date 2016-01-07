@@ -176,7 +176,7 @@ class ThreadPool
 
   # Tell all threads in the pool to exit and wait for them to finish.
   #
-  def shutdown
+  def shutdown( join_threads = true )
     threads = @mutex.synchronize do
       @shutdown = true
       @not_empty.broadcast
@@ -185,7 +185,7 @@ class ThreadPool
       @workers.dup
     end
 
-    threads.each(&:join)
+    threads.each(&:join) if join_threads
 
     @spawned = 0
     @workers = []
