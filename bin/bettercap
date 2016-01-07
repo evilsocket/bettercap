@@ -56,7 +56,7 @@ begin
   # Start network sniffer.
   if ctx.options.sniffer
     BetterCap::Sniffer.start ctx
-  else
+  elsif ctx.options.has_spoofer?
     BetterCap::Logger.warn 'WARNING: Sniffer module was NOT enabled ( -X argument ), this '\
                            'will cause the MITM to run but no data to be collected.' unless ctx.options.has_spoofer?
   end
