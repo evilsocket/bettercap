@@ -68,11 +68,17 @@ begin
 rescue SystemExit, Interrupt
   BetterCap::Logger.raw "\n"
 
-rescue BetterCap::Error => e
+rescue OptionParser::InvalidOption => e
+  BetterCap::Logger.error e.message
 
+rescue OptionParser::AmbiguousOption => e
+  BetterCap::Logger.error e.message
+
+rescue BetterCap::Error => e
   BetterCap::Logger.error e.message
 
 rescue Exception => e
+  BetterCap::Logger.error "EXCEPTION '#{e.class}' :"
   BetterCap::Logger.error e.message
   BetterCap::Logger.error e.backtrace.join("\n")
 
