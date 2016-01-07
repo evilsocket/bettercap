@@ -88,8 +88,14 @@ class Context
                             'correct network configuration, this could also happen if bettercap '\
                             'is launched from a virtual environment.' if @gateway.nil? or !Network.is_ip?(@gateway)
 
-    Logger.debug "network=#{@ifconfig[:ip4_obj]} gateway=#{@gateway} local_ip=#{@ifconfig[:ip_saddr]}"
-    Logger.debug "IFCONFIG: #{@ifconfig.inspect}"
+    Logger.debug '----- NETWORK INFORMATIONS -----'
+    Logger.debug "  network  = #{@ifconfig[:ip4_obj]}"
+    Logger.debug "  gateway  = #{@gateway}"
+    Logger.debug "  local_ip = #{@ifconfig[:ip_saddr]}\n"
+    @ifconfig.each do |key,value|
+      Logger.debug "  ifconfig[:#{key}] = #{value}"
+    end
+    Logger.debug "--------------------------------\n"
   end
 
   # Find a target given its +ip+ and +mac+ addresses inside the #targets
