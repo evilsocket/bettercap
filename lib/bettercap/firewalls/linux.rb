@@ -33,6 +33,10 @@ class Linux < Base
     Shell.execute("echo #{enabled ? 0 : 1} > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts")
   end
 
+  def disable_send_redirects
+    Shell.execute("echo 0 > /proc/sys/net/ipv4/conf/all/send_redirects")
+  end
+
   # Apply the +r+ BetterCap::Firewalls::Redirection port redirection object.
   def add_port_redirection( r )
     # post route

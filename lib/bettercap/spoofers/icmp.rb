@@ -78,8 +78,6 @@ class Icmp < Base
   def initialize
     Logger.warn "!!! 'BetterCap::Spoofers::Icmp' IS AN EXPERIMENTAL MODULE, IT'S NOT GUARANTEED TO WORK !!!\n"
 
-    # TODO: echo 0 > /proc/sys/net/ipv4/conf/all/send_redirect
-
     @ctx          = Context.get
     @forwarding   = @ctx.firewall.forwarding_enabled?
     @gateway      = nil
@@ -114,6 +112,7 @@ class Icmp < Base
     @running = true
 
     @ctx.firewall.enable_forwarding(true) unless @forwarding
+    @ctx.firewall.disable_send_redirects
 
     @spoof_thread = Thread.new { icmp_spoofer }
   end

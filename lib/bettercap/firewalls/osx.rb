@@ -33,6 +33,10 @@ class OSX < Base
     Shell.execute('sysctl net.inet.ip.forwarding').strip.split(' ')[1] == '1'
   end
 
+  def disable_send_redirects
+    raise BetterCap::Error, "Disabling send_redirects is not yet supported by OSX."
+  end
+
   # If +enabled+ is true, the PF firewall will be enabled, otherwise it will
   # be disabled.
   def enable(enabled)
