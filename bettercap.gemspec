@@ -17,6 +17,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency( 'packetfu', '~> 1.1.10' )
   gem.add_dependency( 'pcaprub', '~> 0.12.0' )
   gem.add_dependency( 'network_interface', '~> 0.0.1' )
+  gem.add_dependency( 'net-dns', '~> 0.8.0' )
 
   gem.files = Dir.glob("*.md") +
               Dir.glob("Rakefile") +

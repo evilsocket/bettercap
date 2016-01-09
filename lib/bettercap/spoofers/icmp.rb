@@ -15,6 +15,7 @@ require 'bettercap/context'
 require 'bettercap/network'
 require 'bettercap/logger'
 require 'colorize'
+require 'net/dns'
 
 module BetterCap
 module Spoofers
@@ -86,6 +87,7 @@ class Icmp < Base
     @gateway      = nil
     @local        = @ctx.ifconfig[:ip_saddr]
     @spoof_thread = nil
+    @watch_thread = nil
     @running      = false
     @entries      = [ '8.8.8.8', '8.8.4.4',                # Google DNS
                       '208.67.222.222', '208.67.220.220' ] # OpenDNS
@@ -123,6 +125,7 @@ class Icmp < Base
     @ctx.firewall.disable_send_redirects
 
     @spoof_thread = Thread.new { icmp_spoofer }
+    @watch_thread = Thread.new { dns_watcher }
   end
 
   # Stop the ICMP redirect spoofing, reset firewall state.
@@ -142,6 +145,54 @@ class Icmp < Base
   end
 
   private
+
+  def dns_watcher
+    Logger.info 'DNS watcher started ...'
+    begin
+      @capture = PacketFu::Capture.new(
+          iface: @ctx.options.iface,
+          filter: 'udp and port 53',
+          start: true
+      )
+    rescue  Exception => e
+      Logger.error e.message
+    end
+
+    @capture.stream.each do |p|
+      begin
+        if not @running
+            Logger.debug 'Stopping DNS watcher thread ...'
+            Thread.exit
+            break
+        end
+
+        if PacketFu::UDPPacket.can_parse?(p)
+          pkt = PacketFu::Packet.parse p
+          dns = Net::DNS::Packet.parse(pkt.payload) rescue nil
+          next if dns.nil?
+
+          if dns.header.anCount > 0
+            dns.answer.each do |a|
+              if a.respond_to?(:address)
+                Logger.info "[DNS] Redirecting #{a.address.to_s} ..."
+                @entries << a.address.to_s unless @entries.include?(a.address.to_s)
+              end
+            end
+
+          elsif dns.header.qdCount > 0
+            source = pkt.ip_src
+            name = dns.question.first.qName
+            if name =~ /\.$/
+              name = name[0,name.size-1]
+            end
+            Logger.info "[DNS] #{source} is requesting '#{name}' address ..."
+          end
+        end
+      rescue Exception => e
+        Logger.error e.message
+      end
+    end
+  end
 
   def icmp_spoofer
     prev_size = @ctx.targets.size
