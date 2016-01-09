@@ -166,27 +166,31 @@ class Icmp < Base
             break
         end
 
-        if PacketFu::UDPPacket.can_parse?(p)
-          pkt = PacketFu::Packet.parse p
-          dns = Net::DNS::Packet.parse(pkt.payload) rescue nil
-          next if dns.nil?
+        pkt = PacketFu::Packet.parse p rescue nil
+        next if pkt.nil? or pkt.ip_saddr == @local
 
-          if dns.header.anCount > 0
-            dns.answer.each do |a|
-              if a.respond_to?(:address)
-                Logger.info "[DNS] Redirecting #{a.address.to_s} ..."
-                @entries << a.address.to_s unless @entries.include?(a.address.to_s)
-              end
-            end
+        dns = Net::DNS::Packet.parse(pkt.payload) rescue nil
+        next if dns.nil?
 
-          elsif dns.header.qdCount > 0
-            source = pkt.ip_src
-            name = dns.question.first.qName
-            if name =~ /\.$/
-              name = name[0,name.size-1]
+        Logger.debug dns.inspect
+
+        if dns.header.anCount > 0
+          dns.answer.each do |a|
+            if a.respond_to?(:address)
+              Logger.debug "[DNS] Redirecting #{a.address.to_s} ..."
+              @entries << a.address.to_s unless @entries.include?(a.address.to_s)
+            else
+              puts a.inspect
             end
-            Logger.info "[DNS] #{source} is requesting '#{name}' address ..."
           end
+        end
+
+        if dns.header.qdCount > 0
+          name = dns.question.first.qName
+          if name =~ /\.$/
+            name = name[0,name.size-1]
+          end
+          Logger.info "[#{'DNS'.green}] #{pkt.ip_saddr} is requesting '#{name}' address ..."
         end
       rescue Exception => e
         Logger.error e.message
