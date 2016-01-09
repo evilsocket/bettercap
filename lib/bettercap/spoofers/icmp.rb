@@ -57,15 +57,18 @@ class ICMPRedirectPacket < PacketFu::Packet
       super
     end
 
-    def update!( ip_saddr, ip_daddr, fake_gateway, ip_encl_saddr, ip_encl_daddr )
-      @ip_header.ip_saddr = ip_saddr
-      @ip_header.ip_daddr = ip_daddr
+    def update!( gateway, target, local, address2redirect )
+      @eth_header.eth_src = PacketFu::EthHeader.mac2str(gateway.mac)
+      @ip_header.ip_saddr = gateway.ip
 
-      @udp_dummy.ip_saddr = ip_encl_saddr
-      @udp_dummy.ip_daddr = ip_encl_daddr
+      @eth_header.eth_dst = PacketFu::EthHeader.mac2str(target.mac)
+      @ip_header.ip_daddr = target.ip
+
+      @udp_dummy.ip_saddr = target.ip
+      @udp_dummy.ip_daddr = address2redirect
       @udp_dummy.recalc
 
-      @icmp_header.body = fake_gateway.split('.').collect(&:to_i).pack('C*') +
+      @icmp_header.body = local.split('.').collect(&:to_i).pack('C*') +
                           @udp_dummy.ip_header.to_s
 
       recalc
@@ -100,7 +103,7 @@ class Icmp < Base
     Logger.debug "Sending ICMP Redirect to #{target.to_s_compact} ..."
 
     pkt = ICMPRedirectPacket.new
-    pkt.update!( @gateway.ip, target.ip, @address, target.ip, @gateway.ip )
+    pkt.update!( @gateway, target, @address, @gateway.ip )
     pkt.to_w(@ctx.ifconfig[:iface])
   end
 
