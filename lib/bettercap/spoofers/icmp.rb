@@ -124,7 +124,7 @@ class Icmp < Base
             pkt.to_w(@ctx.ifconfig[:iface])
           end
         rescue Exception => e
-          Logger.debug "#{self.class.name} : #{ip} -> #{e.message}"
+          Logger.debug "#{self.class.name} : #{e.message}"
         end
       }
     }
