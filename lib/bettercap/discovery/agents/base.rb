@@ -28,7 +28,7 @@ class Base
     while net.include?ip
       # rescanning the gateway could cause an issue when the
       # gateway itself has multiple interfaces ( LAN, WAN ... )
-      if ip != ctx.gateway and ip != local_ip
+      if ip != ctx.gateway and ip != @local_ip
         @queue.push ip
       end
 
@@ -40,13 +40,13 @@ class Base
       ::Thread.new do
         begin
           while ip = @queue.pop(true)
-            loop do              
+            loop do
               begin
                 send_probe ip.to_s
 
                 break
               rescue Exception => e
-                Logger.debug "#{self.class.name}#send_probe : #{ip} -> #{e.message}"
+                # Logger.debug "#{self.class.name}#send_probe : #{ip} -> #{e.message}"
 
                 # If we've got an error message such as:
                 #   (cannot open BPF device) /dev/bpf0: Too many open files
@@ -61,9 +61,7 @@ class Base
               end
             end
           end
-        rescue Exception => e
-          Logger.debug "#{self.class.name} : #{ip} -> #{e.message}"
-        end
+        rescue; end
       end
     end
   end

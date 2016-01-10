@@ -15,7 +15,7 @@ module BetterCap
 module Discovery
 module Agents
 # Class responsible to send UDP probe packets to each possible IP on the network.
-class Udp < Base
+class Udp < Discovery::Agents::Base
   private
 
   def send_probe( ip )

@@ -16,7 +16,7 @@ module Discovery
 module Agents
 # Class responsible to parse ARP cache and send ARP probes to each
 # possible IP on the network.
-class Arp < Base
+class Arp < Discovery::Agents::Base
   # Parse the current ARP cache and return a list of BetterCap::Target
   # objects which are found inside it, using the +ctx+ BetterCap::Context
   # instance.

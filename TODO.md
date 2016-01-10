@@ -11,6 +11,7 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 - [x] Let `-T|--target` [support MAC addresses](https://github.com/evilsocket/bettercap/issues/82).
 - [x] Fix modules structure by folder.
 - [x] Document classes with RDoc.
+- [x] ICMP Redirect ( double direct )
 - [ ] Rewrite proxy class using [em-proxy](https://github.com/igrigorik/em-proxy) library.
 - [ ] HTTP/2 Support.
 
@@ -24,7 +25,6 @@ This is a list of TODOs I use to keep track of tasks and upcoming features.
 
 - [ ] Implement event-driven core plugin infrastructure ( for webui, etc ).
 - [ ] Implement web-ui core plugin.
-- [ ] ICMP Redirect ? ( only half duplex and filtered by many firewalls anyway ... dunno ).
 - [ ] DNS Spoofing ( not sure if it actually makes any sense ).
 - [ ] sslstrip ( not really sure, currently is quite useless )
 - [ ] Implement `--mkcert FILENAME` option to create custom HTTPS `crt` files.

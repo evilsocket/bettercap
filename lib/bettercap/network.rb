@@ -137,7 +137,7 @@ class << self
   def start_agents( ctx )
     agents = []
     AGENT_NAMES.each do |name|
-      agents << Kernel.const_get("Discovery::Agents::#{name}").new( ctx )
+      agents << Kernel.const_get("BetterCap::Discovery::Agents::#{name}").new( ctx )
     end
     agents.each do |agent|
       agent.wait
