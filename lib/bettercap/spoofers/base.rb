@@ -28,6 +28,76 @@ class Base
 
 private
 
+  def sniff_packets( filter )
+    begin
+      @capture = PacketFu::Capture.new(
+          iface: @ctx.options.iface,
+          filter: filter,
+          start: true
+      )
+    rescue  Exception => e
+      Logger.error e.message
+    end
+
+    @capture.stream.each do |p|
+      begin
+        if not @running
+            Logger.debug 'Stopping thread ...'
+            Thread.exit
+            break
+        end
+
+        pkt = PacketFu::Packet.parse p rescue nil
+
+        yield( pkt ) unless pkt.nil?
+
+      rescue Exception => e
+        Logger.error e.message
+      end
+    end
+  end
+
+  def spoof_loop( delay )
+    prev_size = @ctx.targets.size
+    loop do
+      if not @running
+          Logger.debug 'Stopping spoofing thread ...'
+          Thread.exit
+          break
+      end
+
+      size = @ctx.targets.size
+      if size > prev_size
+        Logger.warn "Aquired #{size - prev_size} new targets."
+      elsif size < prev_size
+        Logger.warn "Lost #{prev_size - size} targets."
+      end
+
+      Logger.debug "Spoofing #{@ctx.targets.size} targets ..."
+
+      update_targets!
+
+      @ctx.targets.each do |target|
+        yield(target)
+      end
+
+      prev_size = @ctx.targets.size
+
+      sleep(delay)
+    end
+  end
+
+  def update_gateway!
+    Logger.info "Getting gateway #{@ctx.gateway} MAC address ..."
+
+    hw = Network.get_hw_address( @ctx.ifconfig, @ctx.gateway )
+    raise BetterCap::Error, "Couldn't determine router MAC" if hw.nil?
+
+    @gateway = Target.new( @ctx.gateway, hw )
+
+    Logger.info "  #{@gateway}"
+  end
+
   def update_targets!
     @ctx.targets.each do |target|
       # targets could change, update mac addresses if needed

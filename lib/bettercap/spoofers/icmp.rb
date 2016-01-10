@@ -16,6 +16,7 @@ require 'bettercap/network'
 require 'bettercap/logger'
 require 'colorize'
 require 'net/dns'
+require 'resolv'
 
 module BetterCap
 module Spoofers
@@ -92,14 +93,7 @@ class Icmp < Base
     @entries      = [ '8.8.8.8', '8.8.4.4',                # Google DNS
                       '208.67.222.222', '208.67.220.220' ] # OpenDNS
 
-    Logger.info "Getting gateway #{@ctx.gateway} MAC address ..."
-
-    hw = Network.get_hw_address( @ctx.ifconfig, @ctx.gateway )
-    raise BetterCap::Error, "Couldn't determine router MAC" if hw.nil?
-
-    @gateway = Target.new( @ctx.gateway, hw )
-
-    Logger.info "  #{@gateway}"
+    update_gateway!
   end
 
   # Send ICMP redirect to the +target+, redirecting the gateway ip and
@@ -125,12 +119,9 @@ class Icmp < Base
 
             Logger.debug "Sending ICMP Redirect to #{target.to_s_compact} redirecting #{address} to us ..."
 
-            3.times do
-              pkt = ICMPRedirectPacket.new
-              pkt.update!( @gateway, target, @local, address )
-              pkt.to_w(@ctx.ifconfig[:iface])
-              sleep(0.3)
-            end
+            pkt = ICMPRedirectPacket.new
+            pkt.update!( @gateway, target, @local, address )
+            pkt.to_w(@ctx.ifconfig[:iface])
           end
         rescue Exception => e
           Logger.debug "#{self.class.name} : #{ip} -> #{e.message}"
@@ -166,86 +157,55 @@ class Icmp < Base
 
   private
 
-  def dns_watcher
-    Logger.info 'DNS watcher started ...'
-    begin
-      @capture = PacketFu::Capture.new(
-          iface: @ctx.options.iface,
-          filter: 'udp and port 53',
-          start: true
-      )
-    rescue  Exception => e
-      Logger.error e.message
-    end
-
-    @capture.stream.each do |p|
-      begin
-        if not @running
-            Logger.debug 'Stopping DNS watcher thread ...'
-            Thread.exit
-            break
-        end
-
-        pkt = PacketFu::Packet.parse p rescue nil
-        next if pkt.nil? or pkt.ip_saddr == @local
-
-        dns = Net::DNS::Packet.parse(pkt.payload) rescue nil
-        next if dns.nil?
-
-        Logger.debug dns.inspect
-
-        if dns.header.anCount > 0
-          dns.answer.each do |a|
-            if a.respond_to?(:address)
-              Logger.debug "[DNS] Redirecting #{a.address.to_s} ..."
-              @entries << a.address.to_s unless @entries.include?(a.address.to_s)
-            end
-          end
-        end
-
-        if dns.header.qdCount > 0
-          name = dns.question.first.qName
-          if name =~ /\.$/
-            name = name[0,name.size-1]
-          end
-          Logger.info "[#{'DNS'.green}] #{pkt.ip_saddr} is requesting '#{name}' address ..."
-        end
-      rescue Exception => e
-        Logger.error e.message
+  def is_interesting_packet?(pkt)
+    return false if pkt.ip_saddr == @local
+    @ctx.targets.each do |target|
+      if target.ip and ( target.ip == pkt.ip_saddr or target.ip == pkt.ip_daddr )
+        return true
       end
     end
+    false
+  end
+
+  def dns_watcher
+    Logger.info 'DNS watcher started ...'
+
+    sniff_packets('udp and port 53') { |pkt|
+      next unless is_interesting_packet?(pkt)
+
+      dns = Net::DNS::Packet.parse(pkt.payload) rescue nil
+      next if dns.nil?
+
+      Logger.debug dns.inspect
+
+      if dns.header.anCount > 0
+        dns.answer.each do |a|
+          if a.respond_to?(:address)
+            Logger.debug "[DNS] Redirecting #{a.address.to_s} ..."
+            @entries << a.address.to_s unless @entries.include?(a.address.to_s)
+          end
+        end
+      end
+
+      if dns.header.qdCount > 0
+        name = dns.question.first.qName
+        if name =~ /\.$/
+          name = name[0,name.size-1]
+        end
+        Logger.info "[#{'DNS'.green}] #{pkt.ip_saddr} is requesting '#{name}' address ..."
+        Resolv.each_address(name) do |ip|
+          @entries << ip unless @entries.include?(ip)
+        end
+      end
+    }
   end
 
   def icmp_spoofer
-    prev_size = @ctx.targets.size
-    loop do
-      if not @running
-          Logger.debug 'Stopping spoofing thread ...'
-          Thread.exit
-          break
+    spoof_loop(3) { |target|
+      unless target.ip.nil? or target.mac.nil?
+        send_spoofed_packet target
       end
-
-      size = @ctx.targets.size
-      if size > prev_size
-        Logger.warn "Aquired #{size - prev_size} new targets."
-      elsif size < prev_size
-        Logger.warn "Lost #{prev_size - size} targets."
-      end
-
-      Logger.debug "Spoofing #{@ctx.targets.size} targets ..."
-
-      update_targets!
-
-      @ctx.targets.each do |target|
-        unless target.ip.nil? or target.mac.nil?
-          send_spoofed_packet target
-        end
-      end
-
-      prev_size = @ctx.targets.size
-
-      sleep(10)
-    end
+    }
   end
 end
 end
