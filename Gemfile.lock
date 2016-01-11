@@ -3,6 +3,7 @@ PATH
   specs:
     bettercap (1.1.11b)
       colorize (~> 0.7.5)
+      net-dns (~> 0.8.0)
       network_interface (~> 0.0.1)
       packetfu (~> 1.1.10)
       pcaprub (~> 0.12.0)
@@ -10,9 +11,12 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    colorize (0.7.5)
+    colorize (0.7.7)
+    net-dns (0.8.0)
     network_interface (0.0.1)
-    packetfu (1.1.10)
+    packetfu (1.1.11)
+      network_interface (~> 0.0)
+      pcaprub (~> 0.12)
     pcaprub (0.12.0)
 
 PLATFORMS
@@ -20,6 +24,3 @@ PLATFORMS
 
 DEPENDENCIES
   bettercap!
-
-BUNDLED WITH
-   1.11.2
