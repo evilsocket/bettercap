@@ -90,7 +90,7 @@ class Arp < Discovery::Agents::Base
     pkt.arp_saddr_ip  = @ifconfig[:ip_saddr]
     pkt.arp_daddr_ip  = ip
 
-    pkt.to_w( @ifconfig[:iface] )
+    @ctx.packets.push(pkt)
   end
 end
 end

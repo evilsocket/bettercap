@@ -44,15 +44,10 @@ class Thread
     Logger.debug( 'Network discovery thread started.' ) unless @ctx.options.arpcache
 
     while @running
-      empty_list = @ctx.targets.empty?
-
-      if @ctx.options.should_discover_hosts?
-        Logger.info 'Searching for targets ...' if empty_list
-      end
-
+      was_empty = @ctx.targets.empty?
       @ctx.targets = Network.get_alive_targets(@ctx).sort_by { |t| t.sortable_ip }
 
-      if empty_list and not @ctx.targets.empty?
+      if was_empty and not @ctx.targets.empty?
         Logger.info "Collected #{@ctx.targets.size} total targets."
 
         msg = "\n"

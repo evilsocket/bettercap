@@ -27,6 +27,7 @@ Config = RbConfig
 require 'bettercap/update_checker'
 require 'bettercap/error'
 require 'bettercap/options'
+require 'bettercap/packet_queue'
 require 'bettercap/discovery/thread'
 require 'bettercap/discovery/agents/base'
 require 'bettercap/discovery/agents/arp'

@@ -18,6 +18,7 @@ module Agents
 class Base
   # Initialize the agent using the +ctx+ BetterCap::Context instance.
   def initialize( ctx )
+    @ctx      = ctx
     @ifconfig = ctx.ifconfig
     @local_ip = @ifconfig[:ip_saddr]
     @queue    = Queue.new

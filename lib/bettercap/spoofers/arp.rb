@@ -46,7 +46,7 @@ class Arp < Base
     pkt.arp_daddr_ip = daddr
     pkt.arp_opcode = 2
 
-    pkt.to_w(@ctx.ifconfig[:iface])
+    @ctx.packets.push(pkt)
   end
 
   # Start the ARP spoofing.

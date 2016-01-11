@@ -109,7 +109,7 @@ class << self
             start: true,
             filter: "arp src #{ip_address} and ether dst #{arp_pkt.eth_saddr}"
           )
-          arp_pkt.to_w(iface[:iface])
+          Context.get.packets.push(arp_pkt)
 
           begin
             Logger.debug 'Attempting to get MAC from packet capture ...'

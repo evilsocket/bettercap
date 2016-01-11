@@ -88,8 +88,6 @@ class Icmp < Base
     @spoof_thread = nil
     @watch_thread = nil
     @running      = false
-    @queue        = Queue.new
-    @workers      = nil
     @entries      = [ '8.8.8.8', '8.8.4.4',                # Google DNS
                       '208.67.222.222', '208.67.220.220' ] # OpenDNS
 
@@ -100,7 +98,15 @@ class Icmp < Base
   # everything in the @entries list of addresses to us.
   def send_spoofed_packet( target )
     ( [@gateway.ip] + @entries ).each do |address|
-      @queue.push([target, address])
+      begin
+        Logger.debug "Sending ICMP Redirect to #{target.to_s_compact} redirecting #{address} to us ..."
+
+        pkt = ICMPRedirectPacket.new
+        pkt.update!( @gateway, target, @local, address )
+        @ctx.packets.push(pkt)
+      rescue Exception => e
+        Logger.debug "#{self.class.name} : #{e.message}"
+      end
     end
   end
 
@@ -110,24 +116,6 @@ class Icmp < Base
 
     stop() if @running
     @running = true
-
-    @workers = (0...4).map {
-      ::Thread.new {
-        begin
-          while @running do
-            target, address = @queue.pop
-
-            Logger.debug "Sending ICMP Redirect to #{target.to_s_compact} redirecting #{address} to us ..."
-
-            pkt = ICMPRedirectPacket.new
-            pkt.update!( @gateway, target, @local, address )
-            pkt.to_w(@ctx.ifconfig[:iface])
-          end
-        rescue Exception => e
-          Logger.debug "#{self.class.name} : #{e.message}"
-        end
-      }
-    }
 
     @ctx.firewall.enable_forwarding(true) unless @forwarding
     @ctx.firewall.enable_send_redirects(false)

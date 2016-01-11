@@ -22,7 +22,7 @@ class Icmp
   def initialize( ctx )
     @thread = ::Thread.new {
       Factories::Firewall.get.enable_icmp_bcast(true)
-      
+
       # TODO: Use the real broadcast address for this network.
       3.times do
         pkt = PacketFu::ICMPPacket.new
@@ -36,9 +36,7 @@ class Icmp
         pkt.payload   = "ABCD"
         pkt.recalc
 
-        pkt.to_w( ctx.ifconfig[:iface] )
-
-        sleep(0.5)
+        ctx.packets.push(pkt)
       end
     }
   end

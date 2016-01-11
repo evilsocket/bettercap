@@ -40,6 +40,8 @@ class Context
   attr_accessor :running
   # Timeout for discovery operations.
   attr_reader   :timeout
+  # Instance of BetterCap::PacketQueue.
+  attr_reader   :packets
 
   @@instance = nil
 
@@ -73,6 +75,7 @@ class Context
     @redirections    = []
     @discovery       = Discovery::Thread.new self
     @firewall        = Factories::Firewall.get
+    @packets         = nil
   end
 
   # Update the Context state parsing network related informations.
@@ -96,6 +99,8 @@ class Context
       Logger.debug "  ifconfig[:#{key}] = #{value}"
     end
     Logger.debug "--------------------------------\n"
+
+    @packets = PacketQueue.new( @ifconfig[:iface], 16 )
   end
 
   # Find a target given its +ip+ and +mac+ addresses inside the #targets
@@ -179,6 +184,8 @@ class Context
 
     # Logger is silent if @running == false
     puts "\nShutting down, hang on ...\n"
+
+    @packets.stop
 
     Logger.debug 'Stopping target discovery manager ...'
     @discovery.stop
