@@ -101,6 +101,8 @@ class << self
         arp_pkt.arp_daddr_ip  = ip_address
 
         cap_thread = Thread.new do
+          Context.get.packets.push(arp_pkt)
+
           target_mac = nil
           timeout = 0
 
@@ -109,7 +111,6 @@ class << self
             start: true,
             filter: "arp src #{ip_address} and ether dst #{arp_pkt.eth_saddr}"
           )
-          Context.get.packets.push(arp_pkt)
 
           begin
             Logger.debug 'Attempting to get MAC from packet capture ...'
@@ -132,16 +133,11 @@ class << self
 
   private
 
-  AGENT_NAMES = [ 'Icmp', 'Udp', 'Arp' ]
-
   def start_agents( ctx )
-    agents = []
-    AGENT_NAMES.each do |name|
-      agents << Kernel.const_get("BetterCap::Discovery::Agents::#{name}").new( ctx )
+    [ 'Icmp', 'Udp', 'Arp' ].each do |name|
+      Kernel.const_get("BetterCap::Discovery::Agents::#{name}").new( ctx )
     end
-    agents.each do |agent|
-      agent.wait
-    end
+    ctx.packets.wait_empty( ctx.timeout )
   end
 
   def get_mac_from_capture( cap, ip_address )

@@ -81,16 +81,16 @@ class Arp < Discovery::Agents::Base
     /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{Context.get.ifconfig[:iface]}.*/i.match(line)
   end
 
-  def send_probe( ip )
+  def get_probe( ip )
     pkt = PacketFu::ARPPacket.new
 
     pkt.eth_saddr     = pkt.arp_saddr_mac = @ifconfig[:eth_saddr]
     pkt.eth_daddr     = 'ff:ff:ff:ff:ff:ff'
     pkt.arp_daddr_mac = '00:00:00:00:00:00'
     pkt.arp_saddr_ip  = @ifconfig[:ip_saddr]
-    pkt.arp_daddr_ip  = ip
+    pkt.arp_daddr_ip  = ip.to_s
 
-    @ctx.packets.push(pkt)
+    pkt
   end
 end
 end

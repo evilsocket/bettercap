@@ -18,11 +18,9 @@ module Agents
 class Udp < Discovery::Agents::Base
   private
 
-  def send_probe( ip )
+  def get_probe( ip )
     # send dummy udp packet, just to fill ARP table
-    sd = UDPSocket.new
-    sd.send( "\x10\x12\x85\x00\x00", 0, ip.to_s, 137 )
-    sd = nil
+    [ ip.to_s, 137, "\x10\x12\x85\x00\x00" ]
   end
 end
 end

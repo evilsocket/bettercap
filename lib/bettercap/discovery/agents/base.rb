@@ -18,10 +18,9 @@ module Agents
 class Base
   # Initialize the agent using the +ctx+ BetterCap::Context instance.
   def initialize( ctx )
-    @ctx      = ctx
-    @ifconfig = ctx.ifconfig
-    @local_ip = @ifconfig[:ip_saddr]
-    @queue    = Queue.new
+    @ctx       = ctx
+    @ifconfig  = ctx.ifconfig
+    @local_ip  = @ifconfig[:ip_saddr]
 
     net = ip = @ifconfig[:ip4_obj]
 
@@ -30,56 +29,21 @@ class Base
       # rescanning the gateway could cause an issue when the
       # gateway itself has multiple interfaces ( LAN, WAN ... )
       if ip != ctx.gateway and ip != @local_ip
-        @queue.push ip
+        packet = get_probe(ip)
+        @ctx.packets.push(packet)
       end
 
       ip = ip.succ
     end
-
-    # spawn the workers! ( tnx to https://blog.engineyard.com/2014/ruby-thread-pool )
-    @workers = (0...4).map do
-      ::Thread.new do
-        begin
-          while ip = @queue.pop(true)
-            loop do
-              begin
-                send_probe ip.to_s
-
-                break
-              rescue Exception => e
-                # Logger.debug "#{self.class.name}#send_probe : #{ip} -> #{e.message}"
-
-                # If we've got an error message such as:
-                #   (cannot open BPF device) /dev/bpf0: Too many open files
-                # We want to retry to probe this ip in a while.
-                if e.message.include? 'Too many open files'
-                  Logger.debug "Retrying #{self.class.name}#send_probe on #{ip} in 1 second."
-
-                  sleep 1
-                else
-                  break
-                end
-              end
-            end
-          end
-        rescue; end
-      end
-    end
   end
 
   # Wait for all the probes to be sent by this agent.
-  def wait
-    begin
-      @workers.map(&:join)
-    rescue Exception => e
-      Logger.debug "#{self.class.name}.wait: #{e.message}"
-    end
-  end
+  def wait; end
 
   private
 
-  def send_probe( ip )
-    Logger.warn "#{self.class.name} not implemented!"
+  def get_probe( ip )
+    Logger.warn "#{self.class.name}#get_probe not implemented!"
   end
 end
 end

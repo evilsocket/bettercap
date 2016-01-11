@@ -100,7 +100,7 @@ class Context
     end
     Logger.debug "--------------------------------\n"
 
-    @packets = PacketQueue.new( @ifconfig[:iface], 16 )
+    @packets = PacketQueue.new( @ifconfig[:iface], 4 )
   end
 
   # Find a target given its +ip+ and +mac+ addresses inside the #targets
