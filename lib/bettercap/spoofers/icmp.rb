@@ -130,7 +130,7 @@ class Icmp < Base
     }
 
     @ctx.firewall.enable_forwarding(true) unless @forwarding
-    @ctx.firewall.disable_send_redirects
+    @ctx.firewall.enable_send_redirects(false)
 
     @spoof_thread = Thread.new { icmp_spoofer }
     @watch_thread = Thread.new { dns_watcher }

@@ -33,7 +33,8 @@ class OSX < Base
     Shell.execute('sysctl net.inet.ip.forwarding').strip.split(' ')[1] == '1'
   end
 
-  def disable_send_redirects; end
+  # This method is ignored on OSX.
+  def enable_send_redirects(enabled); end
 
   # If +enabled+ is true, the PF firewall will be enabled, otherwise it will
   # be disabled.

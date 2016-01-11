@@ -26,6 +26,20 @@ class Base
     not_implemented_method!
   end
 
+  # If +enabled+ is true will enable icmp_echo_ignore_broadcasts, otherwise it will
+  # disable it.
+  # Raise NotImplementedError
+  def enable_icmp_bcast(enabled)
+    not_implemented_method!
+  end
+
+  # If +enabled+ is true will enable send_redirects, otherwise it will
+  # disable it.
+  # Raise NotImplementedError
+  def enable_send_redirects(enabled)
+    not_implemented_method!
+  end
+
   # Return true if packet forwarding is currently enabled, otherwise false.
   # Raise NotImplementedError
   def forwarding_enabled?
