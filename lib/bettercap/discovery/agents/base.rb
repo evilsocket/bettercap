@@ -23,7 +23,6 @@ class Base
     @local_ip  = @ifconfig[:ip_saddr]
 
     net = ip = @ifconfig[:ip4_obj]
-
     # loop each ip in our subnet and push it to the queue
     while net.include?ip
       # rescanning the gateway could cause an issue when the
@@ -36,9 +35,6 @@ class Base
       ip = ip.succ
     end
   end
-
-  # Wait for all the probes to be sent by this agent.
-  def wait; end
 
   private
 
