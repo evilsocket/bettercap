@@ -17,53 +17,9 @@ class PacketQueue
     @nworkers = nworkers
     @running  = true
     @injector = PacketFu::Inject.new(:iface => iface)
+    @udp      = UDPSocket.new
     @queue    = Queue.new
-    @workers  = (0...nworkers).map {
-      ::Thread.new {
-        Logger.debug "PacketQueue worker started."
-
-        while @running
-          begin
-            packet = @queue.pop
-            # nil packet pushed to signal stopping
-            if packet.nil?
-              Logger.debug "Got nil packet, PacketQueue stopping ..."
-              break
-
-            # [ ip, port, data ] pushed by Discovery::Agents::Udp
-            elsif packet.is_a?(Array)
-              ip, port, data = packet
-              Logger.debug "Sending UDP data packet to #{ip}:#{port} ..."
-
-              # TODO: Maybe just create one globally?
-              sd = UDPSocket.new
-              sd.send( data, 0, ip, port )
-              sd = nil
-
-            # PacketFu packet
-            else
-              Logger.debug "Sending #{packet.class.name} packet ..."
-
-              # Use a global PacketFu::Inject object.
-              @injector.array = [packet.headers[0].to_s]
-              @injector.inject
-            end
-          rescue Exception => e
-            Logger.debug "#{self.class.name} ( #{packet.class.name} ) : #{e.message}"
-
-            # If we've got an error message such as:
-            #   (cannot open BPF device) /dev/bpf0: Too many open files
-            # We want to retry to probe this ip in a while.
-            if e.message.include? 'Too many open files'
-              Logger.debug "Repushing #{self.class.name} to the packet queue ..."
-              push(packet)
-            end
-          end
-        end
-
-        Logger.debug "PacketQueue worker stopped."
-      }
-    }
+    @workers  = (0...nworkers).map { ::Thread.new { worker } }
   end
 
   # Push a packet to the queue.
@@ -87,6 +43,54 @@ class PacketQueue
     @running = false
     @nworkers.times { push(nil) }
     @workers.map(&:join)
+  end
+
+  private
+
+  def dispatch_udp_packet(packet)
+    ip, port, data = packet
+    Logger.debug "Sending UDP data packet to #{ip}:#{port} ..."
+    @udp.send( data, 0, ip, port )
+  end
+
+  def dispatch_raw_packet(packet)
+    Logger.debug "Sending #{packet.class.name} packet ..."
+    @injector.array = [packet.headers[0].to_s]
+    @injector.inject
+  end
+
+  def worker
+    Logger.debug "PacketQueue worker started."
+
+    while @running
+      begin
+        packet = @queue.pop
+        case packet
+        # nil packet pushed to signal stopping
+        when nil
+          Logger.debug "Got nil packet, PacketQueue stopping ..."
+          break
+        # [ ip, port, data ] pushed by Discovery::Agents::Udp
+        when Array
+          dispatch_udp_packet(packet)
+        # PacketFu raw packet
+        when Object
+          dispatch_raw_packet(packet)
+        end
+      rescue Exception => e
+        Logger.debug "#{self.class.name} ( #{packet.class.name} ) : #{e.message}"
+
+        # If we've got an error message such as:
+        #   (cannot open BPF device) /dev/bpf0: Too many open files
+        # We want to retry to probe this ip in a while.
+        if e.message.include? 'Too many open files'
+          Logger.debug "Repushing #{self.class.name} to the packet queue ..."
+          push(packet)
+        end
+      end
+    end
+
+    Logger.debug "PacketQueue worker stopped."
   end
 end
 end
