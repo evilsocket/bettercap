@@ -18,6 +18,9 @@ begin
   puts BetterCap::BANNER.green.bold
   puts "\n\n\n"
 
+  # We need this in order to report unhandled exceptions.
+  original_argv = ARGV.clone
+
   # Create global context, parse command line arguments and perform basic
   # error checking.
   ctx = BetterCap::Options.parse!
@@ -78,9 +81,17 @@ rescue BetterCap::Error => e
   BetterCap::Logger.error e.message
 
 rescue Exception => e
-  BetterCap::Logger.error "EXCEPTION '#{e.class}' :"
-  BetterCap::Logger.error e.message
-  BetterCap::Logger.error e.backtrace.join("\n")
+  puts "\n\n"
+  BetterCap::Logger.error "Oooops, seems like something weird occurred, please copy paste the following output " \
+                          "and open a new issue on https://github.com/evilsocket/bettercap/issues :\n"
+
+  BetterCap::Logger.error "Platform          : #{RUBY_PLATFORM}"
+  BetterCap::Logger.error "Ruby Version      : #{RUBY_VERSION}"
+  BetterCap::Logger.error "BetterCap Version : #{BetterCap::VERSION}"
+  BetterCap::Logger.error "Command Line      : #{original_argv.join(" ")}"
+  BetterCap::Logger.error "Exception         : #{e.class}"
+  BetterCap::Logger.error "Message           : #{e.message}"
+  BetterCap::Logger.error "Backtrace         :\n\n    #{e.backtrace.join("\n    ")}\n"
 
 ensure
   # Make sure all the messages on the logger queue are printed.
