@@ -131,8 +131,11 @@ class Options
     ctx = Context.get
 
     OptionParser.new do |opts|
-      opts.banner = "Usage: #{$0} [options]"
       opts.version = BetterCap::VERSION
+      opts.banner = "Usage: bettercap [options]"
+      opts.separator ""
+      opts.separator "Specific options:"
+      opts.separator ""
 
       opts.on( '-G', '--gateway ADDRESS', 'Manually specify the gateway address, if not specified the current gateway will be retrieved and used. ' ) do |v|
         ctx.options.gateway = v
