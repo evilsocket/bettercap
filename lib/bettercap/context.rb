@@ -127,10 +127,8 @@ class Context
   # is needed in order to run proxy modules.
   def create_proxies
     if @options.has_proxy_module?
-      require @options.proxy_module
-
       Proxy::Module.register_modules
-
+      
       raise BetterCap::Error, "#{@options.proxy_module} is not a valid bettercap proxy module." if Proxy::Module.modules.empty?
     end
 

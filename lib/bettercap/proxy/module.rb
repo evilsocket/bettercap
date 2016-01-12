@@ -26,13 +26,30 @@ class Module
     true
   end
 
+  # Register custom options for each available module.
+  def self.register_options(opts)
+    self.each_module do |const|
+      if const.respond_to?(:on_options)
+        const.on_options(opts)
+      end
+    end
+  end
+
   # Register available proxy modules into the system.
   def self.register_modules
+    self.each_module do |const|
+      Logger.debug "Registering module #{const}"
+      @@modules << const.new
+    end
+  end
+
+  private
+
+  def self.each_module
     Object.constants.each do |klass|
       const = Kernel.const_get(klass)
       if const.respond_to?(:superclass) and const.superclass == self
-        Logger.debug "Registering module #{const}"
-        @@modules << const.new
+        yield const
       end
     end
   end
