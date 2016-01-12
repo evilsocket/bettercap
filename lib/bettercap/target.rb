@@ -72,8 +72,12 @@ class Target
   end
 
   # Return a verbose string representation of this object.
-  def to_s
-    s = sprintf( '%-15s : %-17s', if @ip.nil? then '???' else @ip end, @mac )
+  def to_s(padding=true)
+    if padding
+      s = sprintf( '%-15s : %-17s', if @ip.nil? then '???' else @ip end, @mac )
+    else
+      s = sprintf( '%s : %s', if @ip.nil? then '???' else @ip end, @mac )
+    end
     s += " / #{@hostname}" unless @hostname.nil?
     s += if @vendor.nil? then " ( ??? )" else " ( #{@vendor} )" end
     s

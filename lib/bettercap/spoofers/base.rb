@@ -88,14 +88,11 @@ private
   end
 
   def update_gateway!
-    Logger.info "Getting gateway #{@ctx.gateway} MAC address ..."
-
     hw = Network.get_hw_address( @ctx.ifconfig, @ctx.gateway )
     raise BetterCap::Error, "Couldn't determine router MAC" if hw.nil?
-
     @gateway = Target.new( @ctx.gateway, hw )
 
-    Logger.info "  #{@gateway}"
+    Logger.info "[#{'GATEWAY'.green}] #{@gateway.to_s(false)}"
   end
 
   def update_targets!
@@ -104,21 +101,22 @@ private
       if target.mac.nil?
         hw = Network.get_hw_address( @ctx.ifconfig, target.ip )
         if hw.nil?
-          Logger.warn "Couldn't determine target #{ip} MAC!"
+          Logger.warn "Couldn't determine target #{ip} MAC address!"
           next
         else
-          Logger.info "  Target MAC    : #{hw}"
           target.mac = hw
+          Logger.info "[#{'TARGET'.green}] #{target.to_s(false)}"
         end
       # target was specified by MAC address
       elsif target.ip_refresh
         ip = Network.get_ip_address( @ctx, target.mac )
         if ip.nil?
-          Logger.warn "Couldn't determine target #{target.mac} IP!"
+          Logger.warn "Couldn't determine target #{target.mac} IP address!"
           next
         else
-          Logger.info "Target #{target.mac} IP : #{ip}" if target.ip.nil? or target.ip != ip
+          doprint = ( target.ip.nil? or target.ip != ip )
           target.ip = ip
+          Logger.info("[#{'TARGET'.green}] #{target.to_s(false)}") if doprint
         end
       end
     end
