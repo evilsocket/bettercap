@@ -70,16 +70,16 @@ class << self
       Logger.debug 'Using current ARP cache.'
     end
 
-    Discovery::Agents::Arp.parse ctx
+    ArpReader.parse ctx
   end
 
   # Return the IP address associated with the +mac+ hardware address using the
   # given BetterCap::Context ( +ctx+ ).
   def get_ip_address( ctx, mac )
-    ip = Discovery::Agents::Arp.find_mac( mac )
+    ip = ArpReader.find_mac( mac )
     if ip.nil?
       start_agents( ctx )
-      ip = Discovery::Agents::Arp.find_mac( mac )
+      ip = ArpReader.find_mac( mac )
     end
     ip
   end
@@ -88,7 +88,7 @@ class << self
   # the +iface+ network interface.
   # The resolution will be performed for the specified number of +attempts+.
   def get_hw_address( iface, ip_address, attempts = 2 )
-    hw_address = Discovery::Agents::Arp.find_address( ip_address )
+    hw_address = ArpReader.find_address( ip_address )
 
     if hw_address.nil?
       attempts.times do
