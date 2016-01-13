@@ -37,7 +37,7 @@ class Spoofer
 
       require_relative "../spoofers/#{name}"
 
-      Kernel.const_get("BetterCap").const_get("Spoofers").const_get("#{name.capitalize}").new
+      BetterCap::Loader.load("BetterCap::Spoofers::#{name.capitalize}").new
     end
 
     private

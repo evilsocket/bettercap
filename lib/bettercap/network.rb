@@ -135,7 +135,7 @@ class << self
 
   def start_agents( ctx )
     [ 'Icmp', 'Udp', 'Arp' ].each do |name|
-      Kernel.const_get("BetterCap").const_get("Discovery").const_get("Agents").const_get(name).new( ctx )
+      BetterCap::Loader.load("BetterCap::Discovery::Agents::#{name}").new(ctx)
     end
     ctx.packets.wait_empty( ctx.timeout )
   end

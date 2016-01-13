@@ -55,7 +55,7 @@ class Parser
 
           require_relative "#{@@path}#{file}"
 
-          loaded << Kernel.const_get("BetterCap").const_get("Parsers").const_get("#{cname.capitalize}").new
+          loaded << BetterCap::Loader.load("BetterCap::Parsers::#{cname.capitalize}").new
         end
       end
       loaded
