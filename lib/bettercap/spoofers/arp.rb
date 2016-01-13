@@ -56,7 +56,12 @@ class Arp < Base
     stop() if @running
     @running = true
 
-    @ctx.firewall.enable_forwarding(true) unless @forwarding
+    if @ctx.options.kill
+      Logger.warn "Disabling packet forwarding."
+      @ctx.firewall.enable_forwarding(false) if @forwarding
+    else
+      @ctx.firewall.enable_forwarding(true) unless @forwarding
+    end
 
     @sniff_thread = Thread.new { arp_watcher }
     @spoof_thread = Thread.new { arp_spoofer }

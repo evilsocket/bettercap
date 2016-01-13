@@ -117,7 +117,13 @@ class Icmp < Base
     stop() if @running
     @running = true
 
-    @ctx.firewall.enable_forwarding(true) unless @forwarding
+    if @ctx.options.kill
+      Logger.warn "Disabling packet forwarding."
+      @ctx.firewall.enable_forwarding(false) if @forwarding
+    else
+      @ctx.firewall.enable_forwarding(true) unless @forwarding
+    end
+    
     @ctx.firewall.enable_send_redirects(false)
 
     @spoof_thread = Thread.new { icmp_spoofer }

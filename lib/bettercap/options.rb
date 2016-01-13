@@ -80,6 +80,9 @@ class Options
   attr_accessor :check_updates
   # If true, targets NBNS hostname resolution won't be performed.
   attr_accessor :no_target_nbns
+  # If true, bettercap won't forward packets for any target, causing
+  # connections to be killed.
+  attr_accessor :kill
 
   # Create a BetterCap::Options class instance using the specified network interface.
   def initialize( iface )
@@ -93,6 +96,7 @@ class Options
     @debug = false
     @arpcache = false
     @no_target_nbns = false
+    @kill = false
 
     @ignore = nil
 
@@ -283,6 +287,10 @@ class Options
       opts.on( '--httpd-path PATH', 'Set HTTP server path, default to ' + ctx.options.httpd_path +  '.' ) do |v|
         ctx.options.httpd = true
         ctx.options.httpd_path = v
+      end
+
+      opts.on( '--kill', 'Instead of forwarding packets, this switch will make targets connections to be killed.' ) do
+        ctx.options.kill = true
       end
 
       opts.on( '--check-updates', 'Will check if any update is available and then exit.' ) do
