@@ -34,10 +34,10 @@ class Httpauth < Base
         decoded = Base64.decode64(encoded)
         user, pass = decoded.split(':')
 
-        StreamLogger.log_raw( pkt, '[HTTP BASIC AUTH]'.green + " http://#{hostname}#{path} - username=#{user} password=#{pass}".yellow )
+        StreamLogger.log_raw( pkt, 'HTTP BASIC AUTH', "http://#{hostname}#{path} - username=#{user} password=#{pass}".yellow )
 
       elsif line =~ /Authorization:\s*Digest\s+(.+)/i
-        StreamLogger.log_raw( pkt, '[HTTP DIGEST AUTH]'.green + " http://#{hostname}#{path}\n#{$1}".yellow )
+        StreamLogger.log_raw( pkt, 'HTTP DIGEST AUTH', "http://#{hostname}#{path}\n#{$1}".yellow )
       end
     end
   end
