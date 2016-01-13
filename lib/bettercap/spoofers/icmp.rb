@@ -112,7 +112,7 @@ class Icmp < Base
 
   # Start the ICMP redirect spoofing.
   def start
-    Logger.info "Starting ICMP redirect spoofer ..."
+    Logger.debug "Starting ICMP redirect spoofer ..."
 
     stop() if @running
     @running = true
@@ -128,8 +128,7 @@ class Icmp < Base
   def stop
     raise 'ICMP redirect spoofer is not running' unless @running
 
-    Logger.info 'Stopping ICMP redirect spoofer ...'
-
+    Logger.debug 'Stopping ICMP redirect spoofer ...'
     Logger.debug "Resetting packet forwarding to #{@forwarding} ..."
     @ctx.firewall.enable_forwarding( @forwarding )
 
@@ -156,7 +155,7 @@ class Icmp < Base
   end
 
   def dns_watcher
-    Logger.info 'DNS watcher started ...'
+    Logger.debug 'DNS watcher started ...'
 
     sniff_packets('udp and port 53') { |pkt|
       next unless is_interesting_packet?(pkt)

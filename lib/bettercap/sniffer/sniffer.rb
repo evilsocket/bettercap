@@ -29,7 +29,7 @@ class Sniffer
   # +ctx+ BetterCap::Context instance.
   def self.start( ctx )
     Thread.new do
-      Logger.info 'Starting sniffer ...'
+      Logger.debug 'Starting sniffer ...'
 
       setup( ctx )
 

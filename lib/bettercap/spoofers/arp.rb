@@ -51,7 +51,7 @@ class Arp < Base
 
   # Start the ARP spoofing.
   def start
-    Logger.info "Starting ARP spoofer ( #{@ctx.options.half_duplex ? 'Half' : 'Full'} Duplex ) ..."
+    Logger.debug "Starting ARP spoofer ( #{@ctx.options.half_duplex ? 'Half' : 'Full'} Duplex ) ..."
 
     stop() if @running
     @running = true
@@ -66,8 +66,7 @@ class Arp < Base
   def stop
     raise 'ARP spoofer is not running' unless @running
 
-    Logger.info 'Stopping ARP spoofer ...'
-
+    Logger.debug 'Stopping ARP spoofer ...'
     Logger.debug "Resetting packet forwarding to #{@forwarding} ..."
     @ctx.firewall.enable_forwarding( @forwarding )
 
@@ -77,7 +76,7 @@ class Arp < Base
     rescue
     end
 
-    Logger.info "Restoring ARP table of #{@ctx.targets.size} targets ..."
+    Logger.debug "Restoring ARP table of #{@ctx.targets.size} targets ..."
 
     @ctx.targets.each do |target|
       unless target.ip.nil? or target.mac.nil?
@@ -101,7 +100,7 @@ class Arp < Base
   end
 
   def arp_watcher
-    Logger.info 'ARP watcher started ...'
+    Logger.debug 'ARP watcher started ...'
 
     sniff_packets('arp') { |pkt|
       # we're only interested in 'who-has' packets
