@@ -1,5 +1,4 @@
-![logo](http://www.bettercap.org/assets/img/navbar-logo.png)
-
+![logo](http://www.bettercap.org/assets/img/homepage-logo.png)  
 http://www.bettercap.org/
 
 [![Gem Version](https://badge.fury.io/rb/bettercap.svg)](http://badge.fury.io/rb/bettercap) [![Code Climate](https://codeclimate.com/github/evilsocket/bettercap/badges/gpa.svg)](https://codeclimate.com/github/evilsocket/bettercap) [![Join the chat at https://gitter.im/evilsocket/bettercap](https://badges.gitter.im/evilsocket/bettercap.svg)](https://gitter.im/evilsocket/bettercap?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
