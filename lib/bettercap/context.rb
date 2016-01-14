@@ -100,7 +100,7 @@ class Context
     end
     Logger.debug "--------------------------------\n"
 
-    @packets = PacketQueue.new( @ifconfig[:iface], 4 )
+    @packets = PacketQueue.new( @ifconfig[:iface], @options.packet_throttle, 4 )
   end
 
   # Find a target given its +ip+ and +mac+ addresses inside the #targets
@@ -128,7 +128,7 @@ class Context
   def create_proxies
     if @options.has_proxy_module?
       Proxy::Module.register_modules
-      
+
       raise BetterCap::Error, "#{@options.proxy_module} is not a valid bettercap proxy module." if Proxy::Module.modules.empty?
     end
 

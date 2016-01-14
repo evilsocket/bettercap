@@ -54,6 +54,7 @@ class Thread
         @ctx.targets.each do |target|
           msg += "  #{target}\n"
         end
+        msg += "\n"
         Logger.raw msg
       end
 

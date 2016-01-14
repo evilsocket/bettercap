@@ -83,6 +83,8 @@ class Options
   # If true, bettercap won't forward packets for any target, causing
   # connections to be killed.
   attr_accessor :kill
+  # If different than 0, this time will be used as a delay while sending packets.
+  attr_accessor :packet_throttle
 
   # Create a BetterCap::Options class instance using the specified network interface.
   def initialize( iface )
@@ -97,6 +99,7 @@ class Options
     @arpcache = false
     @no_target_nbns = false
     @kill = false
+    @packet_throttle = 0.0
 
     @ignore = nil
 
@@ -291,6 +294,11 @@ class Options
 
       opts.on( '--kill', 'Instead of forwarding packets, this switch will make targets connections to be killed.' ) do
         ctx.options.kill = true
+      end
+
+      opts.on( '--packet-throttle NUMBER', 'Number of seconds ( can be a decimal number ) to wait between each packet to be sent.' ) do |v|
+        ctx.options.packet_throttle = v.to_f
+        raise BetterCap::Error, "Invalid packet throttle value specified." if ctx.options.packet_throttle <= 0.0
       end
 
       opts.on( '--check-updates', 'Will check if any update is available and then exit.' ) do

@@ -12,9 +12,12 @@ module BetterCap
 class PacketQueue
   # Initialize the PacketQueue, it will spawn +nworkers+ thread and
   # will send packets to the +iface+ network interface.
-  def initialize( iface, nworkers = 4 )
+  # If +packet_throttle+ is different than 0.0, it will be used as
+  # a delay between each packet to be sent.
+  def initialize( iface, packet_throttle = 0.0, nworkers = 4 )
     @iface    = iface
     @nworkers = nworkers
+    @throttle = packet_throttle;
     @running  = true
     @injector = PacketFu::Inject.new(:iface => iface)
     @udp      = UDPSocket.new
@@ -77,6 +80,9 @@ class PacketQueue
         when Object
           dispatch_raw_packet(packet)
         end
+
+        sleep(@throttle) if @throttle != 0.0
+        
       rescue Exception => e
         Logger.debug "#{self.class.name} ( #{packet.class.name} ) : #{e.message}"
 
