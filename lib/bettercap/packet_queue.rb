@@ -19,7 +19,8 @@ class PacketQueue
     @nworkers = nworkers
     @throttle = packet_throttle;
     @running  = true
-    @injector = PacketFu::Inject.new(:iface => iface)
+    @stream   = Pcap.open_live( iface, 0xffff, false , 1 )
+    @mutex    = Mutex.new
     @udp      = UDPSocket.new
     @queue    = Queue.new
     @workers  = (0...nworkers).map { ::Thread.new { worker } }
@@ -52,14 +53,17 @@ class PacketQueue
 
   def dispatch_udp_packet(packet)
     ip, port, data = packet
-    Logger.debug "Sending UDP data packet to #{ip}:#{port} ..."
-    @udp.send( data, 0, ip, port )
+    @mutex.synchronize {
+      Logger.debug "Sending UDP data packet to #{ip}:#{port} ..."
+      @udp.send( data, 0, ip, port )
+    }
   end
 
   def dispatch_raw_packet(packet)
-    Logger.debug "Sending #{packet.class.name} packet ..."
-    @injector.array = [packet.headers[0].to_s]
-    @injector.inject
+    @mutex.synchronize {
+      Logger.debug "Sending #{packet.class.name} packet ..."
+      @stream.inject( packet.headers[0].to_s )
+    }
   end
 
   def worker
@@ -82,7 +86,7 @@ class PacketQueue
         end
 
         sleep(@throttle) if @throttle != 0.0
-        
+
       rescue Exception => e
         Logger.debug "#{self.class.name} ( #{packet.class.name} ) : #{e.message}"
 
