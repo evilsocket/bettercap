@@ -18,6 +18,13 @@ class Injectjs < BetterCap::Proxy::Module
     opts.separator "Inject JS Proxy Module Options:"
     opts.separator ""
 
+    opts.on( '--js-data STRING', 'Javascript code to be injected.' ) do |v|
+      @@jsdata = v
+      unless @@jsdata.include?("<script")
+        @@jsdata = "<script type=\"text/javascript\">\n#{@@jsdata}\n</script>"
+      end
+    end
+
     opts.on( '--js-file PATH', 'Path of the javascript file to be injected.' ) do |v|
       filename = File.expand_path v
       raise BetterCap::Error, "#{filename} invalid file." unless File.exists?(filename)

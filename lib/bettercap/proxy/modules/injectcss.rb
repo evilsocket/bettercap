@@ -18,6 +18,13 @@ class Injectcss < BetterCap::Proxy::Module
     opts.separator "Inject CSS Proxy Module Options:"
     opts.separator ""
 
+    opts.on( '--css-data STRING', 'CSS code to be injected.' ) do |v|
+      @@cssdata = v
+      unless @@jsdata.include?("<style>")
+        @@cssdata = "<style>\n#{@@cssdata}\n</style>"
+      end
+    end
+
     opts.on( '--css-file PATH', 'Path of the CSS file to be injected.' ) do |v|
       filename = File.expand_path v
       raise BetterCap::Error, "#{filename} invalid file." unless File.exists?(filename)
