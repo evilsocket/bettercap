@@ -45,7 +45,7 @@ class Thread
 
     while @running
       was_empty = @ctx.targets.empty?
-      @ctx.targets = Network.get_alive_targets(@ctx).sort_by { |t| t.sortable_ip }
+      @ctx.targets = Network::Network.get_alive_targets(@ctx).sort_by { |t| t.sortable_ip }
 
       if was_empty and not @ctx.targets.empty?
         Logger.info "Collected #{@ctx.targets.size} total targets."

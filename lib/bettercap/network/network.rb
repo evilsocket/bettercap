@@ -12,6 +12,7 @@ This project is released under the GPL 3 license.
 require 'thread'
 
 module BetterCap
+module Network
 # Handles various network related tasks.
 class Network
 class << self
@@ -148,6 +149,7 @@ class << self
     end
   end
 
+end
 end
 end
 end

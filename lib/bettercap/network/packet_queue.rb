@@ -8,6 +8,7 @@ This project is released under the GPL 3 license.
 require 'bettercap/error'
 
 module BetterCap
+module Network
 # This class is responsible for sending various network packets.
 class PacketQueue
   # Initialize the PacketQueue, it will spawn +nworkers+ thread and
@@ -102,5 +103,6 @@ class PacketQueue
 
     Logger.debug "PacketQueue worker stopped."
   end
+end
 end
 end

@@ -13,6 +13,7 @@ require 'bettercap/logger'
 require 'socket'
 
 module BetterCap
+module Network
 # This class represents a target, namely a single endpoint device on the
 # network.
 class Target
@@ -151,5 +152,6 @@ private
 
     @@prefixes[ mac.split(':')[0,3].join('').upcase ]
   end
+end
 end
 end

@@ -10,11 +10,6 @@ This project is released under the GPL 3 license.
 
 =end
 require 'bettercap/spoofers/base'
-require 'bettercap/error'
-require 'bettercap/context'
-require 'bettercap/network'
-require 'bettercap/logger'
-require 'colorize'
 require 'net/dns'
 require 'resolv'
 
@@ -123,7 +118,7 @@ class Icmp < Base
     else
       @ctx.firewall.enable_forwarding(true) unless @forwarding
     end
-    
+
     @ctx.firewall.enable_send_redirects(false)
 
     @spoof_thread = Thread.new { icmp_spoofer }

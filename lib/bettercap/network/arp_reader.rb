@@ -8,6 +8,7 @@ This project is released under the GPL 3 license.
 require 'bettercap/error'
 
 module BetterCap
+module Network
 # This class is responsible for reading the computer ARP table.
 class ArpReader
   # Parse the current ARP cache and return a list of BetterCap::Target
@@ -74,5 +75,6 @@ class ArpReader
   def self.parse_cache_line( iface, line )
     /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{iface}.*/i.match(line)
   end
+end
 end
 end
