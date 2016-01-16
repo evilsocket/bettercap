@@ -15,7 +15,44 @@ module BetterCap
 module Proxy
 # Base class for transparent proxy modules.
 class Module
+  @@path    = File.dirname(__FILE__) + '/modules/'
   @@modules = []
+
+  # Return a list of available builtin proxy module names.
+  def self.available
+    avail = []
+    Dir.foreach( @@path ) do |file|
+      if file =~ /.rb/
+        avail << file.gsub('.rb','')
+      end
+    end
+    avail
+  end
+
+  # Check if the module with +name+ is within the builtin ones.
+  def self.is_builtin?(name)
+    self.available.include?(name)
+  end
+
+  # Load the module with +name+.
+  def self.load(ctx, opts, name)
+    ctx.options.proxy = true
+
+    if self.is_builtin?(name)
+      ctx.options.proxy_module = "#{@@path}/#{name}.rb"
+    else
+      ctx.options.proxy_module = File.expand_path(name)
+    end
+
+    begin
+      require ctx.options.proxy_module
+
+      self.register_options(opts)
+    rescue LoadError
+      raise BetterCap::Error, "Invalid proxy module name '#{name}' ."
+    end
+  end
+
   # Return a list of registered modules.
   def self.modules
     @@modules

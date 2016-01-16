@@ -253,13 +253,8 @@ class Options
         ctx.options.proxy_pem_file = File.expand_path v
       end
 
-      opts.on( '--proxy-module MODULE', 'Ruby proxy module to load.' ) do |v|
-        ctx.options.proxy = true
-        ctx.options.proxy_module = File.expand_path v
-
-        require ctx.options.proxy_module
-
-        Proxy::Module.register_options(opts)
+      opts.on( '--proxy-module MODULE', 'Ruby proxy module to load, either a custom file or one of the following: ' + Proxy::Module.available.join(', ') + ' .' ) do |v|
+        Proxy::Module.load(ctx, opts, v)
       end
 
       opts.on( '--custom-proxy ADDRESS', 'Use a custom HTTP upstream proxy instead of the builtin one.' ) do |v|
