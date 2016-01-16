@@ -12,9 +12,8 @@ This project is released under the GPL 3 license.
 require 'thread'
 
 module BetterCap
-module Network
 # Handles various network related tasks.
-class Network
+module Network
 class << self
   # Return true if +ip+ is a valid IP address, otherwise false.
   def is_ip?(ip)
@@ -149,7 +148,6 @@ class << self
     end
   end
 
-end
 end
 end
 end

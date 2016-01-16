@@ -81,7 +81,7 @@ class Context
   # Update the Context state parsing network related informations.
   def update!
     @ifconfig = PacketFu::Utils.ifconfig @options.iface
-    @gateway  = Network::Network.get_gateway if @gateway.nil?
+    @gateway  = Network.get_gateway if @gateway.nil?
 
     raise BetterCap::Error, "Could not determine IPv4 address of '#{@options.iface}', make sure this interface "\
                             'is active and connected.' if @ifconfig[:ip4_obj].nil?
@@ -89,7 +89,7 @@ class Context
     raise BetterCap::Error, "Could not detect the gateway address for interface #{@options.iface}, "\
                             'make sure you\'ve specified the correct network interface to use and to have the '\
                             'correct network configuration, this could also happen if bettercap '\
-                            'is launched from a virtual environment.' if @gateway.nil? or !Network::Network.is_ip?(@gateway)
+                            'is launched from a virtual environment.' if @gateway.nil? or !Network.is_ip?(@gateway)
 
     Logger.debug '----- NETWORK INFORMATIONS -----'
     Logger.debug "  network  = #{@ifconfig[:ip4_obj]}"

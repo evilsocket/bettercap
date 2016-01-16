@@ -326,7 +326,7 @@ class Options
     raise BetterCap::Error, 'No default interface found, please specify one with the -I argument.' if ctx.options.iface.nil?
 
     unless ctx.options.gateway.nil?
-      raise BetterCap::Error, "The specified gateway '#{ctx.options.gateway}' is not a valid IPv4 address." unless Network::Network.is_ip?(ctx.options.gateway)
+      raise BetterCap::Error, "The specified gateway '#{ctx.options.gateway}' is not a valid IPv4 address." unless Network.is_ip?(ctx.options.gateway)
       ctx.gateway = ctx.options.gateway
       Logger.debug("Targetting manually specified gateway #{ctx.gateway}")
     end
@@ -374,7 +374,7 @@ class Options
   # or more invalid IP addresses are specified.
   def ignore=(value)
     @ignore = value.split(",")
-    valid = @ignore.select { |target| Network::Network.is_ip?(target) }
+    valid = @ignore.select { |target| Network.is_ip?(target) }
 
     raise BetterCap::Error, "Invalid ignore addresses specified." if valid.empty?
 
@@ -392,21 +392,21 @@ class Options
   # +value+ is not a valid IP address.
   def custom_proxy=(value)
     @custom_proxy = value
-    raise BetterCap::Error, 'Invalid custom HTTP upstream proxy address specified.' unless Network::Network.is_ip? @custom_proxy
+    raise BetterCap::Error, 'Invalid custom HTTP upstream proxy address specified.' unless Network.is_ip? @custom_proxy
   end
 
   # Setter for the #custom_https_proxy attribute, will raise a BetterCap::Error if
   # +value+ is not a valid IP address.
   def custom_https_proxy=(value)
     @custom_https_proxy = value
-    raise BetterCap::Error, 'Invalid custom HTTPS upstream proxy address specified.' unless Network::Network.is_ip? @custom_https_proxy
+    raise BetterCap::Error, 'Invalid custom HTTPS upstream proxy address specified.' unless Network.is_ip? @custom_https_proxy
   end
 
   # Split specified targets and parse them ( either as IP or MAC ), will raise a
   # BetterCap::Error if one or more invalid addresses are specified.
   def to_targets
     targets = @target.split(",")
-    valid_targets = targets.select { |target| Network::Network.is_ip?(target) or Network::Network.is_mac?(target) }
+    valid_targets = targets.select { |target| Network.is_ip?(target) or Network.is_mac?(target) }
 
     raise BetterCap::Error, "Invalid target specified." if valid_targets.empty?
 

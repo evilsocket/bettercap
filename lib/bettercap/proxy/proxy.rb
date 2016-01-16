@@ -37,9 +37,9 @@ class Proxy
     begin
       @local_ips = Socket.ip_address_list.collect { |x| x.ip_address }
     rescue
-      Logger.warn 'Could not get local ips using Socket module, using Network::Network.get_local_ips method.'
+      Logger.warn 'Could not get local ips using Socket module, using Network.get_local_ips method.'
 
-      @local_ips = Network::Network.get_local_ips
+      @local_ips = Network.get_local_ips
     end
 
     BasicSocket.do_not_reverse_lookup = true
