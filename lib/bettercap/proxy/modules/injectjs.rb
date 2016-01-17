@@ -39,21 +39,20 @@ class Injectjs < BetterCap::Proxy::Module
     end
   end
 
+  def initialize
+    raise BetterCap::Error, "No --js-file, --js-url or --js-data options specified for the proxy module." if @@jsdata.nil? and @@jsurl.nil?
+  end
+
   def on_request( request, response )
     # is it a html page?
     if response.content_type =~ /^text\/html.*/
-      # check command line arguments.
-      if @@jsdata.nil? and @@jsurl.nil?
-        BetterCap::Logger.warn "No --js-file or --js-url options specified, this proxy module won't work."
+      BetterCap::Logger.info "Injecting javascript #{if @@jsdata.nil? then "URL" else "file" end} into http://#{request.host}#{request.url}"
+      # inject URL
+      if @@jsdata.nil?
+        response.body.sub!( '</head>', "<script src=\"#{@@jsurl}\" type=\"text/javascript\"></script></head>" )
+      # inject data
       else
-        BetterCap::Logger.info "Injecting javascript #{if @@jsdata.nil? then "URL" else "file" end} into http://#{request.host}#{request.url}"
-        # inject URL
-        if @@jsdata.nil?
-          response.body.sub!( '</head>', "<script src=\"#{@@jsurl}\" type=\"text/javascript\"></script></head>" )
-        # inject data
-        else
-          response.body.sub!( '</head>', "#{@@jsdata}</head>" )
-        end
+        response.body.sub!( '</head>', "#{@@jsdata}</head>" )
       end
     end
   end

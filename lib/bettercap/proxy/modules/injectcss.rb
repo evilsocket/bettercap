@@ -39,21 +39,20 @@ class Injectcss < BetterCap::Proxy::Module
     end
   end
 
+  def initialize
+    raise BetterCap::Error, "No --css-file, --css-url or --css-data options specified for the proxy module." if @@cssdata.nil? and @@cssurl.nil?
+  end
+
   def on_request( request, response )
     # is it a html page?
     if response.content_type =~ /^text\/html.*/
-      # check command line arguments.
-      if @@cssdata.nil? and @@cssurl.nil?
-        BetterCap::Logger.warn "No --css-file or --css-url options specified, this proxy module won't work."
+      BetterCap::Logger.info "Injecting CSS #{if @@cssdata.nil? then "URL" else "file" end} into http://#{request.host}#{request.url}"
+      # inject URL
+      if @@cssdata.nil?
+        response.body.sub!( '</head>', "  <link rel=\"stylesheet\" href=\"#{@cssurl}\"></script></head>" )
+      # inject data
       else
-        BetterCap::Logger.info "Injecting CSS #{if @@cssdata.nil? then "URL" else "file" end} into http://#{request.host}#{request.url}"
-        # inject URL
-        if @@cssdata.nil?
-          response.body.sub!( '</head>', "  <link rel=\"stylesheet\" href=\"#{@cssurl}\"></script></head>" )
-        # inject data
-        else
-          response.body.sub!( '</head>', "#{@@cssdata}</head>" )
-        end
+        response.body.sub!( '</head>', "#{@@cssdata}</head>" )
       end
     end
   end
