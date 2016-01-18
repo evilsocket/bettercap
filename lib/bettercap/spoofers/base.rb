@@ -58,7 +58,9 @@ private
   end
 
   def spoof_loop( delay )
-    prev_size = @ctx.targets.size
+    prev_size    = @ctx.targets.size
+    prev_targets = @ctx.targets
+
     loop do
       if not @running
           Logger.debug 'Stopping spoofing thread ...'
@@ -68,9 +70,19 @@ private
 
       size = @ctx.targets.size
       if size > prev_size
-        Logger.warn "Aquired #{size - prev_size} new targets."
+        diff  = @ctx.targets - prev_targets
+        delta = diff.size
+        Logger.warn "Acquired #{delta} new target#{if delta > 1 then "s" else "" end}."
+        diff.each do |target|
+          Logger.info "  [#{'NEW'.green}] #{target.to_s(false)}"
+        end
       elsif size < prev_size
-        Logger.warn "Lost #{prev_size - size} targets."
+        diff  = prev_targets - @ctx.targets
+        delta = diff.size
+        Logger.warn "Lost #{delta} target#{if delta > 1 then "s" else "" end}."
+        diff.each do |target|
+          Logger.info "  [#{'LOST'.red}] #{target.to_s(false)}"
+        end
       end
 
       Logger.debug "Spoofing #{@ctx.targets.size} targets ..."
@@ -81,7 +93,8 @@ private
         yield(target)
       end
 
-      prev_size = @ctx.targets.size
+      prev_size    = @ctx.targets.size
+      prev_targets = @ctx.targets
 
       sleep(delay)
     end
