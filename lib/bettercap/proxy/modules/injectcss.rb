@@ -20,7 +20,7 @@ class Injectcss < BetterCap::Proxy::Module
 
     opts.on( '--css-data STRING', 'CSS code to be injected.' ) do |v|
       @@cssdata = v
-      unless @@jsdata.include?("<style>")
+      unless @@cssdata.include?("<style>")
         @@cssdata = "<style>\n#{@@cssdata}\n</style>"
       end
     end
