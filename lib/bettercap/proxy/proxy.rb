@@ -107,95 +107,24 @@ class Proxy
     @local_ips.include? IPSocket.getaddress(request.host)
   end
 
-  def create_upstream_connection( request )
-    sock = TCPSocket.new( request.host, request.port )
-
-    if @is_https
-      ctx = OpenSSL::SSL::SSLContext.new
-      # do we need this? :P ctx.set_params(verify_mode: OpenSSL::SSL::VERIFY_PEER)
-
-      sock = OpenSSL::SSL::SSLSocket.new(sock, ctx).tap do |socket|
-        sock.sync_close = true
-        sock.connect
-      end
-    end
-
-    sock
-  end
-
-  def get_client_details( client )
-    unless @is_https
-      client_port, client_ip = Socket.unpack_sockaddr_in(client.getpeername)
-    else
-      _, client_port, _, client_ip = client.peeraddr
-    end
-
-    [ client_ip, client_port ]
-  end
-
   def client_worker( client )
-    client_ip, client_port = get_client_details client
-
-    Logger.debug "New #{@type} connection from #{client_ip}:#{client_port}"
-
-    server = nil
+    server  = nil
     request = Request.new @is_https ? 443 : 80
 
     begin
       Logger.debug 'Reading request ...'
 
-      request.read client
+      request.read(client)
 
       # someone is having fun with us =)
       if is_self_request? request
-
-        Logger.warn "#{client_ip} is connecting to us directly."
-
         @streamer.rickroll client
-
-      elsif request.verb == 'CONNECT'
-
-        Logger.error "You're using bettercap as a normal HTTP(S) proxy, it wasn't designed to handle CONNECT requests:\n\n#{request.to_s}"
-
+      # handle request
       else
-
-        Logger.debug 'Creating upstream connection ...'
-
-        server = create_upstream_connection request
-
-        sreq = request.to_s
-
-        Logger.debug "Sending request:\n#{sreq}"
-
-        server.write sreq
-
-        # this is probably a POST request, collect incoming data
-        if request.content_length > 0
-          Logger.debug "Getting #{request.content_length} bytes from client"
-
-          @streamer.binary client, server, request: request
-        end
-
-        Logger.debug 'Reading response ...'
-
-        response = Response.from_socket server
-
-        if response.textual?
-          StreamLogger.log_http( @is_https, client_ip, request, response )
-
-          Logger.debug 'Detected textual response'
-
-          @streamer.html request, response, server, client
-        else
-          Logger.debug "[#{client_ip}] -> #{request.host}#{request.url} [#{response.code}]"
-
-          Logger.debug 'Binary streaming'
-
-          @streamer.binary server, client, response: response
-        end
-
-        Logger.debug "#{@type} client served."
+        @streamer.handle( request, client, @is_https )
       end
+
+      Logger.debug "#{@type} client served."
 
     rescue Exception => e
       if request.host

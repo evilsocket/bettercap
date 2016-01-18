@@ -24,8 +24,12 @@ class Request
   attr_reader :host
   # Request port.
   attr_reader :port
+  # Request headers hash.
+  attr_reader :headers
   # Content length.
   attr_reader :content_length
+  # Request body.
+  attr_reader :body
 
   # Initialize this object setting #port to +default_port+.
   def initialize( default_port = 80 )
@@ -34,7 +38,9 @@ class Request
     @url    = nil
     @host   = nil
     @port   = default_port
+    @headers = {}
     @content_length = 0
+    @body   = nil
   end
 
   # Read lines from the +sock+ socket and parse them.
@@ -53,6 +59,11 @@ class Request
     end
 
     raise "Couldn't extract host from the request." unless @host
+
+    # keep reading the request body if needed
+    if @content_length > 0
+      @body = sock.read(@content_length)
+    end
   end
 
   # Parse a single request line, patch it if needed and append it to #lines.
@@ -93,6 +104,11 @@ class Request
       line = 'Accept-Encoding: identity'
     end
 
+    # collect headers
+    if line =~ /^([^:\s]+)\s*:\s*(.+)$/i
+      @headers[$1] = $2
+    end
+
     @lines << line
   end
 
@@ -103,7 +119,7 @@ class Request
 
   # Return a string representation of the HTTP request.
   def to_s
-    @lines.join("\n") + "\n"
+    @lines.join("\n") + "\n" + ( @body || '' )
   end
 end
 end

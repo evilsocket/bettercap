@@ -25,7 +25,7 @@ class Response
   # A list of response headers.
   attr_reader :headers
   # Response status code.
-  attr_reader :code
+  attr_accessor :code
   # True if the parser finished to parse the headers, otherwise false.
   attr_reader :headers_done
   # Response body.
@@ -43,21 +43,15 @@ class Response
     @chunked = false
   end
 
-  # Read lines from the +sock+ socket until all headers are correctly parsed
-  # and return a BetterCap::Proxy::Response instance.
-  def self.from_socket(sock)
-    response = Response.new
-
-    # read all response headers
-    loop do
-      line = sock.readline
-
-      response << line
-
-      break unless not response.headers_done
+  # Convert a webrick response to this class.
+  def convert_webrick_response!(response)
+    self << "HTTP/#{response.http_version} #{response.code} #{response.msg}"
+    response.each do |key,value|
+      self << "#{key}: #{value}"
     end
-
-    response
+    self << "\n"
+    @code = response.code
+    @body = response.body || ''
   end
 
   # Parse a single response +line+.
