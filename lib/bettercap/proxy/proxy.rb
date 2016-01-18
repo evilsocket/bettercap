@@ -108,7 +108,6 @@ class Proxy
   end
 
   def client_worker( client )
-    server  = nil
     request = Request.new @is_https ? 443 : 80
 
     begin
@@ -134,7 +133,6 @@ class Proxy
     end
 
     client.close
-    server.close unless server.nil?
   end
 end
 
