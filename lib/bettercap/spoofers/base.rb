@@ -59,34 +59,49 @@ private
     end
   end
 
+  # Print informations about new and lost targets.
+  def print_differences( prev_targets )
+    size      = @ctx.targets.size
+    prev_size = prev_targets.size
+    diff      = nil
+    label     = nil
+
+    if size > prev_size
+      diff  = @ctx.targets - prev_targets
+      delta = diff.size
+      label = 'NEW'.green
+
+      Logger.warn "Acquired #{delta} new target#{if delta > 1 then "s" else "" end}."
+    elsif size < prev_size
+      diff  = prev_targets - @ctx.targets
+      delta = diff.size
+      label = 'LOST'.red
+
+      Logger.warn "Lost #{delta} target#{if delta > 1 then "s" else "" end}."
+    end
+
+    unless diff.nil?
+      msg = "\n"
+      diff.each do |target|
+        msg += "  [#{label}] #{target.to_s(false)}\n"
+      end
+      msg += "\n"
+      Logger.raw msg
+    end
+  end
+
   # Main spoof loop repeated each +delay+ seconds.
   def spoof_loop( delay )
-    prev_size    = @ctx.targets.size
     prev_targets = @ctx.targets
 
     loop do
-      if not @running
+      unless @running
           Logger.debug 'Stopping spoofing thread ...'
           Thread.exit
           break
       end
 
-      size = @ctx.targets.size
-      if size > prev_size
-        diff  = @ctx.targets - prev_targets
-        delta = diff.size
-        Logger.warn "Acquired #{delta} new target#{if delta > 1 then "s" else "" end}."
-        diff.each do |target|
-          Logger.info "  [#{'NEW'.green}] #{target.to_s(false)}"
-        end
-      elsif size < prev_size
-        diff  = prev_targets - @ctx.targets
-        delta = diff.size
-        Logger.warn "Lost #{delta} target#{if delta > 1 then "s" else "" end}."
-        diff.each do |target|
-          Logger.info "  [#{'LOST'.red}] #{target.to_s(false)}"
-        end
-      end
+      print_differences prev_targets
 
       Logger.debug "Spoofing #{@ctx.targets.size} targets ..."
 
@@ -96,7 +111,6 @@ private
         yield(target)
       end
 
-      prev_size    = @ctx.targets.size
       prev_targets = @ctx.targets
 
       sleep(delay)

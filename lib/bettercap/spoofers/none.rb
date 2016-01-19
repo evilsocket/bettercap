@@ -20,8 +20,12 @@ class None < Base
   def initialize
     Logger.warn 'Spoofing disabled.'
 
+    @ctx     = Context.get
+    @gateway = nil
     @thread  = nil
     @running = false
+
+    update_gateway!
   end
 
   # Start the "NONE" spoofer.
@@ -47,9 +51,7 @@ class None < Base
 
   # Main fake spoofer loop.
   def fake_spoofer
-    spoof_loop(1) { |target|
-
-    }
+    spoof_loop(1) { |target| }
   end
 
 end
