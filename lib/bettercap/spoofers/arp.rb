@@ -80,24 +80,41 @@ class Arp < Base
 
     @ctx.targets.each do |target|
       unless target.ip.nil? or target.mac.nil?
-        begin
-          send_spoofed_packet( @gateway.ip, @gateway.mac, target.ip, target.mac )
-          send_spoofed_packet( target.ip, target.mac, @gateway.ip, @gateway.mac ) unless @ctx.options.half_duplex
-        rescue; end
+        spoof(target)
       end
     end
   end
 
   private
 
+  # Send an ARP spoofing packet to +target+, if +restore+ is True it will
+  # restore its ARP cache instead.
+  def spoof( target, restore = False )
+    if restore
+      send_spoofed_packet( @gateway.ip, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
+      send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @gateway.ip, @gateway.mac ) unless @ctx.options.half_duplex
+    else
+      send_spoofed_packet( @gateway.ip, @gateway.mac, target.ip, target.mac )
+      send_spoofed_packet( target.ip, target.mac, @gateway.ip, @gateway.mac ) unless @ctx.options.half_duplex
+    end
+  end
+
   # Main spoofer loop.
   def arp_spoofer
     spoof_loop(1) { |target|
       unless target.ip.nil? or target.mac.nil?
-        send_spoofed_packet( @gateway.ip, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
-        send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @gateway.ip, @gateway.mac ) unless @ctx.options.half_duplex
+        spoof( target, True)
       end
     }
+  end
+
+  # Return true if the +pkt+ packet is an ARP 'who-has' query coming
+  # from some network endpoint.
+  def is_arp_query?(pkt)
+    # we're only interested in 'who-has' packets
+    pkt.arp_opcode == 1 and \
+    pkt.arp_dst_mac.to_s == '00:00:00:00:00:00' and \
+    pkt.arp_src_ip.to_s != @ctx.ifconfig[:ip_saddr]
   end
 
   # Will watch for incoming ARP requests and spoof the source address.
@@ -105,14 +122,9 @@ class Arp < Base
     Logger.debug 'ARP watcher started ...'
 
     sniff_packets('arp') { |pkt|
-      # we're only interested in 'who-has' packets
-      if pkt.arp_opcode == 1 and pkt.arp_dst_mac.to_s == '00:00:00:00:00:00'
-        is_from_us = ( pkt.arp_src_ip.to_s == @ctx.ifconfig[:ip_saddr] )
-        unless is_from_us
-          Logger.info "[ARP] #{pkt.arp_src_ip.to_s} is asking who #{pkt.arp_dst_ip.to_s} is."
-
-          send_spoofed_packet pkt.arp_dst_ip.to_s, @ctx.ifconfig[:eth_saddr], pkt.arp_src_ip.to_s, pkt.arp_src_mac.to_s
-        end
+      if is_arp_query?(pkt)
+        Logger.info "[#{'ARP'.green}] #{pkt.arp_src_ip.to_s} is asking who #{pkt.arp_dst_ip.to_s} is."
+        send_spoofed_packet pkt.arp_dst_ip.to_s, @ctx.ifconfig[:eth_saddr], pkt.arp_src_ip.to_s, pkt.arp_src_mac.to_s
       end
     }
   end
