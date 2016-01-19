@@ -52,6 +52,7 @@ class Sniffer
 
   private
 
+  # Return the current PCAP stream.
   def self.stream
     if @@ctx.options.sniffer_src.nil?
       @@cap.stream
@@ -62,12 +63,14 @@ class Sniffer
     end
   end
 
+  # Return true if the +pkt+ packet instance must be skipped.
   def self.skip_packet?( pkt )
     !@@ctx.options.local and
         ( pkt.ip_saddr == @@ctx.ifconfig[:ip_saddr] or
             pkt.ip_daddr == @@ctx.ifconfig[:ip_saddr] )
   end
 
+  # Apply each parser on the given +parsed+ packet.
   def self.parse_packet( parsed )
     @@parsers.each do |parser|
       begin
@@ -78,6 +81,7 @@ class Sniffer
     end
   end
 
+  # Append the packet +p+ to the current PCAP file.
   def self.append_packet( p )
     begin
       @@pcap.array_to_file(
@@ -89,6 +93,7 @@ class Sniffer
     end
   end
 
+  # Setup all needed objects for the sniffer using the +ctx+ Context instance.
   def self.setup( ctx )
     @@ctx = ctx
 

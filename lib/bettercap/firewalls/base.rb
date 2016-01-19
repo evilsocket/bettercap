@@ -68,6 +68,7 @@ class Base
 
 private
 
+  # Method used to raise NotImplementedError exception.
   def not_implemented_method!
     raise NotImplementedError, 'Firewalls::Base: Unimplemented method!'
   end

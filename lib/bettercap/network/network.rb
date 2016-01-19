@@ -133,6 +133,8 @@ class << self
 
   private
 
+  # Start discovery agents and wait for +ctx.timeout+ seconds for them to
+  # complete their job.
   def start_agents( ctx )
     [ 'Icmp', 'Udp', 'Arp' ].each do |name|
       BetterCap::Loader.load("BetterCap::Discovery::Agents::#{name}").new(ctx)
@@ -140,6 +142,8 @@ class << self
     ctx.packets.wait_empty( ctx.timeout )
   end
 
+  # Search for the MAC address associated to +ip_address+ inside the +cap+
+  # PacketFu::Capture object.
   def get_mac_from_capture( cap, ip_address )
     cap.stream.each do |p|
       arp_response = PacketFu::Packet.parse(p)

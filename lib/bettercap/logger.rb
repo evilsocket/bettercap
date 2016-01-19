@@ -73,6 +73,7 @@ module Logger
 
     private
 
+    # Main logger logic.
     def worker
       loop do
         message = @@queue.pop
@@ -82,6 +83,7 @@ module Logger
       end
     end
 
+    # Emit the +message+.
     def emit(message)
       puts message
       unless @@logfile.nil?
@@ -91,6 +93,7 @@ module Logger
       end
     end
 
+    # Format +message+ for the given +message_type+.
     def formatted_message(message, message_type)
       "[#{message_type}] #{message}"
     end

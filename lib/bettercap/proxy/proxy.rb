@@ -87,6 +87,8 @@ class Proxy
 
   private
 
+  # Main server thread, will accept incoming connections and push them to
+  # the thread pool.
   def server_thread
     Logger.info "#{@type} Proxy started on #{@address}:#{@port} ...\n"
 
@@ -103,10 +105,13 @@ class Proxy
     @socket.close unless @socket.nil?
   end
 
+  # Return true if the +request+ host header contains one of this computer
+  # ip addresses.
   def is_self_request?(request)
     @local_ips.include? IPSocket.getaddress(request.host)
   end
 
+  # Handle a new +client+.
   def client_worker( client )
     request = Request.new @is_https ? 443 : 80
 

@@ -28,6 +28,8 @@ class Base
 
 private
 
+  # Will create a PacketFu::Capture object using the specified +filter+ and
+  # will yield every parsed packet to the given code block.
   def sniff_packets( filter )
     begin
       @capture = PacketFu::Capture.new(
@@ -57,6 +59,7 @@ private
     end
   end
 
+  # Main spoof loop repeated each +delay+ seconds.
   def spoof_loop( delay )
     prev_size    = @ctx.targets.size
     prev_targets = @ctx.targets
@@ -100,6 +103,7 @@ private
     end
   end
 
+  # Get the MAC address of the gateway and update it.
   def update_gateway!
     hw = Network.get_hw_address( @ctx.ifconfig, @ctx.gateway )
     raise BetterCap::Error, "Couldn't determine router MAC" if hw.nil?
@@ -108,6 +112,7 @@ private
     Logger.info "[#{'GATEWAY'.green}] #{@gateway.to_s(false)}"
   end
 
+  # Update each target that needs to be updated.
   def update_targets!
     @ctx.targets.each do |target|
       # targets could change, update mac addresses if needed
@@ -135,6 +140,7 @@ private
     end
   end
 
+  # Used to raise a NotImplementedError exception.
   def not_implemented_method!
     raise NotImplementedError, 'Spoofers::Base: Unimplemented method!'
   end

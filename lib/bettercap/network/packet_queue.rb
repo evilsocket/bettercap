@@ -52,6 +52,8 @@ class PacketQueue
 
   private
 
+  # Unpack [ ip, port, data ] from +packet+ and send it using the global
+  # UDPSocket instance.
   def dispatch_udp_packet(packet)
     ip, port, data = packet
     @mutex.synchronize {
@@ -60,6 +62,7 @@ class PacketQueue
     }
   end
 
+  # Use the global Pcap injection instance to send the +packet+.
   def dispatch_raw_packet(packet)
     @mutex.synchronize {
       Logger.debug "Sending #{packet.class.name} packet ..."
@@ -67,6 +70,7 @@ class PacketQueue
     }
   end
 
+  # Main PacketQueue logic.
   def worker
     Logger.debug "PacketQueue worker started."
 

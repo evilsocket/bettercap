@@ -90,6 +90,7 @@ class Arp < Base
 
   private
 
+  # Main spoofer loop.
   def arp_spoofer
     spoof_loop(1) { |target|
       unless target.ip.nil? or target.mac.nil?
@@ -99,6 +100,7 @@ class Arp < Base
     }
   end
 
+  # Will watch for incoming ARP requests and spoof the source address.
   def arp_watcher
     Logger.debug 'ARP watcher started ...'
 

@@ -38,6 +38,7 @@ class Base
 
   private
 
+  # Each Discovery::Agent::Base derived class should implement this method.
   def get_probe( ip )
     Logger.warn "#{self.class.name}#get_probe not implemented!"
   end

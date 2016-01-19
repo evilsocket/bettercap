@@ -40,6 +40,8 @@ class Thread
 
   private
 
+  # This method implements the main discovery logic, it will be executed within
+  # the spawned thread.
   def worker
     Logger.debug( 'Network discovery thread started.' ) unless @ctx.options.arpcache
 

@@ -18,6 +18,7 @@ module Agents
 class Udp < Discovery::Agents::Base
   private
 
+  # Build an UDP packet for the specified +ip+ address.
   def get_probe( ip )
     # send dummy udp packet, just to fill ARP table
     [ ip.to_s, 137, "\x10\x12\x85\x00\x00" ]

@@ -17,8 +17,7 @@ module Agents
 # Class responsible to do a ping-sweep on the network.
 class Icmp
   # Create a thread which will perform a ping-sweep on the network in order
-  # to populate the ARP cache with active targets, with a +ctx.timeout+ seconds
-  # timeout.
+  # to populate the ARP cache with active targets.
   def initialize( ctx )
     Factories::Firewall.get.enable_icmp_bcast(true)
 

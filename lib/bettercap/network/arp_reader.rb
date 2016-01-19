@@ -58,6 +58,8 @@ class ArpReader
 
   private
 
+  # Read the computer ARP cache and parse each line, it will yield each
+  # ip and mac address it will be able to extract.
   def self.parse_cache
     iface = Context.get.ifconfig[:iface]
     Shell.arp.split("\n").each do |line|
@@ -72,6 +74,7 @@ class ArpReader
     end
   end
 
+  # Parse a single ARP cache +line+ related to the +iface+ network interface.
   def self.parse_cache_line( iface, line )
     /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{iface}.*/i.match(line)
   end

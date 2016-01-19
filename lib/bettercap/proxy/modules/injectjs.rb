@@ -9,10 +9,15 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
+
+# This proxy module will take care of Javascript code injection.
 class Injectjs < BetterCap::Proxy::Module
+  # JS data to be injected.
   @@jsdata = nil
+  # JS file URL to be injected.
   @@jsurl  = nil
 
+  # Add custom command line arguments to the +opts+ OptionParser instance.
   def self.on_options(opts)
     opts.separator ""
     opts.separator "Inject JS Proxy Module Options:"
@@ -39,10 +44,14 @@ class Injectjs < BetterCap::Proxy::Module
     end
   end
 
+  # Create an instance of this module and raise a BetterCap::Error if command
+  # line arguments weren't correctly specified.
   def initialize
     raise BetterCap::Error, "No --js-file, --js-url or --js-data options specified for the proxy module." if @@jsdata.nil? and @@jsurl.nil?
   end
 
+  # Called by the BetterCap::Proxy::Proxy processor on each HTTP +request+ and
+  # +response+.
   def on_request( request, response )
     # is it a html page?
     if response.content_type =~ /^text\/html.*/

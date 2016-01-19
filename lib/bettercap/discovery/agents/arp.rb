@@ -18,6 +18,7 @@ module Agents
 class Arp < Discovery::Agents::Base
   private
 
+  # Build a PacketFu::ARPPacket instance for the specified +ip+ address.
   def get_probe( ip )
     pkt = PacketFu::ARPPacket.new
 

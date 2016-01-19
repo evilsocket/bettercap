@@ -30,6 +30,7 @@ class ICMPRedirectPacket < PacketFu::Packet
 
     attr_accessor :eth_header, :ip_header, :icmp_header, :ip_encl_header
 
+    # Create a ICMPRedirectPacket instance.
     def initialize(args={})
       @eth_header = PacketFu::EthHeader.new(args).read(args[:eth])
 
@@ -54,6 +55,8 @@ class ICMPRedirectPacket < PacketFu::Packet
       super
     end
 
+    # Update this packet with the correct +gateway+, +target+, +local+ address
+    # and +address2redirect+.
     def update!( gateway, target, local, address2redirect )
       @eth_header.eth_src = PacketFu::EthHeader.mac2str(gateway.mac)
       @ip_header.ip_saddr = gateway.ip
@@ -145,6 +148,7 @@ class Icmp < Base
 
   private
 
+  # Return true if the +pkt+ packet comes from one of our targets.
   def is_interesting_packet?(pkt)
     return false if pkt.ip_saddr == @local
     @ctx.targets.each do |target|
@@ -155,6 +159,7 @@ class Icmp < Base
     false
   end
 
+  # DNS watcher logic.
   def dns_watcher
     Logger.debug 'DNS watcher started ...'
 
@@ -188,6 +193,7 @@ class Icmp < Base
     }
   end
 
+  # Main spoofer loop.
   def icmp_spoofer
     spoof_loop(3) { |target|
       unless target.ip.nil? or target.mac.nil?

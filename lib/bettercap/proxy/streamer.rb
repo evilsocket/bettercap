@@ -55,6 +55,7 @@ class Streamer
 
   private
 
+  # Return the +client+ ip address and port.
   def get_client_details( is_https, client )
     unless is_https
       client_port, client_ip = Socket.unpack_sockaddr_in(client.getpeername)
@@ -65,6 +66,8 @@ class Streamer
     [ client_ip, client_port ]
   end
 
+  # Use a Net::HTTP object in order to perform the +req+ BetterCap::Proxy::Request
+  # object, will return a BetterCap::Proxy::Response object instance.
   def perform_proxy_request(req, res)
     path         = req.url
     response     = nil
@@ -78,22 +81,26 @@ class Streamer
     res.convert_webrick_response!(response)
   end
 
+  # Handle a CONNECT request, +req+ is the request object and +res+ the response.
   def do_CONNECT(req, res)
     Logger.error "You're using bettercap as a normal HTTP(S) proxy, it wasn't designed to handle CONNECT requests:\n\n#{req.to_s}"
   end
 
+  # Handle a GET request, +req+ is the request object and +res+ the response.
   def do_GET(req, res)
     perform_proxy_request(req, res) do |http, path, header|
       http.get(path, header)
     end
   end
 
+  # Handle a HEAD request, +req+ is the request object and +res+ the response.
   def do_HEAD(req, res)
     perform_proxy_request(req, res) do |http, path, header|
       http.head(path, header)
     end
   end
 
+  # Handle a POST request, +req+ is the request object and +res+ the response.
   def do_POST(req, res)
     perform_proxy_request(req, res) do |http, path, header|
       http.post(path, req.body || "", header)

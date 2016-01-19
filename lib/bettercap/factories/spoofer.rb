@@ -42,6 +42,7 @@ class Spoofer
 
     private
 
+    # Return true if +name+ is a valid spoofer name, otherwise false.
     def available?(name)
       available.include?(name)
     end

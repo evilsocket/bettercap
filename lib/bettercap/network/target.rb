@@ -114,6 +114,7 @@ class Target
 
 private
 
+  # Attempt to perform a NBNS name resolution for this target.
   def resolve!
     resp, sock = nil, nil
     begin
@@ -133,10 +134,12 @@ private
     end
   end
 
+  # Given the +resp+ NBNS response, parse the hostname from it.
   def parse_nbns_response resp
     resp[0][57,15].to_s.strip
   end
 
+  # Lookup the given +mac+ address in order to find its vendor.
   def self.lookup_vendor( mac )
     if @@prefixes == nil
       Logger.debug 'Preloading hardware vendor prefixes ...'
