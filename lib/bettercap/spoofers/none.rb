@@ -19,13 +19,39 @@ class None < Base
   # Initialize the non-spoofing class.
   def initialize
     Logger.warn 'Spoofing disabled.'
+
+    @thread  = nil
+    @running = false
   end
 
-  # This does nothing.
-  def start; end
+  # Start the "NONE" spoofer.
+  def start
+    stop() if @running
+    @running = true
 
-  # This does nothing.
-  def stop; end
+    @thread = Thread.new { fake_spoofer }
+  end
+
+  # Stop the "NONE" spoofer.
+  def stop
+    return unless @running
+
+    @running = false
+    begin
+      @thread.exit
+    rescue
+    end
+  end
+
+  private
+
+  # Main fake spoofer loop.
+  def fake_spoofer
+    spoof_loop(1) { |target|
+
+    }
+  end
+
 end
 end
 end
