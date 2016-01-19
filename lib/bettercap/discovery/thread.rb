@@ -50,7 +50,7 @@ class Thread
       @ctx.targets = Network.get_alive_targets(@ctx).sort_by { |t| t.sortable_ip }
 
       if was_empty and not @ctx.targets.empty?
-        Logger.info "Collected #{@ctx.targets.size} total targets."
+        Logger.info "Collected #{@ctx.targets.size} total target#{if @ctx.targets.size > 1 then "s" else "" end}."
 
         msg = "\n"
         @ctx.targets.each do |target|
