@@ -35,7 +35,7 @@ class InjectHTML < BetterCap::Proxy::Module
   # Create an instance of this module and raise a BetterCap::Error if command
   # line arguments weren't correctly specified.
   def initialize
-    raise BetterCap::Error, "No --html-data option specified for the proxy module." if @@data.nil? and @@iframe.nil?
+    raise BetterCap::Error, "No --html-data or --html-iframe-url options specified for the proxy module." if @@data.nil? and @@iframe.nil?
   end
 
   # Called by the BetterCap::Proxy::Proxy processor on each HTTP +request+ and
