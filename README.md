@@ -3,12 +3,14 @@ and offensive feature you could need in order to perform a man in the middle att
 
 Before submitting issues, please read the relevant [section](http://www.bettercap.org/docs/contribute/) in the documentation.
 
-[![Gem Version](https://badge.fury.io/rb/bettercap.svg)](http://badge.fury.io/rb/bettercap) [![Code Climate](https://codeclimate.com/github/evilsocket/bettercap/badges/gpa.svg)](https://codeclimate.com/github/evilsocket/bettercap) [![Join the chat at https://gitter.im/evilsocket/bettercap](https://badges.gitter.im/evilsocket/bettercap.svg)](https://gitter.im/evilsocket/bettercap?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 <table>
     <tr>
         <th>Version</th>
-        <td>1.2.3</td>
+        <td>
+          <a href="http://badge.fury.io/rb/bettercap" target="_blank">
+            <img src="https://badge.fury.io/rb/bettercap.svg"/>
+          </a>
+        </td>
     </tr>
     <tr>
         <th>Homepage</th>
@@ -27,15 +29,29 @@ Before submitting issues, please read the relevant [section](http://www.betterca
     </tr>
     <tr>
         <th>Code Documentation</th>
-        <td><a href="http://www.rubydoc.info/github/evilsocket/bettercap">http://www.rubydoc.info/github/evilsocket/bettercap</a></td>
+        <td>
+          <a href="http://www.rubydoc.info/github/evilsocket/bettercap">http://www.rubydoc.info/github/evilsocket/bettercap</a>
+          &nbsp;
+          <a href="https://codeclimate.com/github/evilsocket/bettercap" target="_blank">
+            <img src="https://codeclimate.com/github/evilsocket/bettercap/badges/gpa.svg"/>
+          </a>
+        </td>
     </tr>
     <tr>
        <th>Author</th>
-       <td><a href="mailto:evilsocket@gmail.com">Simone Margaritelli</a> (<a href="http://twitter.com/evilsocket">@evilsocket</a>)</td>
+       <td><a href="http://www.evilsocket.net/">Simone Margaritelli</a> (<a href="http://twitter.com/evilsocket">@evilsocket</a>)</td>
     </tr>
     <tr>
         <th>Twitter</th>
         <td><a href="http://twitter.com/bettercap">@bettercap</a></td>
+    </tr>
+    <tr>
+        <th>Chat</th>
+        <td>
+          <a href="https://badges.gitter.im/evilsocket/bettercap.svg" target="_blank">
+            <img src="https://gitter.im/evilsocket/bettercap"/>
+          </a>
+        </td>
     </tr>
     <tr>
         <th>Copyright</th>
