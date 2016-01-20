@@ -56,8 +56,12 @@ class Options
   attr_accessor :proxy_https
   # HTTP proxy port.
   attr_accessor :proxy_port
+  # List of HTTP ports, [ 80 ] by default.
+  attr_accessor :http_ports
   # HTTPS proxy port.
   attr_accessor :proxy_https_port
+  # List of HTTPS ports, [ 443 ] by default.
+  attr_accessor :https_ports
   # File name of the PEM certificate to use for the HTTPS proxy.
   attr_accessor :proxy_pem_file
   # File name of the transparent proxy module to load.
@@ -100,7 +104,8 @@ class Options
     @no_target_nbns = false
     @kill = false
     @packet_throttle = 0.0
-
+    @http_ports = [ 80 ]
+    @https_ports = [ 443 ]
     @ignore = nil
 
     @sniffer = false
@@ -239,6 +244,14 @@ class Options
       opts.on( '--proxy-port PORT', 'Set HTTP proxy port, default to ' + ctx.options.proxy_port.to_s + ' .' ) do |v|
         ctx.options.proxy = true
         ctx.options.proxy_port = v.to_i
+      end
+
+      opts.on( '--http-ports PORT1,PORT2', 'Comma separated list of HTTP ports to redirect to the proxy, default to ' + ctx.options.http_ports.join(', ') + ' .' ) do |v|
+        ctx.options.http_ports = v
+      end
+
+      opts.on( '--https-ports PORT1,PORT2', 'Comma separated list of HTTPS ports to redirect to the proxy, default to ' + ctx.options.https_ports.join(', ') + ' .' ) do |v|
+        ctx.options.https_ports = v
       end
 
       opts.on( '--proxy-https-port PORT', 'Set HTTPS proxy port, default to ' + ctx.options.proxy_https_port.to_s + ' .' ) do |v|
@@ -397,6 +410,32 @@ class Options
     raise BetterCap::Error, 'Invalid custom HTTPS upstream proxy address specified.' unless Network.is_ip? @custom_https_proxy
   end
 
+  # Parse a comma separated list of ports and return an array containing only
+  # valid ports, raise BetterCap::Error if that array is empty.
+  def to_ports(value)
+    ports = []
+    value.split(",").each do |v|
+      v = v.strip.to_i
+      if v > 0 and v <= 65535
+        ports << v
+      end
+    end
+    raise BetterCap::Error, 'Invalid ports specified.' if ports.empty?
+    ports
+  end
+
+  # Setter for the #http_ports attribute, will raise a BetterCap::Error if +value+
+  # is not a valid comma separated list of ports.
+  def http_ports=(value)
+    @http_ports = to_ports(value)
+  end
+
+  # Setter for the #https_ports attribute, will raise a BetterCap::Error if +value+
+  # is not a valid comma separated list of ports.
+  def https_ports=(value)
+    @https_ports = to_ports(value)
+  end
+
   # Split specified targets and parse them ( either as IP or MAC ), will raise a
   # BetterCap::Error if one or more invalid addresses are specified.
   def to_targets
@@ -430,35 +469,43 @@ class Options
     redirections = []
 
     if @proxy
-      redirections << Firewalls::Redirection.new( @iface,
-                                       'TCP',
-                                       80,
-                                       ifconfig[:ip_saddr],
-                                       @proxy_port )
+      @http_ports.each do |port|
+        redirections << Firewalls::Redirection.new( @iface,
+                                         'TCP',
+                                         port,
+                                         ifconfig[:ip_saddr],
+                                         @proxy_port )
+      end
     end
 
     if @proxy_https
-      redirections << Firewalls::Redirection.new( @iface,
-                                       'TCP',
-                                       443,
-                                       ifconfig[:ip_saddr],
-                                       @proxy_https_port )
+      @https_ports.each do |port|
+        redirections << Firewalls::Redirection.new( @iface,
+                                         'TCP',
+                                         port,
+                                         ifconfig[:ip_saddr],
+                                         @proxy_https_port )
+      end
     end
 
     if @custom_proxy
-      redirections << Firewalls::Redirection.new( @iface,
-                                       'TCP',
-                                       80,
-                                       @custom_proxy,
-                                       @custom_proxy_port )
+      @http_ports.each do |port|
+        redirections << Firewalls::Redirection.new( @iface,
+                                         'TCP',
+                                         port,
+                                         @custom_proxy,
+                                         @custom_proxy_port )
+      end
     end
 
     if @custom_https_proxy
-      redirections << Firewalls::Redirection.new( @iface,
-                                       'TCP',
-                                       443,
-                                       @custom_https_proxy,
-                                       @custom_https_proxy_port )
+      @https_ports.each do |port|
+        redirections << Firewalls::Redirection.new( @iface,
+                                         'TCP',
+                                         port,
+                                         @custom_https_proxy,
+                                         @custom_https_proxy_port )
+      end
     end
 
     redirections
