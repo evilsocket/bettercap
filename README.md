@@ -48,8 +48,8 @@ Before submitting issues, please read the relevant [section](http://www.betterca
     <tr>
         <th>Chat</th>
         <td>
-          <a href="https://badges.gitter.im/evilsocket/bettercap.svg" target="_blank">
-            <img src="https://gitter.im/evilsocket/bettercap"/>
+          <a href="https://gitter.im/evilsocket/bettercap" target="_blank">
+            <img src="https://badges.gitter.im/evilsocket/bettercap.svg"/>
           </a>
         </td>
     </tr>
