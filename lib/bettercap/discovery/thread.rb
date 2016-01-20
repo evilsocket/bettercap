@@ -40,25 +40,49 @@ class Thread
 
   private
 
+  # Print informations about new and lost targets.
+  def print_differences( prev_targets )
+    size      = @ctx.targets.size
+    prev_size = prev_targets.size
+    diff      = nil
+    label     = nil
+
+    if size > prev_size
+      diff  = @ctx.targets - prev_targets
+      delta = diff.size
+      label = 'NEW'.green
+
+      Logger.warn "Acquired #{delta} new target#{if delta > 1 then "s" else "" end}."
+    elsif size < prev_size
+      diff  = prev_targets - @ctx.targets
+      delta = diff.size
+      label = 'LOST'.red
+
+      Logger.warn "Lost #{delta} target#{if delta > 1 then "s" else "" end}."
+    end
+
+    unless diff.nil?
+      msg = "\n"
+      diff.each do |target|
+        msg += "  [#{label}] #{target.to_s(false)}\n"
+      end
+      msg += "\n"
+      Logger.raw msg
+    end
+  end
+
   # This method implements the main discovery logic, it will be executed within
   # the spawned thread.
   def worker
     Logger.debug( 'Network discovery thread started.' ) unless @ctx.options.arpcache
 
+    prev = []
     while @running
-      was_empty = @ctx.targets.empty?
       @ctx.targets = Network.get_alive_targets(@ctx).sort_by { |t| t.sortable_ip }
 
-      if was_empty and not @ctx.targets.empty?
-        Logger.info "Collected #{@ctx.targets.size} total target#{if @ctx.targets.size > 1 then "s" else "" end}."
+      print_differences prev
 
-        msg = "\n"
-        @ctx.targets.each do |target|
-          msg += "  #{target}\n"
-        end
-        msg += "\n"
-        Logger.raw msg
-      end
+      prev = @ctx.targets
 
       sleep(5) if @ctx.options.arpcache
     end
