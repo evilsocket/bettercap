@@ -322,9 +322,6 @@ class Options
 
     Logger.init( ctx.options.debug, ctx.options.logfile, ctx.options.silent )
 
-    Logger.warn "You are running an unstable/beta version of this software, please" \
-                " update to a stable one if available." if BetterCap::VERSION =~ /[\d\.+]b/
-
     if ctx.options.check_updates
       UpdateChecker.check
       exit
@@ -332,6 +329,8 @@ class Options
 
     raise BetterCap::Error, 'This software must run as root.' unless Process.uid == 0
     raise BetterCap::Error, 'No default interface found, please specify one with the -I argument.' if ctx.options.iface.nil?
+
+    ctx.options.starting_message
 
     unless ctx.options.gateway.nil?
       raise BetterCap::Error, "The specified gateway '#{ctx.options.gateway}' is not a valid IPv4 address." unless Network.is_ip?(ctx.options.gateway)
@@ -509,6 +508,31 @@ class Options
     end
 
     redirections
+  end
+
+  # Print the starting status message.
+  def starting_message
+    on = '✔'.green
+    off = '✘'.red
+    status = {
+      'spoofing'    => if has_spoofer? then on else off end,
+      'discovery'   => if !target.nil? or arpcache then off else on end,
+      'sniffer'     => if sniffer then on else off end,
+      'http-proxy'  => if proxy then on else off end,
+      'https-proxy' => if proxy_https then on else off end,
+      'http-server' => if httpd then on else off end,
+    }
+
+    msg = "Starting [ "
+    status.each do |k,v|
+      msg += "#{k}:#{v} "
+    end
+    msg += "] ...\n\n"
+
+    Logger.info msg
+
+    Logger.warn "You are running an unstable/beta version of this software, please" \
+                " update to a stable one if available." if BetterCap::VERSION =~ /[\d\.+]b/
   end
 end
 end

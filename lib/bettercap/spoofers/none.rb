@@ -18,7 +18,7 @@ module Spoofers
 class None < Base
   # Initialize the non-spoofing class.
   def initialize
-    Logger.warn 'Spoofing disabled.'
+    Logger.debug 'Spoofing disabled.'
 
     @ctx     = Context.get
     @gateway = nil
