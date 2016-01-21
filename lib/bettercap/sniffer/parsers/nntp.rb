@@ -16,7 +16,7 @@ module Parsers
 # NNTP authentication parser.
 class Nntp < Base
   def initialize
-    @filters = [ /(authinfo|AUTHINFO)\s+(user|USER|pass|PASS)\s+.+/ ]
+    @filters = [ /AUTHINFO\s+(USER|PASS)\s+.+/i ]
     @name = 'NNTP'
   end
 end
