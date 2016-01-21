@@ -85,13 +85,8 @@ class Module
   # Loop each available BetterCap::Proxy::Proxy module and yield each
   # one of them for the given code block.
   def self.each_module
-    ( BetterCap::Proxy::Modules.constants + Object.constants ).each do |klass|
-      begin
-        const = Kernel.const_get(klass.to_s)
-      rescue NameError
-        const = BetterCap::Proxy::Modules.const_get(klass.to_s)
-      end
-
+    Object.constants.each do |klass|
+      const = Kernel.const_get(klass.to_s)
       if const.respond_to?(:superclass) and const.superclass == self
         yield const
       end
