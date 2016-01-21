@@ -10,6 +10,9 @@ This project is released under the GPL 3 license.
 
 =end
 
+module BetterCap
+module Proxy
+module Modules
 # This proxy module will take care of Javascript code injection.
 class InjectJS < BetterCap::Proxy::Module
   # JS data to be injected.
@@ -65,4 +68,8 @@ class InjectJS < BetterCap::Proxy::Module
       end
     end
   end
+end
+
+end
+end
 end

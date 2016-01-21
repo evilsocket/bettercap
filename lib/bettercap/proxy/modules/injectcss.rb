@@ -10,6 +10,9 @@ This project is released under the GPL 3 license.
 
 =end
 
+module BetterCap
+module Proxy
+module Modules
 # This proxy module will take care of CSS code injection.
 class InjectCSS < BetterCap::Proxy::Module
   # CSS data to be injected.
@@ -65,4 +68,8 @@ class InjectCSS < BetterCap::Proxy::Module
       end
     end
   end
+end
+
+end
+end
 end

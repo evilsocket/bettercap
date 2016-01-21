@@ -10,6 +10,9 @@ This project is released under the GPL 3 license.
 
 =end
 
+module BetterCap
+module Proxy
+module Modules
 # This proxy module will take care of HTML code injection.
 class InjectHTML < BetterCap::Proxy::Module
   # URL of the iframe if --html-iframe-url was specified.
@@ -52,4 +55,8 @@ class InjectHTML < BetterCap::Proxy::Module
       end
     end
   end
+end
+
+end
+end
 end
