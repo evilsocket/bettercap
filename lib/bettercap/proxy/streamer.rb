@@ -21,8 +21,10 @@ class Streamer
   end
 
   # Redirect the +client+ to a funny video.
-  def rickroll( client )
-    Logger.warn "#{client_ip} is connecting to us directly."
+  def rickroll( client, is_https )
+    client_ip, client_port = get_client_details( is_https, client )
+
+    Logger.warn "#{client_ip}:#{client_port} is connecting to us directly."
 
     client.write "HTTP/1.1 302 Found\n"
     client.write "Location: https://www.youtube.com/watch?v=dQw4w9WgXcQ\n\n"
