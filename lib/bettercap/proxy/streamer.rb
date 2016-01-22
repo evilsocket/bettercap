@@ -18,6 +18,8 @@ class Streamer
   # Initialize the class with the given +processor+ routine.
   def initialize( processor )
     @processor = processor
+    @ctx       = Context.get
+    @sslstrip  = SSLStrip::Strip.new
   end
 
   # Redirect the +client+ to a funny video.
@@ -47,11 +49,15 @@ class Streamer
         Logger.debug "[#{client_ip}] -> #{request.host}#{request.url} [#{response.code}]"
       end
 
+      @sslstrip.process( client_ip, request, response ) if @ctx.options.sslstrip
+
       @processor.call( request, response )
 
       client.write response.to_s
-    rescue NoMethodError
+    rescue NoMethodError => e
       Logger.warn "Could not handle #{request.verb} request from #{client_ip}:#{client_port} ..."
+      Logger.debug e.inspect
+      Logger.debug e.backtrace.join("\n")
     end
   end
 
