@@ -83,9 +83,9 @@ Dependencies
 All dependencies will be automatically installed through the GEM system, in some case you might need to install some system
 dependency in order to make everything work:
 
-    sudo apt-get install ruby-dev libpcap-dev
+    sudo apt-get install build-essential ruby-dev libpcap-dev
 
-This should solve issues such as [this one](https://github.com/evilsocket/bettercap/issues/22).
+This should solve issues such as [this one](https://github.com/evilsocket/bettercap/issues/22) or [this one](https://github.com/evilsocket/bettercap/issues/100).
 
 Documentation and Examples
 ============
