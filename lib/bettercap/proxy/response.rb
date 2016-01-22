@@ -47,7 +47,7 @@ class Response
   def convert_webrick_response!(response)
     self << "HTTP/#{response.http_version} #{response.code} #{response.msg}"
     response.each do |key,value|
-      self << "#{key}: #{value}"
+      self << "#{key.gsub(/\bwww|^te$|\b\w/){ $&.upcase }}: #{value}"
     end
     self << "\n"
     @code = response.code
