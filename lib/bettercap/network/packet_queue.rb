@@ -45,6 +45,7 @@ class PacketQueue
 
   # Notify the queue to stop and wait for every worker to finish.
   def stop
+    wait_empty( 60 )
     @running = false
     @nworkers.times { push(nil) }
     @workers.map(&:join)

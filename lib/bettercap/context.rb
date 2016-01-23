@@ -183,8 +183,6 @@ class Context
     # Logger is silent if @running == false
     puts "\nShutting down, hang on ...\n"
 
-    @packets.stop
-
     Logger.debug 'Stopping target discovery manager ...'
     @discovery.stop
 
@@ -192,6 +190,10 @@ class Context
     @spoofer.each do |spoofer|
       spoofer.stop
     end
+
+    # Spoofer might be sending some last packets to restore the targets,
+    # the packet queue must be stopped here.
+    @packets.stop
 
     Logger.debug 'Stopping proxies ...'
     @proxies.each do |proxy|
