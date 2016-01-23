@@ -134,7 +134,7 @@ class Context
 
     @proxy_processor = Proc.new do |request,response|
       if Proxy::Module.modules.empty?
-        Logger.warn 'WARNING: No proxy module loaded, skipping request.'
+        Logger.debug 'WARNING: No proxy module loaded, skipping request.'
       else
         # loop each loaded module and execute if enabled
         Proxy::Module.modules.each do |mod|

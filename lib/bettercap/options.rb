@@ -131,7 +131,7 @@ class Options
     @custom_https_proxy = nil
     @custom_https_proxy_port = 8083
 
-    @sslstrip = false
+    @sslstrip = true
 
     @httpd = false
     @httpd_port = 8081
@@ -282,8 +282,8 @@ class Options
         ctx.options.custom_proxy_port = v.to_i
       end
 
-      opts.on( '--sslstrip', 'Enable sslstrip.' ) do
-        ctx.options.sslstrip = true
+      opts.on( '--no-sslstrip', 'Disable SSLStrip.' ) do
+        ctx.options.sslstrip = false
       end
 
       opts.on( '--custom-https-proxy ADDRESS', 'Use a custom HTTPS upstream proxy instead of the builtin one.' ) do |v|
@@ -528,7 +528,7 @@ class Options
       'sniffer'     => if sniffer then on else off end,
       'http-proxy'  => if proxy then on else off end,
       'https-proxy' => if proxy_https then on else off end,
-      'sslstrip'    => if sslstrip then on else off end,
+      'sslstrip'    => if proxy and sslstrip then on else off end,
       'http-server' => if httpd then on else off end,
     }
 

@@ -23,7 +23,7 @@ class Request
   # Hostname.
   attr_reader :host
   # Request port.
-  attr_reader :port
+  attr_accessor :port
   # Request headers hash.
   attr_reader :headers
   # Content length.

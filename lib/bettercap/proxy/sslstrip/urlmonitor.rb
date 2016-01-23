@@ -14,16 +14,19 @@ module BetterCap
 module Proxy
 module SSLStrip
 
-# https://github.com/moxie0/sslstrip/blob/master/sslstrip/URLMonitor.py
+# Class to handle a list of ( client, url ) objects.
 class URLMonitor
+  # Create an instance of this object.
   def initialize
     @urls = []
   end
 
+  # Return true if the object (client, url) is found inside this list.
   def secure_link?( client, url )
     @urls.include?([client, url])
   end
 
+  # Add the object (client, url) to this list.
   def add!( client, url )
     unless secure_link?(client, url)
       @urls << [client, url]
