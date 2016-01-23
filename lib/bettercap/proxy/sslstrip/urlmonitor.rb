@@ -16,6 +16,9 @@ module SSLStrip
 
 # Class to handle a list of ( client, url ) objects.
 class URLMonitor
+  # Regular expression used to parse HTTPS urls.
+  HTTPS_URL_RE = /(https:\/\/[^"'\/]+)/i
+
   # Create an instance of this object.
   def initialize
     @urls = []
@@ -31,6 +34,19 @@ class URLMonitor
     unless secure_link?(client, url)
       @urls << [client, url]
     end
+  end
+
+  # Return a normalized version of +url+.
+  def normalize( url )
+    url = if url.include?('://') then url else "https://#{url}" end
+    url = if url.end_with?('/') then url else "#{url}/" end
+    url
+  end
+
+  # Downgrade +url+ from HTTPS to HTTP.
+  # Will take care of HSTS bypass urls in a near future.
+  def downgrade( url )
+    url.gsub( 'https://', 'http://' )
   end
 end
 

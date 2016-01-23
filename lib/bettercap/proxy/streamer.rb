@@ -41,7 +41,7 @@ class Streamer
     Logger.debug "Handling #{request.verb} request from #{client_ip}:#{client_port} ..."
 
     begin
-      @sslstrip.check( client_ip, request ) if @ctx.options.sslstrip
+      @sslstrip.preprocess( client_ip, request ) if @ctx.options.sslstrip
 
       self.send( "do_#{request.verb}", request, response )
 
