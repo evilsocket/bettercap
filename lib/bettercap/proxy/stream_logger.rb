@@ -46,7 +46,8 @@ class StreamLogger
 
   # Log a HTTP ( HTTPS if +is_https+ is true ) stream performed by the +client+
   # with the +request+ and +response+ most important informations.
-  def self.log_http( is_https, client, request, response )
+  def self.log_http( request, response )
+    is_https   = request.port == 443
     request_s  = "#{is_https ? 'https' : 'http'}://#{request.host}#{request.url}"
     response_s = "( #{response.content_type} )"
     request_s  = request_s.slice(0..@@MAX_REQ_SIZE) + '...' unless request_s.length <= @@MAX_REQ_SIZE
@@ -58,7 +59,7 @@ class StreamLogger
       response_s += " [#{response.code}]"
     end
 
-    Logger.raw "[#{self.addr2s(client)}] #{request.verb.light_blue} #{request_s} #{response_s}"
+    Logger.raw "[#{self.addr2s(request.client)}] #{request.verb.light_blue} #{request_s} #{response_s}"
   end
 end
 end

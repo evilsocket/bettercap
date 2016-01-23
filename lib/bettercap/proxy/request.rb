@@ -30,6 +30,10 @@ class Request
   attr_reader :content_length
   # Request body.
   attr_reader :body
+  # Client address.
+  attr_accessor :client
+  # Client port.
+  attr_accessor :client_port
 
   # Initialize this object setting #port to +default_port+.
   def initialize( default_port = 80 )
@@ -41,6 +45,8 @@ class Request
     @headers = {}
     @content_length = 0
     @body   = nil
+    @client = ""
+    @client_port = 0
   end
 
   # Read lines from the +sock+ socket and parse them.

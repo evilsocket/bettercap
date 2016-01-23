@@ -122,10 +122,10 @@ class Proxy
 
       # someone is having fun with us =)
       if is_self_request? request
-        @streamer.rickroll client, @is_https
+        @streamer.rickroll( client, @is_https )
       # handle request
       else
-        @streamer.handle( request, client, @is_https )
+        @streamer.handle( request, client )
       end
 
       Logger.debug "#{@type} client served."

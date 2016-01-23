@@ -16,22 +16,19 @@ module SSLStrip
 
 # Class to handle a list of ( client, url ) objects.
 class URLMonitor
-  # Regular expression used to parse HTTPS urls.
-  HTTPS_URL_RE = /(https:\/\/[^"'\/]+)/i
-
   # Create an instance of this object.
   def initialize
     @urls = []
   end
 
   # Return true if the object (client, url) is found inside this list.
-  def secure_link?( client, url )
+  def was_stripped?( client, url )
     @urls.include?([client, url])
   end
 
   # Add the object (client, url) to this list.
   def add!( client, url )
-    unless secure_link?(client, url)
+    unless was_stripped?(client, url)
       @urls << [client, url]
     end
   end
