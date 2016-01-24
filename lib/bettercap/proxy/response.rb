@@ -31,6 +31,22 @@ class Response
   # Response body.
   attr_accessor :body
 
+  # Return a 200 response object reading the file +filename+ with the specified
+  # +content_type+.
+  def self.from_file( filename, content_type )
+    r = Response.new
+    data = File.read(filename)
+
+    r << "HTTP/1.1 200 OK"
+    r << "Connection: close"
+    r << "Content-Length: #{data.bytesize}"
+    r << "Content-Type: #{content_type}"
+    r << "\n"
+    r << data
+
+    r
+  end
+
   # Initialize this response object state.
   def initialize
     @content_type = nil

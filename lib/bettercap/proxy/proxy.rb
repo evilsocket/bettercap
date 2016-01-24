@@ -133,7 +133,7 @@ class Proxy
     rescue Exception => e
       if request.host
         Logger.warn "Error while serving #{request.host}#{request.url}: #{e.inspect}"
-        Logger.debug e.backtrace.join("\n")
+        Logger.warn e.backtrace.join("\n")
       end
     end
 
