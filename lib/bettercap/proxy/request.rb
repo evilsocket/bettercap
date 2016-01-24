@@ -128,6 +128,7 @@ class Request
     @lines.join("\n") + "\n" + ( @body || '' )
   end
 
+  # Return the full request URL trimming it at +max_length+ characters.
   def to_url(max_length = 50)
     schema = if port == 443 then 'https' else 'http' end
     url = "#{schema}://#{@host}#{@url}"

@@ -96,6 +96,8 @@ class Strip
 
   private
 
+  # Return a 302 Redirect BetterCap::Proxy::Response object for the
+  # +request+, using +expired+ cookie headers to kill a client session.
   def build_expired_cookies( expired, request )
     resp = Response.new
 
