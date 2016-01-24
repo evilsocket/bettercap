@@ -142,13 +142,26 @@ class Request
   end
 
   # If the header with +name+ is found, then a +value+ is assigned to it.
+  # If +value+ is null and the header is found, it will be removed.
   def []=(name, value)
+    found = false
     @lines.each_with_index do |line,i|
       if line =~ /^#{name}:\s*.+$/i
-        @headers[name] = value
-        @lines[i] = "#{name}: #{value}"
+        found = true
+        if value.nil?
+          @headers.delete(name)
+          @lines.delete_at(i)
+        else
+          @headers[name] = value
+          @lines[i] = "#{name}: #{value}"
+        end
         break
       end
+    end
+
+    if !found and !value.nil?
+      @headers[name] = value
+      @lines << "#{name}: #{value}"
     end
   end
 end
