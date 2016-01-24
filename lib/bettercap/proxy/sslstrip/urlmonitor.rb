@@ -25,7 +25,7 @@ class URLMonitor
   def was_stripped?( client, url )
     @urls.include?([client, url])
   end
-
+ 
   # Add the object (client, url) to this list.
   def add!( client, url )
     unless was_stripped?(client, url)

@@ -127,6 +127,13 @@ class Request
   def to_s
     @lines.join("\n") + "\n" + ( @body || '' )
   end
+
+  def to_url(max_length = 50)
+    schema = if port == 443 then 'https' else 'http' end
+    url = "#{schema}://#{@host}#{@url}"
+    url = url.slice(0..max_length) + '...' unless url.length <= max_length
+    url
+  end
 end
 end
 end

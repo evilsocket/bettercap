@@ -56,12 +56,21 @@ class Strip
     end
 
     # parse body
+    links = []
     response.body.scan( HTTPS_URL_RE ).uniq.each do |link|
       if link[0].include?('.')
         link       = @monitor.normalize( link[0] )
         downgraded = @monitor.downgrade( link )
-        Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Found HTTPS link '#{link}' -> '#{downgraded}'."
 
+        links << [link, downgraded]
+      end
+    end
+
+    unless links.empty?
+      Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Stripping #{links.size} HTTPS link#{if links.size > 1 then 's' else '' end} inside '#{request.to_url}'."
+
+      links.each do |l|
+        link, downgraded = l
         @monitor.add!( request.client, link )
         response.body.gsub!( link, downgraded )
       end
