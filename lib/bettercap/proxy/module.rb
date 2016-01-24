@@ -18,6 +18,9 @@ class Module
   @@path    = File.dirname(__FILE__) + '/modules/'
   @@modules = []
 
+  def on_pre_request( request ); end
+  def on_request( request, response ); end
+
   # Return a list of available builtin proxy module names.
   def self.available
     avail = []

@@ -144,7 +144,11 @@ class Context
             original = response
 
             begin
-              mod.on_request request, response
+              if response.nil?
+                mod.on_pre_request request
+              else
+                mod.on_request request, response
+              end
             rescue Exception => e
               Logger.warn "Error with proxy module: #{e.message}"
               response = original

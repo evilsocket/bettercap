@@ -47,6 +47,9 @@ class Streamer
       end
 
       if r.nil?
+        # call modules on_pre_request
+        @processor.call( request, nil )
+
         self.send( "do_#{request.verb}", request, response )
       else
         response = r
@@ -70,6 +73,7 @@ class Streamer
         end
       end
 
+      # call modules on_request
       @processor.call( request, response )
 
       client.write response.to_s
