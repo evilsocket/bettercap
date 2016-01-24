@@ -41,9 +41,16 @@ class Streamer
     Logger.debug "Handling #{request.verb} request from #{request.client}:#{request.client_port} ..."
 
     begin
-      @sslstrip.preprocess( request ) if @ctx.options.sslstrip
+      r = nil
+      if @ctx.options.sslstrip
+        r = @sslstrip.preprocess( request )
+      end
 
-      self.send( "do_#{request.verb}", request, response )
+      if r.nil?
+        self.send( "do_#{request.verb}", request, response )
+      else
+        response = r
+      end
 
       if response.textual?
         StreamLogger.log_http( request, response )

@@ -134,6 +134,22 @@ class Request
     url = url.slice(0..max_length) + '...' unless url.length <= max_length
     url
   end
+
+  # Return the value of header with +name+ or an empty string.
+  def [](name)
+    if @headers.include?(name) then @headers[name] else "" end
+  end
+
+  # If the header with +name+ is found, then a +value+ is assigned to it.
+  def []=(name, value)
+    @lines.each_with_index do |line,i|
+      if line =~ /^#{name}:\s*.+$/i
+        @headers[name] = value
+        @lines[i] = "#{name}: #{value}"
+        break
+      end
+    end
+  end
 end
 end
 end
