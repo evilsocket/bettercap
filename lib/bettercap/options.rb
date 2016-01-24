@@ -66,6 +66,8 @@ class Options
   attr_accessor :proxy_pem_file
   # File name of the transparent proxy module to load.
   attr_accessor :proxy_module
+  # If true, sslstrip is enabled.
+  attr_accessor :sslstrip
   # Custom HTTP transparent proxy address.
   attr_accessor :custom_proxy
   # Custom HTTP transparent proxy port.
@@ -128,6 +130,8 @@ class Options
 
     @custom_https_proxy = nil
     @custom_https_proxy_port = 8083
+
+    @sslstrip = true
 
     @httpd = false
     @httpd_port = 8081
@@ -276,6 +280,10 @@ class Options
 
       opts.on( '--custom-proxy-port PORT', 'Specify a port for the custom HTTP upstream proxy, default to ' + ctx.options.custom_proxy_port.to_s + ' .' ) do |v|
         ctx.options.custom_proxy_port = v.to_i
+      end
+
+      opts.on( '--no-sslstrip', 'Disable SSLStrip.' ) do
+        ctx.options.sslstrip = false
       end
 
       opts.on( '--custom-https-proxy ADDRESS', 'Use a custom HTTPS upstream proxy instead of the builtin one.' ) do |v|
@@ -520,6 +528,7 @@ class Options
       'sniffer'     => if sniffer then on else off end,
       'http-proxy'  => if proxy then on else off end,
       'https-proxy' => if proxy_https then on else off end,
+      'sslstrip'    => if proxy and sslstrip then on else off end,
       'http-server' => if httpd then on else off end,
     }
 

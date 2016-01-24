@@ -23,13 +23,17 @@ class Request
   # Hostname.
   attr_reader :host
   # Request port.
-  attr_reader :port
+  attr_accessor :port
   # Request headers hash.
   attr_reader :headers
   # Content length.
   attr_reader :content_length
   # Request body.
   attr_reader :body
+  # Client address.
+  attr_accessor :client
+  # Client port.
+  attr_accessor :client_port
 
   # Initialize this object setting #port to +default_port+.
   def initialize( default_port = 80 )
@@ -41,6 +45,8 @@ class Request
     @headers = {}
     @content_length = 0
     @body   = nil
+    @client = ""
+    @client_port = 0
   end
 
   # Read lines from the +sock+ socket and parse them.
@@ -120,6 +126,13 @@ class Request
   # Return a string representation of the HTTP request.
   def to_s
     @lines.join("\n") + "\n" + ( @body || '' )
+  end
+
+  def to_url(max_length = 50)
+    schema = if port == 443 then 'https' else 'http' end
+    url = "#{schema}://#{@host}#{@url}"
+    url = url.slice(0..max_length) + '...' unless url.length <= max_length
+    url
   end
 end
 end

@@ -18,6 +18,8 @@ class Streamer
   # Initialize the class with the given +processor+ routine.
   def initialize( processor )
     @processor = processor
+    @ctx       = Context.get
+    @sslstrip  = SSLStrip::Strip.new
   end
 
   # Redirect the +client+ to a funny video.
@@ -30,28 +32,44 @@ class Streamer
     client.write "Location: https://www.youtube.com/watch?v=dQw4w9WgXcQ\n\n"
   end
 
-  # Handle the HTTP +request+ from +client+, if +is_https+ is true it will be
-  # forwarded as a HTTPS request.
-  def handle( request, client, is_https )
+  # Handle the HTTP +request+ from +client+.
+  def handle( request, client, redirects = 0 )
     response = Response.new
-    client_ip, client_port = get_client_details( is_https, client )
+    is_https = request.port == 443
+    request.client, request.client_port = get_client_details( is_https, client )
 
-    Logger.debug "Handling #{request.verb} request from #{client_ip}:#{client_port} ..."
+    Logger.debug "Handling #{request.verb} request from #{request.client}:#{request.client_port} ..."
 
     begin
+      @sslstrip.preprocess( request ) if @ctx.options.sslstrip
+
       self.send( "do_#{request.verb}", request, response )
 
       if response.textual?
-        StreamLogger.log_http( is_https, client_ip, request, response )
+        StreamLogger.log_http( request, response )
       else
-        Logger.debug "[#{client_ip}] -> #{request.host}#{request.url} [#{response.code}]"
+        Logger.debug "[#{request.client}] -> #{request.host}#{request.url} [#{response.code}]"
+      end
+
+      if @ctx.options.sslstrip
+        # do we need to retry the request?
+        if @sslstrip.process( request, response ) == true
+          # https redirect loop?
+          if redirects < SSLStrip::Strip::MAX_REDIRECTS
+            return self.handle( request, client, redirects + 1 )
+          else
+            Logger.info "[#{'SSLSTRIP'.yellow} #{request.client}] Detected HTTPS redirect loop for '#{request.host}'."
+          end
+        end
       end
 
       @processor.call( request, response )
 
       client.write response.to_s
-    rescue NoMethodError
-      Logger.warn "Could not handle #{request.verb} request from #{client_ip}:#{client_port} ..."
+    rescue NoMethodError => e
+      Logger.warn "Could not handle #{request.verb} request from #{request.client}:#{request.client_port} ..."
+      Logger.debug e.inspect
+      Logger.debug e.backtrace.join("\n")
     end
   end
 

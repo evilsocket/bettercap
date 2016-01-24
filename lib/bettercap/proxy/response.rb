@@ -97,6 +97,26 @@ class Response
     @content_type and ( @content_type =~ /^text\/.+/ or @content_type =~ /^application\/.+/ )
   end
 
+  # Return the value of header with +name+ or an empty string.
+  def [](name)
+    @headers.each do |header|
+      if header =~ /^#{name}:\s*(.+)$/i
+        return $1
+      end
+    end
+    ""
+  end
+
+  # If the header with +name+ is found, then a +value+ is assigned to it.
+  def []=(name, value)
+    @headers.each_with_index do |header,i|
+      if header =~ /^#{name}:\s*.+$/i
+        @headers[i] = "#{name}: #{value}"
+        break
+      end
+    end
+  end
+
   # Return a string representation of this response object, patching the
   # Content-Length header if the #body was modified.
   def to_s
