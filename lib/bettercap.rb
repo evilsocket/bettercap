@@ -20,6 +20,7 @@ require 'optparse'
 require 'colorize'
 require 'packetfu'
 require 'ipaddr'
+require 'uri'
 
 Object.send :remove_const, :Config rescue nil
 Config = RbConfig

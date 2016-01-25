@@ -29,7 +29,7 @@ class Request
   # Content length.
   attr_reader :content_length
   # Request body.
-  attr_reader :body
+  attr_accessor :body
   # Client address.
   attr_accessor :client
   # Client port.
@@ -70,6 +70,20 @@ class Request
     if @content_length > 0
       @body = sock.read(@content_length)
     end
+  end
+
+  # Return a Request object from a +raw+ string.
+  def self.parse(raw)
+    req = Request.new
+    lines = raw.split("\n")
+    lines.each_with_index do |line,i|
+      req << line
+      if line.chomp == ''
+        req.body = lines[i + 1..lines.size].join("\n")
+        break
+      end
+    end
+    req
   end
 
   # Parse a single request line, patch it if needed and append it to #lines.
