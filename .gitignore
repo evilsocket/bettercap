@@ -6,8 +6,7 @@
 cert.crt
 cert.key
 cert.pem
-test_https_proxy.rb
-test_chunked.rb
-mkchangelog.rb
+test_*.rb
+test_*.sj
 .tags*
 .DS_Store
