@@ -520,8 +520,8 @@ class Options
 
   # Print the starting status message.
   def starting_message
-    on = '✔'.green
-    off = '✘'.red
+    on = 'on'.green
+    off = 'off'.red
     status = {
       'spoofing'    => if has_spoofer? then on else off end,
       'discovery'   => if !target.nil? or arpcache then off else on end,
