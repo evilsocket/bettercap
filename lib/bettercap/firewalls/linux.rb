@@ -24,7 +24,7 @@ class Linux < Base
   # If +enabled+ is true will enable packet forwarding, otherwise it will
   # disable it.
   def enable_forwarding(enabled)
-    File.open(IP_FORWARD_PATH) { |f| f.puts "#{enabled ? 1 : 0}" }
+    File.open(IP_FORWARD_PATH,'w') { |f| f.puts "#{enabled ? 1 : 0}" }
   end
 
   # Return true if packet forwarding is currently enabled, otherwise false.
@@ -35,13 +35,13 @@ class Linux < Base
   # If +enabled+ is true will enable packet icmp_echo_ignore_broadcasts, otherwise it will
   # disable it.
   def enable_icmp_bcast(enabled)
-    File.open(ICMP_BCAST_PATH) { |f| f.puts "#{enabled ? 1 : 0}" }
+    File.open(ICMP_BCAST_PATH,'w') { |f| f.puts "#{enabled ? 1 : 0}" }
   end
 
   # If +enabled+ is true will enable send_redirects, otherwise it will
   # disable it.
   def enable_send_redirects(enabled)
-    File.open(SEND_REDIRECTS_PATH) { |f| f.puts "#{enabled ? 1 : 0}" }
+    File.open(SEND_REDIRECTS_PATH,'w') { |f| f.puts "#{enabled ? 1 : 0}" }
   end
 
   # Apply the +r+ BetterCap::Firewalls::Redirection port redirection object.
