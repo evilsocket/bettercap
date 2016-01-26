@@ -71,11 +71,10 @@ begin
 rescue SystemExit, Interrupt
   BetterCap::Logger.raw "\n"
 
-rescue OptionParser::InvalidOption => e
-  BetterCap::Logger.error e.message
-
-rescue OptionParser::AmbiguousOption => e
-  BetterCap::Logger.error e.message
+rescue OptionParser::InvalidOption,
+       OptionParser::AmbiguousOption,
+       OptionParser::MissingArgument => e
+  BetterCap::Logger.error "'#{e.message.capitalize}', verify your command line arguments executing 'bettercap --help'."
 
 rescue BetterCap::Error => e
   BetterCap::Logger.error e.message
