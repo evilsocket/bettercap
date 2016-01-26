@@ -16,27 +16,32 @@ module BetterCap
 module Firewalls
 # Linux firewall class.
 class Linux < Base
+
+  IPV4_PATH = "/proc/sys/net/ipv4"
+  IP_FORWARD_PATH = IPV4_PATH + "/ip_forward"
+  ICMP_BCAST_PATH = IPV4_PATH + "/icmp_echo_ignore_broadcasts"
+  SEND_REDIRECTS_PATH = IPV4_PATH + "/conf/all/send_redirects"
   # If +enabled+ is true will enable packet forwarding, otherwise it will
   # disable it.
   def enable_forwarding(enabled)
-    Shell.execute("echo #{enabled ? 1 : 0} > /proc/sys/net/ipv4/ip_forward")
+    File.open(IP_FORWARD_PATH) { |f| f.puts "#{enabled ? 1 : 0}" }
   end
 
   # Return true if packet forwarding is currently enabled, otherwise false.
   def forwarding_enabled?
-    Shell.execute('cat /proc/sys/net/ipv4/ip_forward').strip == '1'
+    File.open(IP_FORWARD_PATH) { |f| f.read.strip == '1' }
   end
 
   # If +enabled+ is true will enable packet icmp_echo_ignore_broadcasts, otherwise it will
   # disable it.
   def enable_icmp_bcast(enabled)
-    Shell.execute("echo #{enabled ? 0 : 1} > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts")
+    File.open(ICMP_BCAST_PATH) { |f| f.puts "#{enabled ? 1 : 0}" }
   end
 
   # If +enabled+ is true will enable send_redirects, otherwise it will
   # disable it.
   def enable_send_redirects(enabled)
-    Shell.execute("echo #{enabled ? 0 : 1} > /proc/sys/net/ipv4/conf/all/send_redirects")
+    File.open(SEND_REDIRECTS_PATH) { |f| f.puts "#{enabled ? 1 : 0}" }
   end
 
   # Apply the +r+ BetterCap::Firewalls::Redirection port redirection object.
