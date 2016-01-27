@@ -1,3 +1,4 @@
+# encoding: UTF-8
 =begin
 
 BETTERCAP
@@ -520,8 +521,8 @@ class Options
 
   # Print the starting status message.
   def starting_message
-    on = 'on'.green
-    off = 'off'.red
+    on = '✔'.green
+    off = '✘'.red
     status = {
       'spoofing'    => if has_spoofer? then on else off end,
       'discovery'   => if !target.nil? or arpcache then off else on end,

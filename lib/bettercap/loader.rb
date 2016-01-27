@@ -1,3 +1,4 @@
+# encoding: UTF-8
 =begin
 BETTERCAP
 Author : Simone 'evilsocket' Margaritelli

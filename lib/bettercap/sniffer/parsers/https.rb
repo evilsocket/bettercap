@@ -1,3 +1,4 @@
+# encoding: UTF-8
 =begin
 
 BETTERCAP
@@ -15,7 +16,7 @@ require 'resolv'
 
 module BetterCap
 module Parsers
-# HTTPS connections parser.    
+# HTTPS connections parser.
 class Https < Base
   @@prev = nil
 

@@ -1,3 +1,4 @@
+# encoding: UTF-8
 =begin
 
 BETTERCAP
@@ -14,7 +15,7 @@ require 'colorize'
 
 module BetterCap
 module Parsers
-# HTTP GET requests parser.  
+# HTTP GET requests parser.
 class Url < Base
   def on_packet( pkt )
     s = pkt.to_s
