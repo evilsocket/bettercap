@@ -27,6 +27,8 @@ class Options
   attr_accessor :target
   # Log file name.
   attr_accessor :logfile
+  # If true the Logger will prepend timestamps to each line.
+  attr_accessor :log_timestamp
   # If true will suppress every log message which is not an error or a warning.
   attr_accessor :silent
   # If true will enable debug messages.
@@ -101,6 +103,7 @@ class Options
     @half_duplex = false
     @target = nil
     @logfile = nil
+    @log_timestamp = false
     @silent = false
     @debug = false
     @arpcache = false
@@ -176,6 +179,10 @@ class Options
 
       opts.on( '-O', '--log LOG_FILE', 'Log all messages into a file, if not specified the log messages will be only print into the shell.' ) do |v|
         ctx.options.logfile = v
+      end
+
+      opts.on( '--log-timestamp', 'Enable logging with timestamps for each line, disabled by default.' ) do
+        ctx.options.log_timestamp = true
       end
 
       opts.on( '-D', '--debug', 'Enable debug logging.' ) do
@@ -329,7 +336,7 @@ class Options
       end
     end.parse!
 
-    Logger.init( ctx.options.debug, ctx.options.logfile, ctx.options.silent )
+    Logger.init( ctx.options.debug, ctx.options.logfile, ctx.options.silent, ctx.options.log_timestamp )
 
     if ctx.options.check_updates
       UpdateChecker.check

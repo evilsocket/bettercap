@@ -14,24 +14,27 @@ module BetterCap
 # Class responsible for console and file logging.
 module Logger
   class << self
-    @@ctx     = nil
-    @@queue   = Queue.new
-    @@debug   = false
-    @@silent  = false
-    @@logfile = nil
-    @@thread  = nil
+    @@ctx       = nil
+    @@queue     = Queue.new
+    @@debug     = false
+    @@timestamp = false
+    @@silent    = false
+    @@logfile   = nil
+    @@thread    = nil
 
     # Initialize the logging system.
     # If +debug+ is true, debug logging will be enabled.
     # If +logfile+ is not nil, every message will be saved to that file.
     # If +silent+ is true, all messages will be suppressed if they're not errors
     # or warnings.
-    def init( debug, logfile, silent )
-      @@debug   = debug
-      @@logfile = logfile
-      @@thread  = Thread.new { worker }
-      @@silent  = silent
-      @@ctx     = Context.get
+    # If +with_timestamp+ is true, a timestamp will be prepended to each line.
+    def init( debug, logfile, silent, with_timestamp )
+      @@debug     = debug
+      @@logfile   = logfile
+      @@thread    = Thread.new { worker }
+      @@silent    = silent
+      @@timestamp = with_timestamp
+      @@ctx       = Context.get
     end
 
     # Log an error +message+.
@@ -58,7 +61,7 @@ module Logger
 
     # Log a +message+ as it is.
     def raw(message)
-      @@queue.push( message )
+      @@queue.push( formatted_message( message, nil ) )
     end
 
     # Wait for the messages queue to be empty.
@@ -96,7 +99,18 @@ module Logger
 
     # Format +message+ for the given +message_type+.
     def formatted_message(message, message_type)
-      "[#{message_type}] #{message}"
+      # raw message?
+      if message_type.nil?
+        if @@timestamp and !message.strip.empty?
+          "[#{Time.now}] #{message}"
+        else
+          message
+        end
+      elsif @@timestamp
+        "[#{Time.now}] [#{message_type}] #{message}"
+      else
+        "[#{message_type}] #{message}"
+      end
     end
   end
 end
