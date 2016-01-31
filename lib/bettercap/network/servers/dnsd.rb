@@ -85,7 +85,13 @@ class DNSD
     rescue; end
   end
 
-  # Parse hosts from +filename+.
+  # Parse hosts from +filename+, example host file:
+  #
+  # # *.google.com will point to the attacker's computer.
+  # local .*google\.com
+  #
+  # # a custom redirection
+  # 12.12.12.12 wtf.idontexist.com
   def self.parse_hosts( filename )
     raise BetterCap::Error, "File '#{filename}' does not exist." unless File.exist?(filename)
 
