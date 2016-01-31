@@ -124,13 +124,20 @@ class Response
     ""
   end
 
-  # If the header with +name+ is found, then a +value+ is assigned to it.
+  # If the header with +name+ is found, then a +value+ is assigned to it,
+  # otherwise it's created.
   def []=(name, value)
+    found = false
     @headers.each_with_index do |header,i|
       if header =~ /^#{name}:\s*.+$/i
         @headers[i] = "#{name}: #{value}"
+        found = true
         break
       end
+    end
+
+    unless found
+      @headers << "#{name}: #{value}"
     end
   end
 
