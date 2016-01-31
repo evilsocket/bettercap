@@ -149,7 +149,7 @@ class Context
 
     # Start network sniffer.
     if @options.sniffer
-      Sniffer.start ctx
+      Sniffer.start self
     elsif @options.has_spoofer?
       Logger.warn 'WARNING: Sniffer module was NOT enabled ( -X argument ), this '\
                   'will cause the MITM to run but no data to be collected.' unless @options.has_spoofer?
