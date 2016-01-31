@@ -53,7 +53,7 @@ begin
 
   # Start local HTTP server.
   if ctx.options.httpd
-    ctx.httpd = BetterCap::HTTPD::Server.new( ctx.options.httpd_port, ctx.options.httpd_path )
+    ctx.httpd = BetterCap::Network::Servers::HTTPD.new( ctx.options.httpd_port, ctx.options.httpd_path )
     ctx.httpd.start
   end
 

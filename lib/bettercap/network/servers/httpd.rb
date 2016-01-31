@@ -15,9 +15,11 @@ require 'webrick'
 require 'bettercap/logger'
 
 module BetterCap
-module HTTPD
+module Network
+module Servers
+
 # Simple HTTP server class used to serve static assets when needed.
-class Server
+class HTTPD
   # Initialize the HTTP server with the specified tcp +port+ using
   # +path+ as the document root.
   def initialize( port = 8081, path = './' )
@@ -46,6 +48,8 @@ class Server
     @server.stop
     @thread.join
   end
+end
+
 end
 end
 end
