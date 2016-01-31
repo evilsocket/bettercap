@@ -499,7 +499,7 @@ class Options
 
   # Helper method to create a Firewalls::Redirection object.
   def redir( address, port, to, proto = 'TCP' )
-    Firewalls::Redirection.new( @iface, 'TCP', port, address, to )
+    Firewalls::Redirection.new( @iface, proto, port, address, to )
   end
 
   # Create a list of BetterCap::Firewalls::Redirection objects which are needed
