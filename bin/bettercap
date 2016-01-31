@@ -51,6 +51,13 @@ begin
 
   ctx.enable_port_redirection!
 
+  # Start local DNS server.
+  if ctx.options.dnsd
+    hosts = BetterCap::Network::Servers::DNSD.parse_hosts( ctx.options.dnsd_file )
+    ctx.dnsd = BetterCap::Network::Servers::DNSD.new( hosts, '0.0.0.0', ctx.options.dnsd_port )
+    ctx.dnsd.start
+  end
+
   # Start local HTTP server.
   if ctx.options.httpd
     ctx.httpd = BetterCap::Network::Servers::HTTPD.new( ctx.options.httpd_port, ctx.options.httpd_path )

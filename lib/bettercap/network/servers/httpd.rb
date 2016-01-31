@@ -35,7 +35,7 @@ class HTTPD
 
   # Start the server.
   def start
-    Logger.info "Starting HTTPD on port #{@port} and path #{@path} ..."
+    Logger.info "[#{'HTTPD'.green}] Starting on port #{@port} and path #{@path} ..."
     @thread = Thread.new {
       @server.start
     }

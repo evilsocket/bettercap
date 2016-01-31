@@ -79,12 +79,18 @@ class Options
   attr_accessor :custom_https_proxy
   # Custom HTTPS transparent proxy port.
   attr_accessor :custom_https_proxy_port
-  # If true, BetterCap::HTTPD::Server will be enabled.
+  # If true, BetterCap::Network::Servers::HTTPD will be enabled.
   attr_accessor :httpd
-  # The port to bind BetterCap::HTTPD::Server to.
+  # The port to bind HTTP server to.
   attr_accessor :httpd_port
-  # Web root of the BetterCap::HTTPD::Server.
+  # Web root of the HTTP server.
   attr_accessor :httpd_path
+  # If true, BetterCap::Network::Servers::DNSD will be enabled.
+  attr_accessor :dnsd
+  # The port to bind DNS server to.
+  attr_accessor :dnsd_port
+  # The host resolution file to use with the DNS server.
+  attr_accessor :dnsd_file
   # If true, bettercap will check for updates then exit.
   attr_accessor :check_updates
   # If true, targets NBNS hostname resolution won't be performed.
@@ -113,6 +119,10 @@ class Options
     @http_ports = [ 80 ]
     @https_ports = [ 443 ]
     @ignore = nil
+
+    @dnsd = false
+    @dnsd_port = 5300
+    @dnsd_file = nil
 
     @sniffer = false
     @sniffer_pcap = nil
@@ -311,6 +321,15 @@ class Options
         ctx.options.httpd_port = v.to_i
       end
 
+      opts.on( '--dns FILE', 'Enable DNS server and use this file as a hosts resolution table.' ) do |v|
+        ctx.options.dnsd      = true
+        ctx.options.dnsd_file = File.expand_path v
+      end
+
+      opts.on( '--dns-port PORT', 'Set DNS server port, default to ' + ctx.options.dnsd_port.to_s +  '.' ) do |v|
+        ctx.options.dnsd_port = v.to_i
+      end
+
       opts.on( '--httpd-path PATH', 'Set HTTP server path, default to ' + ctx.options.httpd_path +  '.' ) do |v|
         ctx.options.httpd = true
         ctx.options.httpd_path = v
@@ -482,6 +501,20 @@ class Options
   # given the specified command line arguments.
   def to_redirections ifconfig
     redirections = []
+
+    if @dnsd
+      redirections << Firewalls::Redirection.new( @iface,
+                                       'TCP',
+                                       53,
+                                       ifconfig[:ip_saddr],
+                                       @dnsd_port )
+
+      redirections << Firewalls::Redirection.new( @iface,
+                                      'UDP',
+                                      53,
+                                      ifconfig[:ip_saddr],
+                                      @dnsd_port )
+    end
 
     if @proxy
       @http_ports.each do |port|

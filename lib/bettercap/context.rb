@@ -31,8 +31,10 @@ class Context
   attr_accessor :discovery
   # A list of BetterCap::Spoofers class instances.
   attr_accessor :spoofer
-  # Instance of BetterCap::HTTPD::Server class.
+  # Instance of BetterCap::Network::Servers::HTTPD class.
   attr_accessor :httpd
+  # Instance of BetterCap::Network::Servers::DNSD class.
+  attr_accessor :dnsd
   # Instance of OpenSSL::X509::Certificate class used
   # for the HTTPS transparent proxy.
   attr_accessor :certificate
@@ -71,6 +73,7 @@ class Context
     @proxy_processor = nil
     @spoofer         = nil
     @httpd           = nil
+    @dnsd            = nil
     @certificate     = nil
     @proxies         = []
     @redirections    = []
@@ -213,6 +216,7 @@ class Context
     Logger.debug 'Restoring firewall state ...'
     @firewall.restore
 
+    @dnsd.stop unless @dnsd.nil?
     @httpd.stop unless @httpd.nil?
   end
 end

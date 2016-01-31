@@ -10,3 +10,4 @@ test_*.rb
 test_*.sj
 .tags*
 .DS_Store
+hosts
