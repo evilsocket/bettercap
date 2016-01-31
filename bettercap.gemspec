@@ -21,7 +21,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency( 'rubydns', '~> 1.0', '>= 1.0.3' )
 
   gem.files = Dir.glob("*.md") +
-              Dir.glob("Rakefile") +
               Dir.glob("lib/**/*") +
               Dir.glob("bin/**/*")
 
