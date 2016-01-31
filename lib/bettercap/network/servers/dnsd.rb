@@ -30,19 +30,8 @@ class DnsWrapper < RubyDNS::RuleBasedServer
   end
 end
 
-# Wrapper class used to suppress Celluloid logging system.
-class Resolver < RubyDNS::Resolver
-  def initialize(servers, options = {})
-    super(servers,options)
-    Celluloid.logger = nil
-  end
-end
-
 # Simple DNS server class used for DNS spoofing.
 class DNSD
-  # Use upstream DNS for name resolution.
-  UPSTREAM = Resolver.new([[:udp, "8.8.8.8", 53], [:tcp, "8.8.8.8", 53]])
-
   # Initialize the DNS server with the specified +address+ and tcp/udp +port+.
   # The server will use the +hosts+ dictionary composed by 'regexp -> ip' entries
   # to do custom DNS spoofing/resolution.
@@ -77,9 +66,12 @@ class DNSD
       RubyDNS::run_server(:listen => @ifaces, :asynchronous => true, :server_class => DnsWrapper, :rules => @rules ) do
         # Suppress RubyDNS logging.
         @logger.level = ::Logger::ERROR
+        @upstream ||= RubyDNS::Resolver.new([[:udp, "8.8.8.8", 53], [:tcp, "8.8.8.8", 53]])
+
         # Default DNS handler
         otherwise do |transaction|
-          transaction.passthrough!(UPSTREAM)
+          Logger.debug "[#{transaction.options[:peer]} > #{'DNS'.green}] Received request for '#{transaction.question.to_s.yellow}' -> upstream DNS"
+          transaction.passthrough!(@upstream)
         end
       end
     }
