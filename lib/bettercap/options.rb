@@ -497,62 +497,42 @@ class Options
     spoofers
   end
 
+  # Helper method to create a Firewalls::Redirection object.
+  def redir( address, port, to, proto = 'TCP' )
+    Firewalls::Redirection.new( @iface, 'TCP', port, address, to )
+  end
+
   # Create a list of BetterCap::Firewalls::Redirection objects which are needed
   # given the specified command line arguments.
   def to_redirections ifconfig
     redirections = []
 
     if @dnsd
-      redirections << Firewalls::Redirection.new( @iface,
-                                       'TCP',
-                                       53,
-                                       ifconfig[:ip_saddr],
-                                       @dnsd_port )
-
-      redirections << Firewalls::Redirection.new( @iface,
-                                      'UDP',
-                                      53,
-                                      ifconfig[:ip_saddr],
-                                      @dnsd_port )
+      redirections << redir( ifconfig[:ip_saddr], 53, @dnsd_port )
+      redirections << redir( ifconfig[:ip_saddr], 53, @dnsd_port, 'UDP' )
     end
 
     if @proxy
       @http_ports.each do |port|
-        redirections << Firewalls::Redirection.new( @iface,
-                                         'TCP',
-                                         port,
-                                         ifconfig[:ip_saddr],
-                                         @proxy_port )
+        redirections << redir( ifconfig[:ip_saddr], port, @proxy_port )
       end
     end
 
     if @proxy_https
       @https_ports.each do |port|
-        redirections << Firewalls::Redirection.new( @iface,
-                                         'TCP',
-                                         port,
-                                         ifconfig[:ip_saddr],
-                                         @proxy_https_port )
+        redirections << redir( ifconfig[:ip_saddr], port, @proxy_https_port )
       end
     end
 
     if @custom_proxy
       @http_ports.each do |port|
-        redirections << Firewalls::Redirection.new( @iface,
-                                         'TCP',
-                                         port,
-                                         @custom_proxy,
-                                         @custom_proxy_port )
+        redirections << redir( @custom_proxy, port, @custom_proxy_port )
       end
     end
 
     if @custom_https_proxy
       @https_ports.each do |port|
-        redirections << Firewalls::Redirection.new( @iface,
-                                         'TCP',
-                                         port,
-                                         @custom_https_proxy,
-                                         @custom_https_proxy_port )
+        redirections << redir( @custom_https_proxy, port, @custom_https_proxy_port )
       end
     end
 
