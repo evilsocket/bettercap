@@ -46,23 +46,12 @@ begin
     if ctx.options.has_http_sniffer_enabled?
       BetterCap::Logger.warn "WARNING: Both HTTP transparent proxy and URL parser are enabled, you're gonna see duplicated logs."
     end
-    ctx.create_proxies
+    ctx.create_proxies!
   end
 
   ctx.enable_port_redirection!
 
-  # Start local DNS server.
-  if ctx.options.dnsd
-    hosts = BetterCap::Network::Servers::DNSD.parse_hosts( ctx.options.dnsd_file )
-    ctx.dnsd = BetterCap::Network::Servers::DNSD.new( hosts, '0.0.0.0', ctx.options.dnsd_port )
-    ctx.dnsd.start
-  end
-
-  # Start local HTTP server.
-  if ctx.options.httpd
-    ctx.httpd = BetterCap::Network::Servers::HTTPD.new( ctx.options.httpd_port, ctx.options.httpd_path )
-    ctx.httpd.start
-  end
+  ctx.create_servers!
 
   # Start network sniffer.
   if ctx.options.sniffer

@@ -571,6 +571,7 @@ class Options
       'https-proxy' => if proxy_https then on else off end,
       'sslstrip'    => if proxy and sslstrip then on else off end,
       'http-server' => if httpd then on else off end,
+      'dns-server'  => if dnsd then on else off end
     }
 
     msg = "Starting [ "
