@@ -103,7 +103,7 @@ class Thread
     while @running
       @ctx.targets = Network.get_alive_targets(@ctx).sort_by { |t| t.sortable_ip }
 
-      print_differences prev
+      print_differences( prev ) unless @ctx.options.arpcache
 
       prev = @ctx.targets
 

@@ -122,7 +122,7 @@ class Context
   def start!
     # Start targets auto discovery if needed.
     if @options.target.nil?
-      BetterCap::Logger.info( "Targeting the whole subnet #{@ifconfig[:ip4_obj].to_range} ..." ) unless @options.has_spoofer?
+      BetterCap::Logger.info( "Targeting the whole subnet #{@ifconfig[:ip4_obj].to_range} ..." ) unless @options.has_spoofer? or @options.arpcache
       @discovery.start
       # give some time to the discovery thread to spawn its workers,
       # this will prevent 'Too many open files' errors to delay host
