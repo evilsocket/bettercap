@@ -190,8 +190,7 @@ class Context
     if @options.dnsd
       Logger.warn "Starting DNS server with spoofing disabled, bettercap will only reply to local DNS queries." unless @options.has_spoofer?
 
-      hosts = Network::Servers::DNSD.parse_hosts( @options.dnsd_file )
-      @dnsd = Network::Servers::DNSD.new( hosts, '0.0.0.0', @options.dnsd_port )
+      @dnsd = Network::Servers::DNSD.new( @options.dnsd_file, '0.0.0.0', @options.dnsd_port )
       @dnsd.start
     end
 
