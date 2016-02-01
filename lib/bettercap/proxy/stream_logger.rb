@@ -41,7 +41,7 @@ class StreamLogger
   def self.log_raw( pkt, label, payload )
     nl    = if label.include?"\n" then "\n" else " " end
     label = label.strip
-    Logger.raw( "[#{self.addr2s(pkt.ip_saddr)} > #{self.addr2s(pkt.ip_daddr)}:#{pkt.tcp_dst}] " \
+    Logger.raw( "[#{self.addr2s(pkt.ip_saddr)} > #{self.addr2s(pkt.ip_daddr)}#{pkt.respond_to?('tcp_dst') ? ':' + pkt.tcp_dst.to_s : ''}] " \
                "[#{label.green}]#{nl}#{payload.strip.yellow}" )
   end
 
