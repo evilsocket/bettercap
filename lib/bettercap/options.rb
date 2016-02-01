@@ -175,7 +175,7 @@ class Options
         ctx.options.iface = v
       end
 
-      opts.on( '-S', '--spoofer NAME', 'Spoofer module to use, available: ' + Factories::Spoofer.available.join(', ') + ' - default: ' + ctx.options.spoofer ) do |v|
+      opts.on( '-S', '--spoofer NAME', 'Spoofer module to use, available: ' + Spoofers::Base.available.join(', ') + ' - default: ' + ctx.options.spoofer ) do |v|
         ctx.options.spoofer = v
       end
 
@@ -492,7 +492,7 @@ class Options
     spoofers = []
     spoofer_modules_names = @spoofer.split(",")
     spoofer_modules_names.each do |module_name|
-      spoofers << Factories::Spoofer.get_by_name( module_name )
+      spoofers << Spoofers::Base.get_by_name( module_name )
     end
     spoofers
   end
