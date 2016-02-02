@@ -1,5 +1,7 @@
 require 'rake'
 
+VERSION_FILENAME = 'lib/bettercap/version.rb'
+
 def proxy!( enabled = true )
   service = "Wi-Fi"
 
@@ -15,12 +17,63 @@ def proxy!( enabled = true )
   end
 end
 
+def get_current_version
+  current_version = nil
+  data = File.read( VERSION_FILENAME )
+  if data =~ /VERSION\s+=\s+'([^']+)'/i
+    current_version = $1
+  end
+  raise 'Could not extract current version.' if current_version.nil?
+  current_version
+end
+
+def change_version( currentv, newv )
+  puts "@ Upgrading from '#{currentv}' to '#{newv}' ..."
+
+  data = File.read( VERSION_FILENAME )
+  data = data.gsub( currentv, newv )
+  File.open( VERSION_FILENAME, 'w') {
+    |file| file.puts data
+  }
+end
+
 namespace :util do
   task :sync do
     puts "@ Synchronizing codebase with GEM installation ..."
     `rm -rf *.gem`
     `gem build bettercap.gemspec`
     `sudo gem install --no-rdoc --no-ri --local *.gem`
+  end
+
+  task :release do
+    current_version = get_current_version
+    raise 'Current version is not a beta.' unless current_version.end_with?'b'
+
+    next_version = current_version.gsub('b','')
+
+    change_version( current_version, next_version )
+    current_version = next_version
+
+    puts "@ Pushing to github ..."
+
+    sh "git add #{VERSION_FILENAME}"
+    sh "git commit -m \"Version bump to #{current_version}\""
+    sh "git push"
+
+    Rake::Task["util:sync"].invoke
+
+    puts "@ Uploading GEM ..."
+
+    sh "gem push bettercap-#{current_version}.gem"
+    `rm -rf *.gem`
+
+    parts = current_version.split('.').map(&:to_i)
+    parts[parts.size-1] += 1
+    next_version = parts.join('.')+'b'
+
+    change_version( current_version, next_version )
+
+    Rake::Task["util:sync"].invoke
   end
 end
 
