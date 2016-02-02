@@ -35,9 +35,31 @@ module Shell
       r
     end
 
-    # Get the +iface+ network interface configuration.
+    # Cross-platform way of finding an executable in the $PATH.
+    def which(cmd)
+      exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+      ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+        exts.each { |ext|
+          exe = File.join(path, "#{cmd}#{ext}")
+          return exe if File.executable?(exe) && !File.directory?(exe)
+        }
+      end
+      return nil
+    end
+
+    # Cross-platform way of finding an executable in the $PATH.
+    def available?(cmd)
+      !which(cmd).nil?
+    end
+
+    # Get the +iface+ network interface configuration ( using ifconfig ).
     def ifconfig(iface = '')
       self.execute( "LANG=en && ifconfig #{iface}" )
+    end
+
+    # Get the +iface+ network interface configuration ( using iproute2 ).
+    def ip(iface = '')
+      self.execute( "LANG=en && ip addr show #{iface}" )
     end
 
     # Get the ARP table cached on this computer.
