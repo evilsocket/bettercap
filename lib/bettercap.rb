@@ -53,6 +53,7 @@ require 'bettercap/sniffer/sniffer'
 require "bettercap/sniffer/parsers/base"
 require "bettercap/sniffer/parsers/custom"
 require "bettercap/sniffer/parsers/dict"
+require "bettercap/sniffer/parsers/cookie"
 require "bettercap/sniffer/parsers/ftp"
 require "bettercap/sniffer/parsers/httpauth"
 require "bettercap/sniffer/parsers/https"

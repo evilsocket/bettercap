@@ -42,7 +42,7 @@ class StreamLogger
     nl    = if label.include?"\n" then "\n" else " " end
     label = label.strip
     Logger.raw( "[#{self.addr2s(pkt.ip_saddr)} > #{self.addr2s(pkt.ip_daddr)}#{pkt.respond_to?('tcp_dst') ? ':' + pkt.tcp_dst.to_s : ''}] " \
-               "[#{label.green}]#{nl}#{payload.strip.yellow}" )
+               "[#{label.green}]#{nl}#{payload.strip}" )
   end
 
   # Log a HTTP ( HTTPS if +is_https+ is true ) stream performed by the +client+
