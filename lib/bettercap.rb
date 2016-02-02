@@ -39,7 +39,6 @@ require 'bettercap/discovery/agents/icmp'
 require 'bettercap/discovery/agents/udp'
 require 'bettercap/context'
 require 'bettercap/monkey/packetfu/utils'
-require 'bettercap/factories/firewall'
 require 'bettercap/spoofers/base'
 require 'bettercap/spoofers/arp'
 require 'bettercap/spoofers/icmp'
@@ -68,6 +67,8 @@ require "bettercap/sniffer/parsers/rlogin"
 require "bettercap/sniffer/parsers/snpp"
 require "bettercap/sniffer/parsers/url"
 require 'bettercap/firewalls/redirection'
+require 'bettercap/firewalls/osx'
+require 'bettercap/firewalls/linux'
 require 'bettercap/proxy/stream_logger'
 require 'bettercap/proxy/request'
 require 'bettercap/proxy/response'

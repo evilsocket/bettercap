@@ -78,7 +78,7 @@ class Context
     @proxies         = []
     @redirections    = []
     @discovery       = Discovery::Thread.new self
-    @firewall        = Factories::Firewall.get
+    @firewall        = Firewalls::Base.get
     @packets         = nil
   end
 
