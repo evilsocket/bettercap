@@ -55,7 +55,6 @@ namespace :util do
     current_version = next_version
 
     puts "@ Pushing to github ..."
-
     sh "git add #{VERSION_FILENAME}"
     sh "git commit -m \"Version bump to #{current_version}\""
     sh "git push"
@@ -72,6 +71,11 @@ namespace :util do
     next_version = parts.join('.')+'b'
 
     change_version( current_version, next_version )
+
+    puts "@ Pushing to github ..."
+    sh "git add #{VERSION_FILENAME}"
+    sh "git commit -m \"Version bump to #{next_version}\""
+    sh "git push"
 
     Rake::Task["util:sync"].invoke
   end
