@@ -26,13 +26,17 @@ class StreamLogger
 
   # Search for the +addr+ IP address inside the list of collected targets and return
   # its compact string representation ( @see BetterCap::Target#to_s_compact ).
-  def self.addr2s( addr )
+  def self.addr2s( addr, alt = nil )
     ctx = Context.get
 
     return 'local' if addr == ctx.ifconfig[:ip_saddr]
 
     target = ctx.find_target addr, nil
     return target.to_s_compact unless target.nil?
+
+    if addr == '0.0.0.0' and !alt.nil?
+      return alt
+    end
 
     addr
   end
@@ -41,8 +45,8 @@ class StreamLogger
   def self.log_raw( pkt, label, payload )
     nl    = if label.include?"\n" then "\n" else " " end
     label = label.strip
-    Logger.raw( "[#{self.addr2s(pkt.ip_saddr)} > #{self.addr2s(pkt.ip_daddr)}:#{pkt.tcp_dst}] " \
-               "[#{label.green}]#{nl}#{payload.strip.yellow}" )
+    Logger.raw( "[#{self.addr2s(pkt.ip_saddr, pkt.eth2s(:src))} > #{self.addr2s(pkt.ip_daddr,pkt.eth2s(:dst))}#{pkt.respond_to?('tcp_dst') ? ':' + pkt.tcp_dst.to_s : ''}] " \
+               "[#{label.green}]#{nl}#{payload.strip}" )
   end
 
   # Log a HTTP ( HTTPS if +is_https+ is true ) stream performed by the +client+

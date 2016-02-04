@@ -14,6 +14,31 @@ module BetterCap
 module Firewalls
 # Base class for BetterCap::Firewalls objects.
 class Base
+  # Instance of the loaded firewall.
+  @@instance = nil
+
+  class << self
+    # Save and return an instance of the appropriate BetterCap::Firewalls object.
+    def get
+      return @@instance unless @@instance.nil?
+
+      if RUBY_PLATFORM =~ /darwin/
+        @@instance = Firewalls::OSX.new
+      elsif RUBY_PLATFORM =~ /linux/
+        @@instance = Firewalls::Linux.new
+      else
+        raise BetterCap::Error, 'Unsupported operating system'
+      end
+
+      @@instance
+    end
+
+    # Clear the instance of the BetterCap::Firewalls object.
+    def clear
+      @@instance = nil
+    end
+  end
+
   # Initialize the firewall object.
   # Raise NotImplementedError
   def initialize

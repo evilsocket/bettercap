@@ -14,6 +14,29 @@ module BetterCap
 module Spoofers
 # Base class for BetterCap::Spoofers modules.
 class Base
+  # Hash of available spoofers ( spoofer name -> class name )
+  @@loaded = {}
+
+  class << self
+    # Called when this base class is inherited from one of the spoofers.
+    def inherited(subclass)
+      name = subclass.name.split('::')[2].upcase
+      @@loaded[name] = subclass.name
+    end
+
+    # Return a list of available spoofers names.
+    def available
+      @@loaded.keys
+    end
+
+    # Create an instance of a BetterCap::Spoofers object given its +name+.
+    # Will raise a BetterCap::Error if +name+ is not valid.
+    def get_by_name(name)
+      raise BetterCap::Error, "Invalid spoofer name '#{name}'!" unless available.include? name
+      BetterCap::Loader.load(@@loaded[name]).new
+    end
+  end
+
   # Will raise NotImplementedError .
   def initialize
     not_implemented_method!

@@ -175,7 +175,7 @@ class Options
         ctx.options.iface = v
       end
 
-      opts.on( '-S', '--spoofer NAME', 'Spoofer module to use, available: ' + Factories::Spoofer.available.join(', ') + ' - default: ' + ctx.options.spoofer ) do |v|
+      opts.on( '-S', '--spoofer NAME', 'Spoofer module to use, available: ' + Spoofers::Base.available.join(', ') + ' - default: ' + ctx.options.spoofer ) do |v|
         ctx.options.spoofer = v
       end
 
@@ -223,9 +223,9 @@ class Options
         ctx.options.sniffer_filter = v
       end
 
-      opts.on( '-P', '--parsers PARSERS', 'Comma separated list of packet parsers to enable, "*" for all ( NOTE: Will set -X to true ), available: ' + Factories::Parser.available.join(', ') + ' - default: *' ) do |v|
+      opts.on( '-P', '--parsers PARSERS', 'Comma separated list of packet parsers to enable, "*" for all ( NOTE: Will set -X to true ), available: ' + Parsers::Base.available.join(', ') + ' - default: *' ) do |v|
         ctx.options.sniffer = true
-        ctx.options.parsers = Factories::Parser.from_cmdline(v)
+        ctx.options.parsers = Parsers::Base.from_cmdline(v)
       end
 
       opts.on( '--custom-parser EXPRESSION', 'Use a custom regular expression in order to capture and show sniffed data ( NOTE: Will set -X to true ).' ) do |v|
@@ -492,7 +492,7 @@ class Options
     spoofers = []
     spoofer_modules_names = @spoofer.split(",")
     spoofer_modules_names.each do |module_name|
-      spoofers << Factories::Spoofer.get_by_name( module_name )
+      spoofers << Spoofers::Base.get_by_name( module_name )
     end
     spoofers
   end

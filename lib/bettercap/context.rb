@@ -78,7 +78,7 @@ class Context
     @proxies         = []
     @redirections    = []
     @discovery       = Discovery::Thread.new self
-    @firewall        = Factories::Firewall.get
+    @firewall        = Firewalls::Base.get
     @packets         = nil
   end
 
@@ -117,6 +117,82 @@ class Context
     end
     nil
   end
+
+  # Start everything!
+  def start!
+    # Start targets auto discovery if needed.
+    if @options.target.nil?
+      BetterCap::Logger.info( "Targeting the whole subnet #{@ifconfig[:ip4_obj].to_range} ..." ) unless @options.has_spoofer? or @options.arpcache
+      @discovery.start
+      # give some time to the discovery thread to spawn its workers,
+      # this will prevent 'Too many open files' errors to delay host
+      # discovery.
+      sleep 1.5
+    end
+
+    # Start network spoofers if any.
+    @spoofer.each do |spoofer|
+      spoofer.start
+    end
+
+    # Start proxies and setup port redirection.
+    if @options.proxy
+      if @options.has_http_sniffer_enabled?
+        BetterCap::Logger.warn "WARNING: Both HTTP transparent proxy and URL parser are enabled, you're gonna see duplicated logs."
+      end
+      create_proxies!
+    end
+
+    enable_port_redirection!
+
+    create_servers!
+
+    # Start network sniffer.
+    if @options.sniffer
+      Sniffer.start self
+    elsif @options.has_spoofer?
+      Logger.warn 'WARNING: Sniffer module was NOT enabled ( -X argument ), this '\
+                  'will cause the MITM to run but no data to be collected.' unless @options.has_spoofer?
+    end
+  end
+
+  # Stop every running daemon that was started and reset system state.
+  def finalize
+    @running = false
+
+    # Logger is silent if @running == false
+    puts "\nShutting down, hang on ...\n"
+
+    Logger.debug 'Stopping target discovery manager ...'
+    @discovery.stop
+
+    Logger.debug 'Stopping spoofers ...'
+    @spoofer.each do |spoofer|
+      spoofer.stop
+    end
+
+    # Spoofer might be sending some last packets to restore the targets,
+    # the packet queue must be stopped here.
+    @packets.stop
+
+    Logger.debug 'Stopping proxies ...'
+    @proxies.each do |proxy|
+      proxy.stop
+    end
+
+    Logger.debug 'Disabling port redirections ...'
+    @redirections.each do |r|
+      @firewall.del_port_redirection( r )
+    end
+
+    Logger.debug 'Restoring firewall state ...'
+    @firewall.restore
+
+    @dnsd.stop unless @dnsd.nil?
+    @httpd.stop unless @httpd.nil?
+  end
+
+  private
 
   # Apply needed BetterCap::Firewalls::Redirection objects.
   def enable_port_redirection!
@@ -190,8 +266,7 @@ class Context
     if @options.dnsd
       Logger.warn "Starting DNS server with spoofing disabled, bettercap will only reply to local DNS queries." unless @options.has_spoofer?
 
-      hosts = Network::Servers::DNSD.parse_hosts( @options.dnsd_file )
-      @dnsd = Network::Servers::DNSD.new( hosts, '0.0.0.0', @options.dnsd_port )
+      @dnsd = Network::Servers::DNSD.new( @options.dnsd_file, @ifconfig[:ip_saddr], @options.dnsd_port )
       @dnsd.start
     end
 
@@ -202,40 +277,5 @@ class Context
     end
   end
 
-  # Stop every running daemon that was started and reset system state.
-  def finalize
-    @running = false
-
-    # Logger is silent if @running == false
-    puts "\nShutting down, hang on ...\n"
-
-    Logger.debug 'Stopping target discovery manager ...'
-    @discovery.stop
-
-    Logger.debug 'Stopping spoofers ...'
-    @spoofer.each do |spoofer|
-      spoofer.stop
-    end
-
-    # Spoofer might be sending some last packets to restore the targets,
-    # the packet queue must be stopped here.
-    @packets.stop
-
-    Logger.debug 'Stopping proxies ...'
-    @proxies.each do |proxy|
-      proxy.stop
-    end
-
-    Logger.debug 'Disabling port redirections ...'
-    @redirections.each do |r|
-      @firewall.del_port_redirection( r )
-    end
-
-    Logger.debug 'Restoring firewall state ...'
-    @firewall.restore
-
-    @dnsd.stop unless @dnsd.nil?
-    @httpd.stop unless @httpd.nil?
-  end
 end
 end

@@ -66,6 +66,15 @@ Before submitting issues, please read the relevant [section](http://www.betterca
 Installation
 ============
 
+**Dependencies**
+
+All dependencies will be automatically installed through the GEM system but in some case you might need to install some system
+dependency in order to make everything work:
+
+    sudo apt-get install build-essential ruby-dev libpcap-dev
+
+This should solve issues such as [this one](https://github.com/evilsocket/bettercap/issues/22) or [this one](https://github.com/evilsocket/bettercap/issues/100).
+
 **Stable Release ( GEM )**
 
     gem install bettercap
@@ -76,16 +85,6 @@ Installation
     cd bettercap
     gem build bettercap.gemspec
     sudo gem install bettercap*.gem
-
-Dependencies
-============
-
-All dependencies will be automatically installed through the GEM system, in some case you might need to install some system
-dependency in order to make everything work:
-
-    sudo apt-get install build-essential ruby-dev libpcap-dev
-
-This should solve issues such as [this one](https://github.com/evilsocket/bettercap/issues/22) or [this one](https://github.com/evilsocket/bettercap/issues/100).
 
 Documentation and Examples
 ============

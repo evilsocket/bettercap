@@ -91,7 +91,7 @@ class Proxy
   # Main server thread, will accept incoming connections and push them to
   # the thread pool.
   def server_thread
-    Logger.info "#{@type} Proxy started on #{@address}:#{@port} ...\n"
+    Logger.info "[#{@type.green}] Proxy starting on #{@address}:#{@port} ...\n"
 
     @running = true
 

@@ -5,7 +5,7 @@ Gem::Specification.new do |gem|
   gem.version = BetterCap::VERSION
   gem.license = 'GPL-3.0'
   gem.summary = %q{A complete, modular, portable and easily extensible MITM framework.}
-  gem.description = %q{BetterCap is the state of the art, modular, portable and easily extensible MITM framework featuring ARP and ICMP spoofing, sslstripping, credentials harvesting and more.}
+  gem.description = %q{BetterCap is the state of the art, modular, portable and easily extensible MITM framework featuring ARP, DNS and ICMP spoofing, sslstripping, credentials harvesting and more.}
   gem.required_ruby_version = '>= 1.9'
 
 
@@ -21,7 +21,6 @@ Gem::Specification.new do |gem|
   gem.add_dependency( 'rubydns', '~> 1.0', '>= 1.0.3' )
 
   gem.files = Dir.glob("*.md") +
-              Dir.glob("Rakefile") +
               Dir.glob("lib/**/*") +
               Dir.glob("bin/**/*")
 

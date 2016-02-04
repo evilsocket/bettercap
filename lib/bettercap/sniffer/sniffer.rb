@@ -104,9 +104,9 @@ class Sniffer
     end
 
     if @@ctx.options.custom_parser.nil?
-      @@parsers = Factories::Parser.load_by_names @@ctx.options.parsers
+      @@parsers = Parsers::Base.load_by_names @@ctx.options.parsers
     else
-      @@parsers = Factories::Parser.load_custom @@ctx.options.custom_parser
+      @@parsers = Parsers::Base.load_custom @@ctx.options.custom_parser
     end
 
     @@cap = Capture.new(

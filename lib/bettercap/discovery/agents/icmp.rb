@@ -20,7 +20,7 @@ class Icmp
   # Create a thread which will perform a ping-sweep on the network in order
   # to populate the ARP cache with active targets.
   def initialize( ctx )
-    Factories::Firewall.get.enable_icmp_bcast(true)
+    Firewalls::Base.get.enable_icmp_bcast(true)
 
     # TODO: Use the real broadcast address for this network.
     3.times do

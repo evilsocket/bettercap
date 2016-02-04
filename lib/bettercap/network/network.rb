@@ -53,9 +53,17 @@ class << self
   def get_local_ips
     ips = []
 
-    Shell.ifconfig.split("\n").each do |line|
-      if line =~ /inet [adr:]*([\d\.]+)/
-        ips << $1
+    if Shell.available?('ip')
+      Shell.ip.split("\n").each do |line|
+        if line.strip =~ /^inet\s+([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\/(\d+).+$/i
+          ips << $1
+        end
+      end
+    else
+      Shell.ifconfig.split("\n").each do |line|
+        if line =~ /inet [adr:]*([\d\.]+)/
+          ips << $1
+        end
       end
     end
 
