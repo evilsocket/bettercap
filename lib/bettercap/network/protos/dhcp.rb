@@ -328,12 +328,14 @@ class Packet
 
   def each_option
     offset = 0
+    limit = self.dhcpoptions.size
 
-    while true
+    while offset < limit
       opt     = self.dhcpoptions[offset]
       break if opt == 0xFF
       offset += 1
       len     = self.dhcpoptions[offset]
+      break if len.nil?
       offset += 1
       data    = self.dhcpoptions[offset..offset+len-1]
       offset += len
