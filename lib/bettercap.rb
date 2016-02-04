@@ -48,6 +48,7 @@ require 'bettercap/shell'
 require 'bettercap/network/network'
 require 'bettercap/version'
 require 'bettercap/network/target'
+require 'bettercap/network/protos/dhcp'
 require 'bettercap/sniffer/sniffer'
 require "bettercap/sniffer/parsers/base"
 require "bettercap/sniffer/parsers/custom"
@@ -62,6 +63,7 @@ require "bettercap/sniffer/parsers/mpd"
 require "bettercap/sniffer/parsers/nntp"
 require "bettercap/sniffer/parsers/ntlmss"
 require "bettercap/sniffer/parsers/post"
+require "bettercap/sniffer/parsers/dhcp"
 require "bettercap/sniffer/parsers/redis"
 require "bettercap/sniffer/parsers/rlogin"
 require "bettercap/sniffer/parsers/snpp"

@@ -19,6 +19,17 @@ This project is released under the GPL 3 license.
 require 'bettercap/logger'
 
 module PacketFu
+  class Packet
+    def eth2s(which = :src)
+      case which
+      when :src
+        self.eth_src.bytes.map(&(Proc.new {|x| sprintf('%02X',x) })).join(':')
+      when :dst
+        self.eth_dst.bytes.map(&(Proc.new {|x| sprintf('%02X',x) })).join(':')
+      end
+    end
+  end
+  
   class Utils
     def self.ifconfig(iface='eth0')
       ret = {}
