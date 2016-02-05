@@ -25,7 +25,7 @@ class PacketQueue
     @nworkers = nworkers
     @throttle = packet_throttle;
     @running  = true
-    @stream   = ::Pcap.open_live( iface, 0xffff, false , 1 )
+    @stream   = PCAPRUB::Pcap.open_live( iface, 0xffff, false , 1 )
     @mutex    = Mutex.new
     @udp      = UDPSocket.new
     @queue    = Queue.new
