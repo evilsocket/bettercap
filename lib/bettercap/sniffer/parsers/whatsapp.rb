@@ -17,37 +17,16 @@ This project is released under the GPL 3 license.
 
 module BetterCap
 module Parsers
-# HTTP GET requests parser.
+# WhatsApp traffic parser.
 class Whatsapp < Base
-  def initialize
-    @name = 'WHATSAPP'
-  end
-  # Convert binary +data+ into human readable hexadecimal representation.
-  def wa_phone( data )
-    phone = ''
-    data.each_byte do |byte|
-      if /[[:print:]]/ === byte.chr
-        phone += byte.chr
-      else
-        if phone.length > 4
-            break
-        else
-            phone = ''
-        end
-      end
-    end
-    phone
-  end
   def on_packet( pkt )
     begin
-      if pkt.tcp_dst == 443 or pkt.tcp_dst == 5222
-        if pkt.payload[0,2] == "WA"
-          s = wa_phone(pkt.payload)
-          StreamLogger.log_raw( pkt, @name, s )
-        end
+      if ( pkt.tcp_dst == 443 or pkt.tcp_dst == 5222 or pkt.tcp_dst == 5223 ) and pkt.payload =~ /^WA.*?([a-zA-Z\-\.0-9]+).*?([0-9]+)/
+        version = $1
+        phone = $2
+        StreamLogger.log_raw( pkt, 'WHATSAPP', "#{'phone'.green}=#{phone.yellow} #{'version'.green}=#{version.yellow}" )
       end
-    rescue
-    end
+    rescue; end
   end
 end
 end
