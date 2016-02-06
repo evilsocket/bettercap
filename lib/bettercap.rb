@@ -20,6 +20,7 @@ Encoding.default_internal = Encoding::UTF_8
 require 'optparse'
 require 'colorize'
 require 'packetfu'
+require 'pcaprub'
 require 'ipaddr'
 require 'uri'
 

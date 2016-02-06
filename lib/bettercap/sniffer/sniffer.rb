@@ -60,7 +60,7 @@ class Sniffer
     else
       Logger.info "Reading packets from #{@@ctx.options.sniffer_src} ..."
 
-      PcapFile.file_to_array @@ctx.options.sniffer_src
+      PacketFu::PcapFile.file_to_array @@ctx.options.sniffer_src
     end
   end
 
@@ -99,7 +99,7 @@ class Sniffer
     @@ctx = ctx
 
     unless @@ctx.options.sniffer_pcap.nil?
-      @@pcap = PcapFile.new
+      @@pcap = PacketFu::PcapFile.new
       Logger.warn "Saving packets to #{@@ctx.options.sniffer_pcap} ."
     end
 

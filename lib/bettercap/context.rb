@@ -57,7 +57,7 @@ class Context
   # Initialize the global context object.
   def initialize
     begin
-      iface = Pcap.lookupdev
+      iface = PCAPRUB::Pcap.lookupdev
     rescue Exception => e
       iface = nil
       Logger.debug e.message
