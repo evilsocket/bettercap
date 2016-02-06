@@ -30,7 +30,11 @@ class Post < Base
 
           req.body.split('&').each do |v|
             name, value = v.split('=')
-            msg << "  #{name.blue} : #{URI.unescape(value).yellow}\n"
+            if name.nil? or value.nil?
+              msg << "  #{URI.unescape(v).yellow}\n"
+            else
+              msg << "  #{name.blue} : #{URI.unescape(value).yellow}\n"
+            end
           end
 
           StreamLogger.log_raw( pkt, "POST", req.to_url(1000) )
