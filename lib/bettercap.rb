@@ -49,6 +49,7 @@ require 'bettercap/shell'
 require 'bettercap/network/network'
 require 'bettercap/version'
 require 'bettercap/network/target'
+require 'bettercap/network/protos/base'
 require 'bettercap/network/protos/dhcp'
 require 'bettercap/sniffer/sniffer'
 require "bettercap/sniffer/parsers/base"

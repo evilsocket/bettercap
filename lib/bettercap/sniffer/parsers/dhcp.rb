@@ -38,7 +38,10 @@ class DHCP < Base
           StreamLogger.log_raw( pkt, 'DHCP', msg )
         end
       end
-    rescue; end
+    rescue Exception => e
+      Logger.debug e.message
+      Logger.debug e.backtrace.join("\n")
+    end
   end
 end
 end

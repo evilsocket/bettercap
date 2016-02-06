@@ -268,65 +268,58 @@ AUTH_PROTOCOLS = {
   1 => "delayed authentication"
 }
 
-class Packet
-  attr_accessor :op
-  attr_accessor :htype
-  attr_accessor :hlen
-  attr_accessor :hops
-  attr_accessor :xid
-  attr_accessor :secs
-  attr_accessor :flags
-  attr_accessor :ciaddr
-  attr_accessor :yiaddr
-  attr_accessor :siaddr
-  attr_accessor :giaddr
-  attr_accessor :chaddr
-  attr_accessor :sname
-  attr_accessor :file
-  attr_accessor :isdhcp
-  attr_accessor :dhcpoptions
+class Packet < Network::Protos::Base
+  uint8     :op
+  uint8     :htype
+  uint8     :hlen
+  uint8     :hops
+  uint32rev :xid
+  uint16    :secs
+  uint16    :flags
+  ip        :ciaddr
+  ip        :yiaddr
+  ip        :siaddr
+  ip        :giaddr
+  mac       :chaddr, :size => 16
+  bytes     :sname, :size => 64
+  bytes     :file, :size => 128
+  uint32    :isdhcp
+  bytes     :dhcpoptions
 
   def type
-    if @dhcpoptions[0] == OP_CONSTANTS[:DHCPMessageType] and @dhcpoptions[1] == 1
-      OP_MESSAGETYPES[ @dhcpoptions[2] ]
-    else
-      OP_MESSAGETYPES[ @op ]
+    self.each_option( :MessageType ) do |opt,data|
+      return OP_MESSAGETYPES[ data[0] ]
     end
+    OP_MESSAGETYPES[ @op ]
   end
 
   def client_identifier
-    self.each_option do |opt,data|
-      if opt == :ClientIdentifier
-        return data.pack('c*')
-      end
+    self.each_option( :ClientIdentifier ) do |opt,data|
+      return data.pack('c*')
     end
-    nil
   end
 
   def authentication
     # Thank you Wireshark BOOTP dissector!
-    self.each_option do |opt,data|
-      if opt == :Authentication
-        auth = {}
+    self.each_option( :Authentication ) do |opt,data|
+      auth = {}
 
-        auth['Protocol'] = AUTH_PROTOCOLS[ data[0] ]
+      auth['Protocol'] = AUTH_PROTOCOLS[ data[0] ]
 
-        if data[0] == 1
-          auth['Delay Algorithm'] = 'HMAC_MD5'
-        end
-
-        auth['Replay Detection Method']    = 'Monotonically-increasing counter'
-        auth['RDM Replay Detection Value'] = "0x" + data[3..10].map { |b| sprintf( "%02x", b ) }.join
-        auth['Secret ID']                  = "0x" + data[11..14].map { |b| sprintf( "%02x", b ) }.join
-        auth['HMAC MD5 Hash']              = data[15..data.size].map { |b| sprintf( "%02X", b ) }.join
-
-        return auth
+      if data[0] == 1
+        auth['Delay Algorithm'] = 'HMAC_MD5'
       end
+
+      auth['Replay Detection Method']    = 'Monotonically-increasing counter'
+      auth['RDM Replay Detection Value'] = "0x" + data[3..10].map { |b| sprintf( "%02x", b ) }.join
+      auth['Secret ID']                  = "0x" + data[11..14].map { |b| sprintf( "%02x", b ) }.join
+      auth['HMAC MD5 Hash']              = data[15..data.size].map { |b| sprintf( "%02X", b ) }.join
+
+      return auth
     end
-    nil
   end
 
-  def each_option
+  def each_option sym = nil
     offset = 0
     limit = self.dhcpoptions.size
 
@@ -340,39 +333,14 @@ class Packet
       data    = self.dhcpoptions[offset..offset+len-1]
       offset += len
 
-      yield( OP_CONSTANTS_REV[opt], data )
+      if sym.nil? or OP_CONSTANTS_REV[opt] == sym
+        yield( OP_CONSTANTS_REV[opt], data )
+      end
     end
   end
 
   def transaction_id
     sprintf( "0x%X", @xid )
-  end
-
-  def self.parse data
-    pkt = Packet.new
-
-    begin
-      pkt.op          = data[0].ord                   # 8bit
-      pkt.htype       = data[1].ord                   # 8bit
-      pkt.hlen        = data[2].ord                   # 8bit
-      pkt.hops        = data[3].ord                   # 8bit
-      pkt.xid         = data[4..7].reverse.unpack('L')[0]     # 32bit
-      pkt.secs        = data[8..9].unpack('S')[0]     # 16bit
-      pkt.flags       = data[10..11].unpack('S')[0]   # 16bit
-      pkt.ciaddr      = data[12..15].bytes            # 32bit (ary)
-      pkt.yiaddr      = data[16..19].bytes            # 32bit (ary)
-      pkt.siaddr      = data[20..23].bytes            # 32bit (ary)
-      pkt.giaddr      = data[24..27].bytes            # 32bit (ary)
-      pkt.chaddr      = data[28..43].bytes            # 128bit (ary)
-      pkt.sname       = data[44..107]                 # 64bit (str)
-      pkt.file        = data[108..235]                # 128bit (str)
-      pkt.isdhcp      = data[236..239].unpack('L')[0] # COOKIEZ OMNOMNOM (32bit)
-      pkt.dhcpoptions = data[240..data.length].bytes  # DHCP Options (rest)
-    rescue
-      pkt = nil
-    end
-
-    pkt
   end
 end
 
