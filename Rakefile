@@ -66,17 +66,6 @@ namespace :util do
     sh "gem push bettercap-#{current_version}.gem"
     `rm -rf *.gem`
 
-    parts = current_version.split('.').map(&:to_i)
-    parts[parts.size-1] += 1
-    next_version = parts.join('.')+'b'
-
-    change_version( current_version, next_version )
-
-    puts "@ Pushing to github ..."
-    sh "git add #{VERSION_FILENAME}"
-    sh "git commit -m \"Version bump to #{next_version}\""
-    sh "git push"
-
     Rake::Task["util:sync"].invoke
   end
 end
