@@ -69,6 +69,7 @@ require "bettercap/sniffer/parsers/redis"
 require "bettercap/sniffer/parsers/rlogin"
 require "bettercap/sniffer/parsers/snpp"
 require "bettercap/sniffer/parsers/url"
+require "bettercap/sniffer/parsers/whatsapp"
 require 'bettercap/firewalls/redirection'
 require 'bettercap/firewalls/osx'
 require 'bettercap/firewalls/linux'
