@@ -58,7 +58,7 @@ class Sniffer
     if @@ctx.options.sniffer_src.nil?
       @@cap.stream
     else
-      Logger.info "Reading packets from #{@@ctx.options.sniffer_src} ..."
+      Logger.info "[#{'SNIFFER'.green}] Reading packets from #{@@ctx.options.sniffer_src} ..."
 
       PacketFu::PcapFile.file_to_array @@ctx.options.sniffer_src
     end
@@ -100,7 +100,7 @@ class Sniffer
 
     unless @@ctx.options.sniffer_pcap.nil?
       @@pcap = PacketFu::PcapFile.new
-      Logger.warn "Saving packets to #{@@ctx.options.sniffer_pcap} ."
+      Logger.info "[#{'SNIFFER'.green}] Saving packets to #{@@ctx.options.sniffer_pcap} ."
     end
 
     if @@ctx.options.custom_parser.nil?
