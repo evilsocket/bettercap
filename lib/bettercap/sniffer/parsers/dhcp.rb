@@ -21,7 +21,7 @@ class DHCP < Base
         unless packet.nil?
           auth = packet.authentication
           cid  = auth.nil?? nil : packet.client_identifier
-          msg  = "[#{packet.type.yellow}] #{'Transaction-ID'.green}=#{packet.transaction_id.yellow}"
+          msg  = "[#{packet.type.yellow}] #{'Transaction-ID'.green}=#{sprintf( "0x%X", packet.xid ).yellow}"
 
           unless cid.nil?
             msg += " #{'Client-ID'.green}='#{cid.yellow}'"

@@ -338,10 +338,6 @@ class Packet < Network::Protos::Base
       end
     end
   end
-
-  def transaction_id
-    sprintf( "0x%X", @xid )
-  end
 end
 
 end
