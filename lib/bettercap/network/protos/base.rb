@@ -23,16 +23,19 @@ class Base
       :uint32rev,
       :ip,
       :mac,
-      :bytes
+      :bytes,
+      :string
   ].freeze
-
-  @@fields = {}
 
   def self.method_missing(method_name, *arguments, &block)
     type = method_name.to_sym
     name = arguments[0]
     if TYPES.include?(type)
-      @@fields[name] = { :type => type, :opts => arguments.length > 1 ? arguments[1] : {} }
+      unless self.class_variables.include?(:@@fields)
+        class_eval "@@fields = {}"
+      end
+
+      class_eval "@@fields[:#{name}] = { :type => :#{type}, :opts => #{arguments.length > 1 ? arguments[1] : {}} }"
       class_eval "attr_accessor :#{name}"
     else
       raise NoMethodError, method_name
@@ -47,7 +50,7 @@ class Base
       limit  = data.length
       value  = nil
 
-      @@fields.each do |name, info|
+      self.class_variable_get(:@@fields).each do |name, info|
         value = nil
 
         case info[:type]
@@ -75,12 +78,18 @@ class Base
           size = size( info, data.length )
           value = data[offset..offset + size - 1].bytes
           offset += size
+        when :string
+          size = size( info, data.length )
+          value = data[offset..offset + size - 1].bytes.pack('c*')
+          offset += size
         end
 
         pkt.send("#{name}=", value)
       end
 
     rescue Exception => e
+      puts e.message
+      puts e.backtrace.join("\n")
       pkt = nil
     end
 
