@@ -38,6 +38,7 @@ def change_version( currentv, newv )
 end
 
 namespace :util do
+  desc "Build a GEM from the current source code and install it locally."
   task :sync do
     puts "@ Synchronizing codebase with GEM installation ..."
     `rm -rf *.gem`
@@ -45,6 +46,7 @@ namespace :util do
     `sudo gem install --no-rdoc --no-ri --local *.gem`
   end
 
+  desc "Upgrade version to stable, push to github and upload the new GEM release."
   task :release do
     current_version = get_current_version
     raise 'Current version is not a beta.' unless current_version.end_with?'b'
@@ -69,6 +71,7 @@ namespace :util do
     Rake::Task["util:sync"].invoke
   end
 
+  desc "Print a markdown changelog for the current release."
   task :changelog do
     feats = []
     fixes = []
@@ -82,6 +85,8 @@ namespace :util do
       if line =~ /^[^\s]+\s+(.+)$/
         msg = $1.gsub( /([^\s]*[A-Z][^\s]*[A-Z][^\s]*)/, '`\1`' ).gsub( /([a-z]+_[a-z]+)/, '`\1`' )
         dwn = msg.downcase
+
+        next if dwn.include?('version bump') or dwn.include?('rake')
 
         if dwn.include?('fix')
           fixes << msg
@@ -115,11 +120,13 @@ namespace :util do
 end
 
 namespace :test do
+  desc "Test discovery."
   task :discovery do
     `sudo arp -ad`
     system("clear && sudo bettercap --no-spoofing")
   end
 
+  desc "Test proxy and injectjs module."
   task :proxy do
     proxy!
 
@@ -131,8 +138,11 @@ namespace :test do
     end
   end
 
+  desc "Test DNS spoofing."
   task :dns do
     File.open('/tmp/hosts','w'){ |f| f.write("local .*google\\.com\n") }
     system("clear && sudo bettercap --no-spoofing --no-discovery --dns /tmp/hosts")
   end
 end
+
+task :default => 'util:sync'
