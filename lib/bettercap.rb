@@ -34,11 +34,13 @@ def autoload( path = '' )
   Dir[dir+"**/*.rb"].each do |filename|
     filename = filename.gsub( dir, '' ).gsub('.rb', '')
     filename = "bettercap/#{path}#{filename}"
-
-    if filename.end_with?('/base')
-      deps << filename
-    else
-      files << filename
+    # Proxy modules must be loaded at runtime.
+    unless filename =~ /.+\/inject[a-z]+$/i
+      if filename.end_with?('/base')
+        deps << filename
+      else
+        files << filename
+      end
     end
   end
 
