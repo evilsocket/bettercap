@@ -24,6 +24,8 @@ class StreamLogger
     '5' => :red
   }
 
+  @@services = nil
+
   # Search for the +addr+ IP address inside the list of collected targets and return
   # its compact string representation ( @see BetterCap::Target#to_s_compact ).
   def self.addr2s( addr, alt = nil )
@@ -41,6 +43,26 @@ class StreamLogger
     addr
   end
 
+  def self.service( proto, port )
+    if @@services.nil?
+      Logger.info 'Preloading network services ...'
+
+      @@services = { :tcp => {}, :udp => {} }
+      filename = File.dirname(__FILE__) + '/../network/services'
+      File.open( filename ).each do |line|
+        if line =~ /([^\s]+)\s+(\d+)\/([a-z]+).*/i
+          @@services[$3.to_sym][$2.to_i] = $1
+        end
+      end
+    end
+
+    if @@services.has_key?(proto) and @@services[proto].has_key?(port)
+      @@services[proto][port]
+    else
+      port
+    end
+  end
+
   # Log a raw packet ( +pkt+ ) data +payload+ using the specified +label+.
   def self.log_raw( pkt, label, payload )
     nl    = label.include?("\n") ? "\n" : " "
@@ -49,9 +71,9 @@ class StreamLogger
     to    = self.addr2s( pkt.ip_daddr, pkt.eth2s(:dst) )
 
     if pkt.respond_to?('tcp_dst')
-      to += ":#{pkt.tcp_dst.to_s}"
+      to += ':' + self.service( :tcp, pkt.tcp_dst ).to_s
     elsif pkt.respond_to?('udp_dst')
-      to += ":#{pkt.udp_dst.to_s}"
+      to += ':' + self.service( :udp, pkt.udp_dst ).to_s
     end
 
     Logger.raw( "[#{from} > #{to}] [#{label.green}]#{nl}#{payload.strip}" )
