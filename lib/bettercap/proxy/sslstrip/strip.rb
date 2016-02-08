@@ -163,13 +163,15 @@ class Strip
     resp = Response.new
 
     resp << "HTTP/1.1 302 Moved"
-    resp << "Connection: close"
     resp << "Location: http://#{request.host}#{request.url}"
 
     expired.each do |cookie|
       resp << "Set-Cookie: #{cookie}"
     end
 
+    resp << "Connection: close"
+    resp << "\n\n"
+    
     resp
   end
 end

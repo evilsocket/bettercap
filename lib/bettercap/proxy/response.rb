@@ -158,7 +158,7 @@ class Response
       end
     end
 
-    @headers.join("\n") + "\n" + @body
+    @headers.join("\n") + "\n" + ( @body || "\n" )
   end
 end
 
