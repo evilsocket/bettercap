@@ -34,18 +34,25 @@ class Sniffer
 
       setup( ctx )
 
-      self.stream.each do |p|
+      self.stream.each do |raw_packet|
         break unless @@ctx.running
         begin
-          parsed = Packet.parse p
+          parsed = PacketFu::Packet.parse(raw_packet)
         rescue Exception => e
           parsed = nil
-          Logger.debug e.message
+          #Logger.debug e.message
+          #Logger.debug e.backtrace.join("\n")
         end
 
         if not parsed.nil? and parsed.is_ip? and !skip_packet?(parsed)
-          append_packet p
+          Logger.debug "Parsing packet ..."
+          append_packet raw_packet
           parse_packet parsed
+        else
+          Logger.debug "[SNIFFER] Skipping packet:" \
+                       " parsed=#{parsed.nil?? 'false' : 'true'}" \
+                       " is_ip?=#{parsed.nil?? 'false' : parsed.is_ip?}" \
+                       " skip_packet?=#{parsed.nil?? 'true' : skip_packet?(parsed)}"
         end
       end
     end
@@ -66,9 +73,12 @@ class Sniffer
 
   # Return true if the +pkt+ packet instance must be skipped.
   def self.skip_packet?( pkt )
-    !@@ctx.options.local and
-        ( pkt.ip_saddr == @@ctx.ifconfig[:ip_saddr] or
-            pkt.ip_daddr == @@ctx.ifconfig[:ip_saddr] )
+    begin
+      !@@ctx.options.local and
+          ( pkt.ip_saddr == @@ctx.ifconfig[:ip_saddr] or
+              pkt.ip_daddr == @@ctx.ifconfig[:ip_saddr] )
+    rescue; end
+    false
   end
 
   # Apply each parser on the given +parsed+ packet.
@@ -77,7 +87,7 @@ class Sniffer
       begin
         parser.on_packet parsed
       rescue Exception => e
-        Logger.warn e.message
+        Logger.debug e.message
       end
     end
   end

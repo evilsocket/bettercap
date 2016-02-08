@@ -13,26 +13,20 @@ This project is released under the GPL 3 license.
 
 module BetterCap
 module Parsers
-# NTLMSS traffic parser.
-class Ntlmss < Base
-  # Convert binary +data+ into human readable hexadecimal representation.
-  def bin2hex( data )
-    hex = ''
-    data.each_byte do |byte|
-      if /[[:print:]]/ === byte.chr
-        hex += byte.chr
-      else
-        hex += "\\x" + byte.to_s(16)
-      end
-    end
-    hex
-  end
-
+# NTLMSS authentication parser.
+class NTLMSS < Base
   def on_packet( pkt )
-    s = pkt.to_s
-    if s =~ /NTLMSSP\x00\x03\x00\x00\x00.+/
-      # TODO: Parse NTLMSSP packet.
-      StreamLogger.log_raw( pkt, 'NTLMSS', bin2hex( pkt.payload ) )
+    packet = Network::Protos::NTLM::Packet.parse( pkt.payload )
+    if !packet.nil? and packet.is_auth?
+      msg = "NTLMSSP Authentication:\n"
+      msg += "  #{'LM Response'.blue}   : #{packet.lm_response.map { |x| sprintf("%02X", x )}.join.yellow}\n"
+      msg += "  #{'NTLM Response'.blue} : #{packet.ntlm_response.map { |x| sprintf("%02X", x )}.join.yellow}\n"
+      msg += "  #{'Domain Name'.blue}   : #{packet.domain_name.yellow}\n"
+      msg += "  #{'User Name'.blue}     : #{packet.user_name.yellow}\n"
+      msg += "  #{'Host Name'.blue}     : #{packet.host_name.yellow}\n"
+      msg += "  #{'Session Key'.blue}   : #{packet.session_key_resp.map { |x| sprintf("%02X", x )}.join.yellow}"
+
+      StreamLogger.log_raw( pkt, 'NTLM', msg )
     end
   end
 end
