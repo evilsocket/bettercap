@@ -48,6 +48,23 @@ class Response
     r
   end
 
+  # Return a 302 response object redirecting to +url+, setting optional +cookies+.
+  def self.redirect( url, cookies = [] )
+    r = Response.new
+
+    r << "HTTP/1.1 302 Moved"
+    r << "Location: #{url}"
+
+    cookies.each do |cookie|
+      r << "Set-Cookie: #{cookie}"
+    end
+
+    r << "Connection: close"
+    r << "\n\n"
+
+    r
+  end
+
   # Initialize this response object state.
   def initialize
     @content_type = nil

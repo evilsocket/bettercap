@@ -29,8 +29,7 @@ class Streamer
 
     Logger.warn "#{client_ip}:#{client_port} is connecting to us directly."
 
-    client.write "HTTP/1.1 302 Found\n"
-    client.write "Location: https://www.youtube.com/watch?v=dQw4w9WgXcQ\n\n"
+    client.write Response.redirect( "https://www.youtube.com/watch?v=dQw4w9WgXcQ" ).to_s
   end
 
   # Handle the HTTP +request+ from +client+.

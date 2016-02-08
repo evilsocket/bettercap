@@ -78,8 +78,7 @@ class Strip
     unless @cookies.is_clean?(request)
       Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Sending expired cookies for '#{request.host}'."
       expired = @cookies.get_expired_headers!(request)
-
-      response = build_expired_cookies( expired, request )
+      response = Response.redirect( "http://#{request.host}#{request.url}", expired )
     end
     response
   end
@@ -155,24 +154,6 @@ class Strip
         response.body.gsub!( link, downgraded )
       end
     end
-  end
-
-  # Return a 302 Redirect BetterCap::Proxy::Response object for the
-  # +request+, using +expired+ cookie headers to kill a client session.
-  def build_expired_cookies( expired, request )
-    resp = Response.new
-
-    resp << "HTTP/1.1 302 Moved"
-    resp << "Location: http://#{request.host}#{request.url}"
-
-    expired.each do |cookie|
-      resp << "Set-Cookie: #{cookie}"
-    end
-
-    resp << "Connection: close"
-    resp << "\n\n"
-    
-    resp
   end
 end
 
