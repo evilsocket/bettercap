@@ -29,7 +29,7 @@ class Sniffer
   # each one of them to the BetterCap::Parsers instances loaded inside the
   # +ctx+ BetterCap::Context instance.
   def self.start( ctx )
-    Thread.new do
+    Thread.new {
       Logger.debug 'Starting sniffer ...'
 
       setup( ctx )
@@ -47,7 +47,9 @@ class Sniffer
           parse_packet parsed
         end
       end
-    end
+
+      Logger.info "[#{'SNIFFER'.green}] Stream processed."
+    }
   end
 
   private
