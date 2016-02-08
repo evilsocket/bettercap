@@ -26,9 +26,7 @@ class Base
     net = ip = @ifconfig[:ip4_obj]
     # loop each ip in our subnet and push it to the queue
     while net.include?ip
-      if skip_address?(ip)
-        puts "Skipping #{ip}"
-      else
+      unless skip_address?(ip)
         @ctx.packets.push( get_probe(ip) )
       end
       ip = ip.succ
