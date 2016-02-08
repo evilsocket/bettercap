@@ -19,12 +19,14 @@ class Base
   TYPES = [
       :uint8,
       :uint16,
+      :uint24,
       :uint32,
       :uint32rev,
       :ip,
       :mac,
       :bytes,
-      :string
+      :string,
+      :stringz
   ].freeze
 
   def self.method_missing(method_name, *arguments, &block)
@@ -62,6 +64,10 @@ class Base
           value = data[offset..offset + 1].unpack('S')[0]
           offset += 2
 
+        when :uint24
+          value = data[offset..offset + 2].unpack('S')[0]
+          offset += 3
+
         when :uint32
           value = data[offset..offset + 3].unpack('L')[0]
           offset += 4
@@ -98,6 +104,15 @@ class Base
             end
           end
           offset += size
+
+        when :stringz
+          value = ""
+          loop do
+            value += data[offset]
+            offset += 1
+            break if data[offset].ord == 0x00
+          end
+          offset += 1
 
         end
 
