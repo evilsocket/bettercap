@@ -68,6 +68,50 @@ namespace :util do
 
     Rake::Task["util:sync"].invoke
   end
+
+  task :changelog do
+    feats = []
+    fixes = []
+    style = []
+
+    puts "@ Fetching remote tags ...\n\n"
+
+    `git fetch --tags`
+    lines = `git log \`git describe --tags --abbrev=0\`..HEAD --oneline`.split("\n")
+    lines.each do |line|
+      if line =~ /^[^\s]+\s+(.+)$/
+        msg = $1.gsub( /([^\s]*[A-Z][^\s]*[A-Z][^\s]*)/, '`\1`' ).gsub( /([a-z]+_[a-z]+)/, '`\1`' )
+        dwn = msg.downcase
+
+        if dwn.include?('fix')
+          fixes << msg
+        elsif dwn.include?('new')
+          feats << msg
+        else
+          style << msg
+        end
+      end
+    end
+
+    puts "Changelog"
+    puts "===\n\n"
+
+    puts "**New Features**\n\n"
+    feats.each do |m|
+      puts "* #{m}"
+    end
+
+    puts "\n**Fixes**\n\n"
+    fixes.each do |m|
+      puts "* #{m}"
+    end
+
+    puts "\n**Code Style**\n\n"
+    style.each do |m|
+      puts "* #{m}"
+    end
+    puts "\n"
+  end
 end
 
 namespace :test do
@@ -80,7 +124,7 @@ namespace :test do
     proxy!
 
     begin
-      system( "clear && sudo bettercap --no-discovery --no-spoofing --proxy --proxy-module injectjs --js-data 'alert(123);'" )
+      system( "clear && sudo bettercap --no-discovery --no-spoofing --proxy --proxy-module injectjs --js-data 'a = 1'" )
     rescue
     ensure
       proxy! false
