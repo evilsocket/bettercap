@@ -56,7 +56,7 @@ class InjectCSS < BetterCap::Proxy::Module
   def on_request( request, response )
     # is it a html page?
     if response.content_type =~ /^text\/html.*/
-      BetterCap::Logger.info "Injecting CSS #{if @@cssdata.nil? then "URL" else "file" end} into http://#{request.host}#{request.url}"
+      BetterCap::Logger.info "[#{'INJECTCSS'.green}] Injecting CSS #{if @@cssdata.nil? then "URL" else "file" end} into http://#{request.host}#{request.url}"
       # inject URL
       if @@cssdata.nil?
         response.body.sub!( '</head>', "  <link rel=\"stylesheet\" href=\"#{@cssurl}\"></script></head>" )

