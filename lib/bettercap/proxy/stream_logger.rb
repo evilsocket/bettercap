@@ -74,9 +74,9 @@ class StreamLogger
     to    = self.addr2s( pkt.ip_daddr, pkt.eth2s(:dst) )
 
     if pkt.respond_to?('tcp_dst')
-      to += ':' + self.service( :tcp, pkt.tcp_dst ).to_s
+      to += ':' + self.service( :tcp, pkt.tcp_dst ).to_s.light_blue
     elsif pkt.respond_to?('udp_dst')
-      to += ':' + self.service( :udp, pkt.udp_dst ).to_s
+      to += ':' + self.service( :udp, pkt.udp_dst ).to_s.light_blue
     end
 
     Logger.raw( "[#{from} > #{to}] [#{label.green}]#{nl}#{payload.strip}" )
