@@ -40,19 +40,11 @@ class Sniffer
           parsed = PacketFu::Packet.parse(raw_packet)
         rescue Exception => e
           parsed = nil
-          #Logger.debug e.message
-          #Logger.debug e.backtrace.join("\n")
         end
 
-        if not parsed.nil? and parsed.is_ip? and !skip_packet?(parsed)
-          Logger.debug "Parsing packet ..."
+        unless skip_packet?(parsed)
           append_packet raw_packet
           parse_packet parsed
-        else
-          Logger.debug "[SNIFFER] Skipping packet:" \
-                       " parsed=#{parsed.nil?? 'false' : 'true'}" \
-                       " is_ip?=#{parsed.nil?? 'false' : parsed.is_ip?}" \
-                       " skip_packet?=#{parsed.nil?? 'true' : skip_packet?(parsed)}"
         end
       end
     end
@@ -74,9 +66,14 @@ class Sniffer
   # Return true if the +pkt+ packet instance must be skipped.
   def self.skip_packet?( pkt )
     begin
-      !@@ctx.options.local and
-          ( pkt.ip_saddr == @@ctx.ifconfig[:ip_saddr] or
-              pkt.ip_daddr == @@ctx.ifconfig[:ip_saddr] )
+      # not parsed
+      return true if parsed.nil?
+      # not IP packet
+      return true unless parsed.is_ip?
+      # skip if local packet and --local|-L was not specified.
+      unless @@ctx.options.local
+        return ( pkt.ip_saddr == @@ctx.ifconfig[:ip_saddr] or pkt.ip_daddr == @@ctx.ifconfig[:ip_saddr] )
+      end
     rescue; end
     false
   end
