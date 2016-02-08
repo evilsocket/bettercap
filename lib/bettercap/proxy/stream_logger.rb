@@ -38,6 +38,8 @@ class StreamLogger
 
     if addr == '0.0.0.0' and !alt.nil?
       return alt
+    elsif addr == '255.255.255.255'
+      return '*'
     end
 
     addr
