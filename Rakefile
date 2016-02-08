@@ -117,7 +117,7 @@ end
 namespace :test do
   task :discovery do
     `sudo arp -ad`
-    system("clear && sudo bettercap --no-spoofing --no-discovery")
+    system("clear && sudo bettercap --no-spoofing")
   end
 
   task :proxy do

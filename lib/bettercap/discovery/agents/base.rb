@@ -26,18 +26,26 @@ class Base
     net = ip = @ifconfig[:ip4_obj]
     # loop each ip in our subnet and push it to the queue
     while net.include?ip
-      # rescanning the gateway could cause an issue when the
-      # gateway itself has multiple interfaces ( LAN, WAN ... )
-      if ip != ctx.gateway and ip != @local_ip
-        packet = get_probe(ip)
-        @ctx.packets.push(packet)
+      if skip_address?(ip)
+        puts "Skipping #{ip}"
+      else
+        @ctx.packets.push( get_probe(ip) )
       end
-
       ip = ip.succ
     end
   end
 
   private
+
+  # Return true if +ip+ must be skipped during discovery, otherwise false.
+  def skip_address?(ip)
+    # don't send probes to the gateway
+    ( ip == @ctx.gateway or \
+      # don't send probes to our device
+      ip == @local_ip or \
+      # don't stress endpoints we already discovered
+      !@ctx.find_target( ip.to_s, nil ).nil? )
+  end
 
   # Each Discovery::Agent::Base derived class should implement this method.
   def get_probe( ip )
