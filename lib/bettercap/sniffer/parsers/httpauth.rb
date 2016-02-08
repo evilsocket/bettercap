@@ -36,7 +36,9 @@ class Httpauth < Base
         StreamLogger.log_raw( pkt, 'HTTP BASIC AUTH', "http://#{hostname}#{path} - username=#{user} password=#{pass}".yellow )
 
       elsif line =~ /Authorization:\s*Digest\s+(.+)/i
-        StreamLogger.log_raw( pkt, 'HTTP DIGEST AUTH', "http://#{hostname}#{path}\n#{$1}".yellow )
+        StreamLogger.log_raw( pkt, 'HTTP DIGEST AUTH', "http://#{hostname}#{path}\n#{'Digest'.blue}: #{$1.yellow}" )
+      elsif line =~ /Authorization:\s*([^\s]+)\s+(.+)/i
+        StreamLogger.log_raw( pkt, "HTTP #{$1} AUTH", "http://#{hostname}#{path}\n#{$1.blue}: #{$2.yellow}" )
       end
     end
   end
