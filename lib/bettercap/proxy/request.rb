@@ -147,7 +147,9 @@ class Request
   def to_url(max_length = 50)
     schema = if port == 443 then 'https' else 'http' end
     url = "#{schema}://#{@host}#{@url}"
-    url = url.slice(0..max_length) + '...' unless url.length <= max_length
+    unless max_length.nil?
+      url = url.slice(0..max_length) + '...' unless url.length <= max_length
+    end
     url
   end
 
@@ -174,10 +176,16 @@ class Request
       end
     end
 
+    if name == 'Host'
+      @host = value
+    end
+
     if !found and !value.nil?
       @headers[name] = value
       @lines << "#{name}: #{value}"
     end
+
+    @lines.reject!(&:empty?)
   end
 end
 end
