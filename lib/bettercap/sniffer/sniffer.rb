@@ -34,6 +34,10 @@ class Sniffer
 
       setup( ctx )
 
+      start     = Time.now.to_i
+      skipped   = 0
+      processed = 0
+
       self.stream.each do |raw_packet|
         break unless @@ctx.running
         begin
@@ -42,13 +46,20 @@ class Sniffer
           parsed = nil
         end
 
-        unless skip_packet?(parsed)
+        if skip_packet?(parsed)
+          skipped += 1
+        else
+          processed += 1
           append_packet raw_packet
           parse_packet parsed
         end
       end
 
-      Logger.info "[#{'SNIFFER'.green}] Stream processed."
+      stop = Time.now.to_i
+      delta = stop - start
+      total = skipped + processed
+
+      Logger.info "[#{'SNIFFER'.green}] #{total} packets processed in #{delta} s ( #{skipped} skipped packets, #{processed} processed packets )"
     }
   end
 
