@@ -96,13 +96,21 @@ class StreamLogger
       request.body.split('&').each do |v|
         name, value = v.split('=')
         if name.nil? or value.nil?
-          msg << "  #{URI.unescape(v).yellow}\n"
+          bin = ''
+          URI.unescape(v).split.each do |b|
+            if b =~ /[[:print:]]/
+              bin << b
+            else
+              bin << '.'
+            end
+          end
+          msg << "  #{bin.yellow}\n"
         else
           msg << "  #{name.blue} : #{URI.unescape(value).yellow}\n"
         end
       end
 
-      Logger.raw "\n#{msg}\n"
+      Logger.raw "#{msg}\n"
     end
   end
 

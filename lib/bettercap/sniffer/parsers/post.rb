@@ -25,10 +25,7 @@ class Post < Base
           StreamLogger.log_raw( pkt, "POST", req.to_url(1000) )
           StreamLogger.log_post( req )
         end
-      rescue Exception => e
-        puts e.message
-        puts e.backtrace.join("\n")
-      end
+      rescue; end
     end
   end
 end

