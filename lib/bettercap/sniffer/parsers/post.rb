@@ -22,25 +22,13 @@ class Post < Base
         req = BetterCap::Proxy::Request.parse(pkt.payload)
         # the packet could be incomplete
         unless req.body.nil? or req.body.empty?
-          msg = "\n[#{'HEADERS'.green}]\n\n"
-          req.headers.each do |name,value|
-            msg << "  #{name.blue} : #{value.yellow}\n"
-          end
-          msg << "\n[#{'BODY'.green}]\n\n"
-
-          req.body.split('&').each do |v|
-            name, value = v.split('=')
-            if name.nil? or value.nil?
-              msg << "  #{URI.unescape(v).yellow}\n"
-            else
-              msg << "  #{name.blue} : #{URI.unescape(value).yellow}\n"
-            end
-          end
-
           StreamLogger.log_raw( pkt, "POST", req.to_url(1000) )
-          Logger.raw "#{msg}\n"
+          StreamLogger.log_post( req )
         end
-      rescue; end
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace.join("\n")
+      end
     end
   end
 end

@@ -82,6 +82,30 @@ class StreamLogger
     Logger.raw( "[#{from} > #{to}] [#{label.green}]#{nl}#{payload.strip}" )
   end
 
+  # If +request+ is a complete POST request, this method will log every header
+  # and post field with its value.
+  def self.log_post( request )
+    # the packet could be incomplete
+    if request.post? and !request.body.nil? and !request.body.empty?
+      msg = "\n[#{'HEADERS'.green}]\n\n"
+      request.headers.each do |name,value|
+        msg << "  #{name.blue} : #{value.yellow}\n"
+      end
+      msg << "\n[#{'BODY'.green}]\n\n"
+
+      request.body.split('&').each do |v|
+        name, value = v.split('=')
+        if name.nil? or value.nil?
+          msg << "  #{URI.unescape(v).yellow}\n"
+        else
+          msg << "  #{name.blue} : #{URI.unescape(value).yellow}\n"
+        end
+      end
+
+      Logger.raw "\n#{msg}\n"
+    end
+  end
+
   # Log a HTTP ( HTTPS if +is_https+ is true ) stream performed by the +client+
   # with the +request+ and +response+ most important informations.
   def self.log_http( request, response )
@@ -98,19 +122,7 @@ class StreamLogger
     end
 
     Logger.raw "[#{self.addr2s(request.client)}] #{request.verb.light_blue} #{request_s} #{response_s}"
-    if request.post?
-      msg = ''
-      request.body.split('&').each do |v|
-        name, value = v.split('=')
-        if name.nil? or value.nil?
-          msg << "  #{URI.unescape(v).yellow}\n"
-        else
-          msg << "  #{name.blue} : #{URI.unescape(value).yellow}\n"
-        end
-      end
-
-      Logger.raw "\n#{msg}\n"
-    end
+    self.log_post( request )
   end
 end
 end
