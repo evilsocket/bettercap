@@ -30,18 +30,16 @@ class StreamLogger
   # its compact string representation ( @see BetterCap::Target#to_s_compact ).
   def self.addr2s( addr, alt = nil )
     ctx = Context.get
-
+    # check for the local address
     return 'local' if addr == ctx.ifconfig[:ip_saddr]
-
+    # is it a known target?
     target = ctx.find_target addr, nil
     return target.to_s_compact unless target.nil?
-
-    if addr == '0.0.0.0' and !alt.nil?
-      return alt
-    elsif addr == '255.255.255.255'
-      return '*'
-    end
-
+    # fix 0.0.0.0 if alt argument was specified
+    return alt if addr == '0.0.0.0' and !alt.nil?
+    # fix broadcast -> *
+    return '*' if addr == '255.255.255.255'
+    # nothing found, return the address as it is
     addr
   end
 
