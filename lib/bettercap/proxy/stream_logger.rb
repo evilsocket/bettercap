@@ -120,7 +120,7 @@ class StreamLogger
     is_https   = request.port == 443
     request_s  = "#{is_https ? 'https' : 'http'}://#{request.host}#{request.url}"
     response_s = "( #{response.content_type} )"
-    request_s  = request_s.slice(0..@@MAX_REQ_SIZE) + '...' unless request_s.length <= @@MAX_REQ_SIZE
+    request_s  = request.to_url( request.post?? nil : @@MAX_REQ_SIZE )
     code       = response.code[0]
 
     if @@CODE_COLORS.has_key? code
