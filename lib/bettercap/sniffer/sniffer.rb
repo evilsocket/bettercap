@@ -69,9 +69,9 @@ class Sniffer
   def self.skip_packet?( pkt )
     begin
       # not parsed
-      return true if parsed.nil?
+      return true if pkt.nil?
       # not IP packet
-      return true unless parsed.is_ip?
+      return true unless pkt.is_ip?
       # skip if local packet and --local|-L was not specified.
       unless @@ctx.options.local
         return ( pkt.ip_saddr == @@ctx.ifconfig[:ip_saddr] or pkt.ip_daddr == @@ctx.ifconfig[:ip_saddr] )
