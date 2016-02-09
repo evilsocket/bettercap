@@ -131,7 +131,7 @@ namespace :test do
     proxy!
 
     begin
-      system( "clear && sudo bettercap --no-discovery --no-spoofing --proxy --proxy-module injectjs --js-data 'a = 1'" )
+      system( "clear && sudo bettercap --no-discovery --no-spoofing --proxy" )
     rescue
     ensure
       proxy! false

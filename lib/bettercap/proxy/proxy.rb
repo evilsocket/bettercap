@@ -121,8 +121,11 @@ class Proxy
 
       request.read(client)
 
+      # stripped request
+      if @streamer.was_stripped?( request, client )
+        @streamer.handle( request, client )
       # someone is having fun with us =)
-      if is_self_request? request
+      elsif is_self_request? request
         @streamer.rickroll( client, @is_https )
       # handle request
       else

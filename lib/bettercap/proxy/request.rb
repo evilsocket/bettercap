@@ -143,6 +143,11 @@ class Request
     @lines.join("\n") + "\n" + ( @body || '' )
   end
 
+  def base_url
+    schema = if port == 443 then 'https' else 'http' end
+    "#{schema}://#{@host}/"
+  end
+
   # Return the full request URL trimming it at +max_length+ characters.
   def to_url(max_length = 50)
     schema = if port == 443 then 'https' else 'http' end

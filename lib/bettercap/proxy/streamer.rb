@@ -23,6 +23,15 @@ class Streamer
     @sslstrip  = SSLStrip::Strip.new
   end
 
+  # Return true if the +request+ was stripped.
+  def was_stripped?(request, client)
+    if @ctx.options.sslstrip
+      request.client, request.client_port = get_client_details( !( request.port == 443 ), client )
+      return @sslstrip.was_stripped?(request)
+    end
+    false
+  end
+
   # Redirect the +client+ to a funny video.
   def rickroll( client, is_https )
     client_ip, client_port = get_client_details( is_https, client )
@@ -49,6 +58,8 @@ class Streamer
       if r.nil?
         # call modules on_pre_request
         @processor.call( request, nil )
+
+        # Logger.debug request.to_s
 
         self.send( "do_#{request.verb}", request, response )
       else

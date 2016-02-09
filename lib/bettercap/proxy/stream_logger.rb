@@ -98,6 +98,19 @@ class StreamLogger
     end
 
     Logger.raw "[#{self.addr2s(request.client)}] #{request.verb.light_blue} #{request_s} #{response_s}"
+    if request.post?
+      msg = ''
+      request.body.split('&').each do |v|
+        name, value = v.split('=')
+        if name.nil? or value.nil?
+          msg << "  #{URI.unescape(v).yellow}\n"
+        else
+          msg << "  #{name.blue} : #{URI.unescape(value).yellow}\n"
+        end
+      end
+
+      Logger.raw "\n#{msg}\n"
+    end
   end
 end
 end
