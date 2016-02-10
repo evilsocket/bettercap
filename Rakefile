@@ -131,7 +131,7 @@ namespace :test do
     proxy!
 
     begin
-      system( "clear && sudo bettercap --no-discovery --no-spoofing --proxy" )
+      system( "clear && sudo bettercap --no-discovery --no-spoofing --proxy -P POST" )
     rescue
     ensure
       proxy! false

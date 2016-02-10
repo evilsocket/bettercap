@@ -24,7 +24,7 @@ class Response
   # True if this is a chunked encoded response, otherwise false.
   attr_reader :chunked
   # A list of response headers.
-  attr_reader :headers
+  attr_accessor :headers
   # Response status code.
   attr_accessor :code
   # True if the parser finished to parse the headers, otherwise false.
@@ -81,7 +81,15 @@ class Response
   def convert_webrick_response!(response)
     self << "HTTP/#{response.http_version} #{response.code} #{response.msg}"
     response.each do |key,value|
-      self << "#{key.gsub(/\bwww|^te$|\b\w/){ $&.upcase }}: #{value}"
+      # sometimes webrick joins all 'set-cookie' headers
+      # which might cause issues with HSTS bypass.
+      if key == 'set-cookie'
+        response.get_fields('set-cookie').each do |v|
+          self << "Set-Cookie: #{v}"
+        end
+      else
+        self << "#{key.gsub(/\bwww|^te$|\b\w/){ $&.upcase }}: #{value}"
+      end
     end
     self << "\n"
     @code = response.code
@@ -155,6 +163,14 @@ class Response
 
     unless found
       @headers << "#{name}: #{value}"
+    end
+  end
+
+  def each_header(name)
+    @headers.each_with_index do |header,i|
+      if header =~ /^#{name}:\s*(.+)$/i
+        yield( $1, i )
+      end
     end
   end
 

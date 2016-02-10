@@ -128,7 +128,10 @@ class StreamLogger
     end
 
     Logger.raw "[#{self.addr2s(request.client)}] #{request.verb.light_blue} #{request_s} #{response_s}"
-    self.log_post( request )
+    # Log post body if the POST sniffer is enabled.
+    if Context.get.post_sniffer_enabled?
+      self.log_post( request )
+    end
   end
 end
 end

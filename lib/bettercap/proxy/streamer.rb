@@ -59,8 +59,6 @@ class Streamer
         # call modules on_pre_request
         @processor.call( request, nil )
 
-        # Logger.debug request.to_s
-
         self.send( "do_#{request.verb}", request, response )
       else
         response = r

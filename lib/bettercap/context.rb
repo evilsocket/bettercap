@@ -156,6 +156,10 @@ class Context
     end
   end
 
+  def post_sniffer_enabled?
+    ( @options.sniffer and @options.parsers.include?('POST') )
+  end
+
   # Stop every running daemon that was started and reset system state.
   def finalize
     @running = false

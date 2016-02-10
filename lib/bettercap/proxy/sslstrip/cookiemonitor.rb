@@ -22,6 +22,10 @@ class CookieMonitor
     @set = []
   end
 
+  def add!(request)
+    @set << [request.client, get_domain(request)]
+  end
+
   # Return true if the +request+ was already cleaned.
   def is_clean?(request)
     if request.post?
