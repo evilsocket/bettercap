@@ -27,7 +27,7 @@ require 'uri'
 Object.send :remove_const, :Config rescue nil
 Config = RbConfig
 
-def autoload( path = '' )
+def bettercap_autoload( path = '' )
   dir = File.dirname(__FILE__) + "/bettercap/#{path}"
   deps = []
   files = []
@@ -47,7 +47,6 @@ def autoload( path = '' )
   ( deps + files ).each do |file|
     require file
   end
-
 end
 
-autoload
+bettercap_autoload
