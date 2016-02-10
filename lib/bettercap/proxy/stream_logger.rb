@@ -91,21 +91,12 @@ class StreamLogger
       end
       msg << "\n[#{'BODY'.green}]\n\n"
 
+      # TODO: Handle content-types correctly.
       request.body.split('&').each do |v|
         name, value = v.split('=')
-        if name.nil? or value.nil?
-          bin = ''
-          URI.unescape(v).split.each do |b|
-            if b =~ /[[:print:]]/
-              bin << b
-            else
-              bin << '.'
-            end
-          end
-          msg << "  #{bin.yellow}\n"
-        else
-          msg << "  #{name.blue} : #{URI.unescape(value).yellow}\n"
-        end
+        name ||= ''
+        value ||= ''
+        msg << "  #{name.blue} : #{URI.unescape(value).yellow}\n"
       end
 
       Logger.raw "#{msg}\n"
