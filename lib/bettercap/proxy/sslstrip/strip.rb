@@ -190,7 +190,7 @@ class Strip
       end
       request.port = 443
 
-      Logger.debug "[#{'SSLSTRIP'.green} #{request.client}] Found stripped HTTPS link '#{url}', proxying via SSL ( #{request.to_url} )."
+      Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Found stripped HTTPS link '#{url}', proxying via SSL ( #{request.to_url} )."
     end
   end
 
