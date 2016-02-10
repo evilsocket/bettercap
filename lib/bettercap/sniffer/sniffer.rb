@@ -97,7 +97,7 @@ class Sniffer
       begin
         parser.on_packet parsed
       rescue Exception => e
-        Logger.debug e.message
+        Logger.exception e
       end
     end
   end
@@ -110,7 +110,7 @@ class Sniffer
           array: [p],
           append: true ) unless @@pcap.nil?
     rescue Exception => e
-      Logger.warn e.message
+      Logger.exception e
     end
   end
 

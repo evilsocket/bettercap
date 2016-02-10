@@ -37,6 +37,20 @@ module Logger
       @@ctx       = Context.get
     end
 
+    # Log the exception +e+, if this is a beta version, log it as a warning,
+    # otherwise as a debug message.
+    def exception(e)
+      msg = "Exception : #{e.class}\n" +
+            "Message   : #{e.message}\n" +
+            "Backtrace :\n\n    #{e.backtrace.join("\n    ")}\n"
+
+      if BetterCap::VERSION.end_with?('b')
+        self.warn(msg)
+      else
+        self.debug(msg)
+      end
+    end
+
     # Log an error +message+.
     def error(message)
       @@queue.push formatted_message(message, 'E').red

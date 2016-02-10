@@ -60,7 +60,7 @@ class Context
       iface = PCAPRUB::Pcap.lookupdev
     rescue Exception => e
       iface = nil
-      Logger.debug e.message
+      Logger.exception e
     end
 
     @running         = true

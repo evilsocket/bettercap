@@ -137,12 +137,12 @@ class Proxy
     rescue SocketError => se
       if request.host
         Logger.debug "Socket error while serving #{request.host}#{request.url}: #{e.message}"
-        Logger.debug e.backtrace.join("\n")
+        Logger.exception e
       end
     rescue Exception => e
       if request.host
         Logger.warn "Error while serving #{request.host}#{request.url}: #{e.message}"
-        Logger.debug e.backtrace.join("\n")
+        Logger.exception e
       end
     end
 

@@ -88,8 +88,7 @@ class Streamer
       client.write response.to_s
     rescue NoMethodError => e
       Logger.warn "Could not handle #{request.verb} request from #{request.client}:#{request.client_port} ..."
-      Logger.debug e.inspect
-      Logger.debug e.backtrace.join("\n")
+      Logger.exception e
     end
   end
 
