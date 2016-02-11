@@ -81,7 +81,10 @@ class Arp < Base
 
     @ctx.targets.each do |target|
       unless target.ip.nil? or target.mac.nil?
-        spoof(target)
+        5.times do 
+          spoof(target)
+          sleep 0.3
+        end
       end
     end
   end
