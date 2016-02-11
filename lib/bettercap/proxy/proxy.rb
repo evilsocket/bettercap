@@ -135,15 +135,13 @@ class Proxy
       Logger.debug "#{@type} client served."
 
     rescue SocketError => se
-      if request.host
-        Logger.debug "Socket error while serving #{request.host}#{request.url}: #{e.message}"
-        Logger.exception e
-      end
+      Logger.debug "Socket error while serving client: #{e.message}"
+      Logger.exception e
+    rescue Errno::EPIPE => ep
+      Logger.debug "Connection closed while serving client."
     rescue Exception => e
-      if request.host
-        Logger.warn "Error while serving #{request.host}#{request.url}: #{e.message}"
-        Logger.exception e
-      end
+      Logger.warn "Error while serving client: #{e.message}"
+      Logger.exception e
     end
 
     client.close
