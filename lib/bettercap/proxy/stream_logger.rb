@@ -10,7 +10,9 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require 'bettercap/logger'
+require 'zlib'
+require 'stringio'
+require 'json'
 
 module BetterCap
 # Raw or http streams pretty logging.
@@ -80,6 +82,38 @@ class StreamLogger
     Logger.raw( "[#{from} > #{to}] [#{label.green}]#{nl}#{payload.strip}" )
   end
 
+  def self.dump_form( request )
+    msg = ''
+    request.body.split('&').each do |v|
+      name, value = v.split('=')
+      name ||= ''
+      value ||= ''
+      msg << "  #{name.blue} : #{URI.unescape(value).yellow}\n"
+    end
+    msg
+  end
+
+  def self.dump_raw( data )
+    msg = ''
+    data.each_byte do |b|
+      msg << ( b.chr =~ /[[:print:]]/ ? b.chr : '.' ).yellow
+    end
+    msg
+  end
+
+  def self.dump_gzip( request )
+    msg = ''
+    uncompressed = Zlib::GzipReader.new(StringIO.new(request.body)).read
+    self.dump_raw( uncompressed )
+  end
+
+  def self.dump_json( request )
+    obj = JSON.parse( request.body )
+    json = JSON.pretty_unparse(obj)
+    json.scan( /("[^"]+"):/ ).map { |x| json.gsub!( x[0], x[0].blue )}
+    json
+  end
+
   # If +request+ is a complete POST request, this method will log every header
   # and post field with its value.
   def self.log_post( request )
@@ -91,12 +125,18 @@ class StreamLogger
       end
       msg << "\n[#{'BODY'.green}]\n\n"
 
-      # TODO: Handle content-types correctly.
-      request.body.split('&').each do |v|
-        name, value = v.split('=')
-        name ||= ''
-        value ||= ''
-        msg << "  #{name.blue} : #{URI.unescape(value).yellow}\n"
+      case request['Content-Type']
+      when 'application/x-www-form-urlencoded'
+        msg << self.dump_form( request )
+
+      when 'gzip'
+        msg << self.dump_gzip( request )
+
+      when 'application/json'
+        msg << self.dump_json( request )
+
+      else
+        msg << self.dump_raw( request.body )
       end
 
       Logger.raw "#{msg}\n"
