@@ -235,6 +235,8 @@ class Context
               end
             rescue Exception => e
               Logger.warn "Error with proxy module: #{e.message}"
+              Logger.exception e
+
               response = original
             end
           end
