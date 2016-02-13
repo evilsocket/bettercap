@@ -184,7 +184,7 @@ class Options
       end
 
       opts.on( '--ignore ADDRESS1,ADDRESS2', 'Ignore these addresses if found while searching for targets.' ) do |v|
-        ctx.options.ignore = v
+        ctx.options.parse_ignore!(v)
       end
 
       opts.on( '-O', '--log LOG_FILE', 'Log all messages into a file, if not specified the log messages will be only print into the shell.' ) do |v|
@@ -269,11 +269,11 @@ class Options
       end
 
       opts.on( '--http-ports PORT1,PORT2', 'Comma separated list of HTTP ports to redirect to the proxy, default to ' + ctx.options.http_ports.join(', ') + ' .' ) do |v|
-        ctx.options.http_ports = v
+        ctx.options.http_ports = ctx.options.parse_ports( v )
       end
 
       opts.on( '--https-ports PORT1,PORT2', 'Comma separated list of HTTPS ports to redirect to the proxy, default to ' + ctx.options.https_ports.join(', ') + ' .' ) do |v|
-        ctx.options.https_ports = v
+        ctx.options.https_ports = ctx.options.parse_ports( v )
       end
 
       opts.on( '--proxy-https-port PORT', 'Set HTTPS proxy port, default to ' + ctx.options.proxy_https_port.to_s + ' .' ) do |v|
@@ -293,7 +293,7 @@ class Options
       end
 
       opts.on( '--custom-proxy ADDRESS', 'Use a custom HTTP upstream proxy instead of the builtin one.' ) do |v|
-        ctx.options.custom_proxy = v
+        ctx.options.parse_custom_proxy!(v)
       end
 
       opts.on( '--custom-proxy-port PORT', 'Specify a port for the custom HTTP upstream proxy, default to ' + ctx.options.custom_proxy_port.to_s + ' .' ) do |v|
@@ -305,7 +305,7 @@ class Options
       end
 
       opts.on( '--custom-https-proxy ADDRESS', 'Use a custom HTTPS upstream proxy instead of the builtin one.' ) do |v|
-        ctx.options.custom_https_proxy = v
+        ctx.options.parse_custom_proxy!( v, true )
       end
 
       opts.on( '--custom-https-proxy-port PORT', 'Specify a port for the custom HTTPS upstream proxy, default to ' + ctx.options.custom_https_proxy_port.to_s + ' .' ) do |v|
@@ -374,7 +374,7 @@ class Options
     end
 
     unless ctx.options.target.nil?
-      ctx.targets = ctx.options.to_targets
+      ctx.targets = ctx.options.parse_targets
     end
 
     # Load firewall instance, network interface informations and detect the
@@ -382,7 +382,7 @@ class Options
     ctx.update!
 
     # Spoofers need the context network data to be initialized.
-    ctx.spoofer = ctx.options.to_spoofers
+    ctx.spoofer = ctx.options.parse_spoofers
 
     ctx
   end
@@ -412,9 +412,11 @@ class Options
     !@ignore.nil? and @ignore.include?(ip)
   end
 
+  # Parsing Routines
+
   # Setter for the #ignore attribute, will raise a BetterCap::Error if one
   # or more invalid IP addresses are specified.
-  def ignore=(value)
+  def parse_ignore!(value)
     @ignore = value.split(",")
     valid = @ignore.select { |target| Network.is_ip?(target) }
 
@@ -430,23 +432,20 @@ class Options
     Logger.warn "Ignoring #{valid.join(", ")} ."
   end
 
-  # Setter for the #custom_proxy attribute, will raise a BetterCap::Error if
-  # +value+ is not a valid IP address.
-  def custom_proxy=(value)
-    @custom_proxy = value
-    raise BetterCap::Error, 'Invalid custom HTTP upstream proxy address specified.' unless Network.is_ip? @custom_proxy
-  end
-
-  # Setter for the #custom_https_proxy attribute, will raise a BetterCap::Error if
-  # +value+ is not a valid IP address.
-  def custom_https_proxy=(value)
-    @custom_https_proxy = value
-    raise BetterCap::Error, 'Invalid custom HTTPS upstream proxy address specified.' unless Network.is_ip? @custom_https_proxy
+  # Setter for the #custom_proxy or #custom_https_proxy attribute, will raise a
+  # BetterCap::Error if +value+ is not a valid IP address.
+  def parse_custom_proxy!(value, https=false)
+    raise BetterCap::Error, 'Invalid custom HTTP upstream proxy address specified.' unless Network.is_ip?(value)
+    if https
+      @custom_proxy = value
+    else
+      @custom_https_proxy = value
+    end
   end
 
   # Parse a comma separated list of ports and return an array containing only
   # valid ports, raise BetterCap::Error if that array is empty.
-  def to_ports(value)
+  def parse_ports(value)
     ports = []
     value.split(",").each do |v|
       v = v.strip.to_i
@@ -458,21 +457,9 @@ class Options
     ports
   end
 
-  # Setter for the #http_ports attribute, will raise a BetterCap::Error if +value+
-  # is not a valid comma separated list of ports.
-  def http_ports=(value)
-    @http_ports = to_ports(value)
-  end
-
-  # Setter for the #https_ports attribute, will raise a BetterCap::Error if +value+
-  # is not a valid comma separated list of ports.
-  def https_ports=(value)
-    @https_ports = to_ports(value)
-  end
-
   # Split specified targets and parse them ( either as IP or MAC ), will raise a
   # BetterCap::Error if one or more invalid addresses are specified.
-  def to_targets
+  def parse_targets
     targets = @target.split(",")
     valid_targets = targets.select { |target| Network.is_ip?(target) or Network.is_mac?(target) }
 
@@ -488,7 +475,7 @@ class Options
 
   # Parse spoofers and return a list of BetterCap::Spoofers objects. Raise a
   # BetterCap::Error if an invalid spoofer name was specified.
-  def to_spoofers
+  def parse_spoofers
     spoofers = []
     spoofer_modules_names = @spoofer.split(",")
     spoofer_modules_names.each do |module_name|
@@ -504,7 +491,7 @@ class Options
 
   # Create a list of BetterCap::Firewalls::Redirection objects which are needed
   # given the specified command line arguments.
-  def to_redirections ifconfig
+  def get_redirections ifconfig
     redirections = []
 
     if @dnsd
