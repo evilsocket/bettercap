@@ -460,17 +460,38 @@ class Options
   # Split specified targets and parse them ( either as IP or MAC ), will raise a
   # BetterCap::Error if one or more invalid addresses are specified.
   def parse_targets
+    valid   = []
     targets = @target.split(",")
-    valid_targets = targets.select { |target| Network.is_ip?(target) or Network.is_mac?(target) }
 
-    raise BetterCap::Error, "Invalid target specified." if valid_targets.empty?
+    targets.each do |t|
+      if Network.is_ip?(t) or Network.is_mac?(t)
+        valid << Network::Target.new(t)
 
-    invalid_targets = targets - valid_targets
-    invalid_targets.each do |target|
-      Logger.warn "Invalid target specified: #{target}"
+      elsif Network.is_range?(t)
+        #tmp = IPAddr.new(t)
+        first, last_part = t.split('-')
+        last = first.split('.')[0..2].join('.') + ".#{last_part}"
+        first = IPAddr.new(first)
+        last  = IPAddr.new(last)
+
+        loop do
+          valid << Network::Target.new(first.to_s)
+          break if first == last
+          first = first.succ
+        end
+
+      elsif Network.is_netmask?(t)
+        mask = IPAddr.new(t)
+        mask.to_range.each do |o|
+          valid << Network::Target.new(o.to_s)
+        end
+      else
+        raise BetterCap::Error, "Invalid target specified '#{t}', valid formats are IP addresses, "\
+                                "MAC addresses, IP ranges ( 192.168.1.1-30 ) or netmasks ( 192.168.1.1/24 ) ."
+      end
     end
 
-    valid_targets.map { |target| Network::Target.new(target) }
+    valid
   end
 
   # Parse spoofers and return a list of BetterCap::Spoofers objects. Raise a

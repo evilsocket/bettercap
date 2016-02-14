@@ -16,9 +16,27 @@ module BetterCap
 # Handles various network related tasks.
 module Network
 class << self
+  IP_ADDRESS_REGEX = '\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}'
+
   # Return true if +ip+ is a valid IP address, otherwise false.
   def is_ip?(ip)
-    if /\A(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\Z/ =~ ip.to_s
+    if /\A(#{IP_ADDRESS_REGEX})\Z/ =~ ip.to_s
+      return $~.captures.all? {|i| i.to_i < 256}
+    end
+    false
+  end
+
+  # Return true if +r+ is a valid IP address range ( 192.168.1.1-93 ), otherwise false.
+  def is_range?(r)
+    if /\A(#{IP_ADDRESS_REGEX})\-(\d{1,3})\Z/ =~ r.to_s
+      return $~.captures.all? {|i| i.to_i < 256}
+    end
+    false
+  end
+
+  # Return true if +n+ is a valid IP netmask range ( 192.168.1.1/24 ), otherwise false.
+  def is_netmask?(n)
+    if /\A(#{IP_ADDRESS_REGEX})\/(\d+)\Z/ =~ n.to_s
       return $~.captures.all? {|i| i.to_i < 256}
     end
     false
@@ -107,9 +125,9 @@ class << self
         arp_pkt.eth_daddr     = 'ff:ff:ff:ff:ff:ff'
         arp_pkt.arp_daddr_mac = '00:00:00:00:00:00'
         arp_pkt.arp_saddr_ip  = iface[:ip_saddr]
-        arp_pkt.arp_daddr_ip  = ip_address
+        arp_pkt.arp_daddr_ip  = ip_address.to_s
 
-        cap_thread = Thread.new do
+        cap_thread = Thread.new {
           Context.get.packets.push(arp_pkt)
 
           target_mac = nil
@@ -122,15 +140,16 @@ class << self
           )
 
           begin
-            Logger.debug 'Attempting to get MAC from packet capture ...'
+            Logger.debug "Attempting to get '#{ip_address}' MAC from packet capture ..."
             target_mac = Timeout::timeout(0.5) { get_mac_from_capture(cap, ip_address) }
           rescue Timeout::Error
-            timeout += 0.1
+            timeout += 0.5
             retry if target_mac.nil? && timeout <= 5
           end
 
           target_mac
-        end
+        }
+
         hw_address = cap_thread.value
 
         break unless hw_address.nil?
