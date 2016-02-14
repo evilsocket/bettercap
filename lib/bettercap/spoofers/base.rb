@@ -120,7 +120,7 @@ private
       if target.mac.nil?
         hw = Network.get_hw_address( @ctx.ifconfig, target.ip )
         if hw.nil?
-          Logger.warn "Couldn't determine target #{ip} MAC address!"
+          Logger.warn "Couldn't determine target #{target.ip} MAC address!"
           next
         else
           target.mac = hw
