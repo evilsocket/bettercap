@@ -16,7 +16,7 @@ module BetterCap
 # Handles various network related tasks.
 module Network
 class << self
-  IP_ADDRESS_REGEX = '\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}'
+  IP_ADDRESS_REGEX = '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
 
   # Return true if +ip+ is a valid IP address, otherwise false.
   def is_ip?(ip)
@@ -50,21 +50,16 @@ class << self
   # Return the current network gateway or nil.
   def get_gateway
     nstat = Shell.execute('netstat -nr')
+    iface = Context.get.options.iface
 
     Logger.debug "NETSTAT:\n#{nstat}"
 
-    out = nstat.split(/\n/).select {|n| n =~ /UG/ }
-    gw  = nil
-    out.each do |line|
-      if line.include?( Context.get.options.iface )
-        tmp = line.split[1]
-        if is_ip?(tmp)
-          gw = tmp
-          break
-        end
+    nstat.split(/\n/).select {|n| n =~ /UG/ }.each do |line|
+      if line =~ /^.+\s+(#{IP_ADDRESS_REGEX})\s+.+$/
+        return $1
       end
     end
-    gw
+    nil
   end
 
   # Return a list of IP addresses associated to this device network interfaces.
