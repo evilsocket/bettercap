@@ -17,6 +17,8 @@ module Proxy
 class Request
   # HTTP method.
   attr_reader :method
+  # HTTP version.
+  attr_reader :version
   # Request path + query.
   attr_reader :path
   # Hostname.
@@ -34,15 +36,16 @@ class Request
 
   # Initialize this object setting #port to +default_port+.
   def initialize( default_port = 80 )
-    @lines  = []
-    @method   = nil
-    @path    = nil
-    @host   = nil
-    @port   = default_port
-    @headers = {}
+    @lines          = []
+    @method         = nil
+    @version        = '1.1'
+    @path           = nil
+    @host           = nil
+    @port           = default_port
+    @headers        = {}
     @content_length = 0
-    @body   = nil
-    @client = ""
+    @body           = nil
+    @client         = ""
   end
 
   # Read lines from the +sock+ socket and parse them.
@@ -89,9 +92,11 @@ class Request
     Logger.debug "  REQUEST LINE: '#{line}'"
 
     # is this the first line '<VERB> <URI> HTTP/<VERSION>' ?
-    if line =~ /^(\w+)\s+(\S+)\s+HTTP\/[\d\.]+\s*$/
-      @method = $1
-      @path   = $2
+    if line =~ /^(\w+)\s+(\S+)\s+HTTP\/([\d\.]+)\s*$/
+      @method  = $1
+      @path    = $2
+      @version = $3
+
       # fix url
       if @path.include? '://'
         uri = URI::parse @path
@@ -133,7 +138,7 @@ class Request
 
   # Return a string representation of the HTTP request.
   def to_s
-    raw = "#{@method} #{@path} HTTP/1.1\n"
+    raw = "#{@method} #{@path} HTTP/#{@version}\n"
 
     @headers.each do |name,value|
       raw << "#{name}: #{value}\n"
