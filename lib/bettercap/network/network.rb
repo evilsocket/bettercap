@@ -55,8 +55,7 @@ class << self
     Logger.debug "NETSTAT:\n#{nstat}"
 
     nstat.split(/\n/).select {|n| n =~ /UG/ }.each do |line|
-      matches = line.scan(/(#{IP_ADDRESS_REGEX})/)
-      matches.each do |m|
+      line.scan(/(#{IP_ADDRESS_REGEX})/).each do |m|
         return m[0] unless m[0] == '0.0.0.0'
       end
     end
