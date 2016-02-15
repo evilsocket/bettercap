@@ -26,15 +26,15 @@ class Streamer
   # Return true if the +request+ was stripped.
   def was_stripped?(request, client)
     if @ctx.options.sslstrip
-      request.client, _ = get_client_details( !( request.port == 443 ), client )
+      request.client, _ = get_client_details( client )
       return @sslstrip.was_stripped?(request)
     end
     false
   end
 
   # Redirect the +client+ to a funny video.
-  def rickroll( client, is_https )
-    client_ip, client_port = get_client_details( is_https, client )
+  def rickroll( client )
+    client_ip, client_port = get_client_details( client )
 
     Logger.warn "#{client_ip}:#{client_port} is connecting to us directly."
 
@@ -44,8 +44,7 @@ class Streamer
   # Handle the HTTP +request+ from +client+.
   def handle( request, client, redirects = 0 )
     response = Response.new
-    is_https = request.port == 443
-    request.client, _ = get_client_details( is_https, client )
+    request.client, _ = get_client_details( client )
 
     Logger.debug "Handling #{request.method} request from #{request.client} ..."
 
@@ -96,13 +95,8 @@ class Streamer
   private
 
   # Return the +client+ ip address and port.
-  def get_client_details( is_https, client )
-    unless is_https
-      client_port, client_ip = Socket.unpack_sockaddr_in(client.getpeername)
-    else
-      _, client_port, _, client_ip = client.peeraddr
-    end
-
+  def get_client_details( client )
+    _, client_port, _, client_ip = client.peeraddr
     [ client_ip, client_port ]
   end
 

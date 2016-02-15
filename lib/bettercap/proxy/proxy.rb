@@ -126,7 +126,7 @@ class Proxy
         @streamer.handle( request, client )
       # someone is having fun with us =)
       elsif is_self_request? request
-        @streamer.rickroll( client, @is_https )
+        @streamer.rickroll( client )
       # handle request
       else
         @streamer.handle( request, client )
