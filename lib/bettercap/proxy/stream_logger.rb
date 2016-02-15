@@ -48,8 +48,6 @@ class StreamLogger
   # Given +proto+ and +port+ return the network service name if possible.
   def self.service( proto, port )
     if @@services.nil?
-      Logger.info 'Preloading network services ...'
-
       @@services = { :tcp => {}, :udp => {} }
       filename = File.dirname(__FILE__) + '/../network/services'
       File.open( filename ).each do |line|
