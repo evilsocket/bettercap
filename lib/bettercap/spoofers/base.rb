@@ -106,7 +106,7 @@ private
 
   # Get the MAC address of the gateway and update it.
   def update_gateway!
-    hw = Network.get_hw_address( @ctx.ifconfig, @ctx.gateway )
+    hw = Network.get_hw_address( @ctx, @ctx.gateway )
     raise BetterCap::Error, "Couldn't determine router MAC" if hw.nil?
     @gateway = Network::Target.new( @ctx.gateway, hw )
 
@@ -118,7 +118,7 @@ private
     @ctx.targets.each do |target|
       # targets could change, update mac addresses if needed
       if target.mac.nil?
-        hw = Network.get_hw_address( @ctx.ifconfig, target.ip )
+        hw = Network.get_hw_address( @ctx, target.ip )
         if hw.nil?
           Logger.warn "Couldn't determine target #{target.ip} MAC address!"
           next

@@ -19,7 +19,7 @@ module Agents
 class Icmp
   # Create a thread which will perform a ping-sweep on the network in order
   # to populate the ARP cache with active targets.
-  def initialize( ctx )
+  def initialize( ctx, address = nil )
     Firewalls::Base.get.enable_icmp_bcast(true)
 
     # TODO: Use the real broadcast address for this network.

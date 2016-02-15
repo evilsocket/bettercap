@@ -113,71 +113,25 @@ class << self
 
   # Return the hardware address associated with the specified +ip_address+ using
   # the +iface+ network interface.
-  # The resolution will be performed for the specified number of +attempts+.
-  def get_hw_address( iface, ip_address, attempts = 2 )
-    hw_address = ArpReader.find_address( ip_address )
-
-    if hw_address.nil?
-      attempts.times do
-        arp_pkt = PacketFu::ARPPacket.new
-
-        arp_pkt.eth_saddr     = arp_pkt.arp_saddr_mac = iface[:eth_saddr]
-        arp_pkt.eth_daddr     = 'ff:ff:ff:ff:ff:ff'
-        arp_pkt.arp_daddr_mac = '00:00:00:00:00:00'
-        arp_pkt.arp_saddr_ip  = iface[:ip_saddr]
-        arp_pkt.arp_daddr_ip  = ip_address.to_s
-
-        cap_thread = Thread.new {
-          Context.get.packets.push(arp_pkt)
-
-          target_mac = nil
-          timeout = 0
-
-          cap = PacketFu::Capture.new(
-            iface: iface[:iface],
-            start: true,
-            filter: "arp src #{ip_address} and ether dst #{arp_pkt.eth_saddr}"
-          )
-
-          begin
-            Logger.debug "Attempting to get '#{ip_address}' MAC from packet capture ..."
-            target_mac = Timeout::timeout(0.5) { get_mac_from_capture(cap, ip_address) }
-          rescue Timeout::Error
-            timeout += 0.5
-            retry if target_mac.nil? && timeout <= 5
-          end
-
-          target_mac
-        }
-
-        hw_address = cap_thread.value
-
-        break unless hw_address.nil?
-      end
+  def get_hw_address( ctx, ip )
+    hw = ArpReader.find_address( ip )
+    if hw.nil?
+      start_agents( ctx, ip )
+      hw = ArpReader.find_address( ip )
     end
-
-    hw_address
+    hw
   end
 
   private
 
   # Start discovery agents and wait for +ctx.timeout+ seconds for them to
   # complete their job.
-  def start_agents( ctx )
+  # If +address+ is not nil only that ip will be probed.
+  def start_agents( ctx, address = nil )
     [ 'Icmp', 'Udp', 'Arp' ].each do |name|
-      BetterCap::Loader.load("BetterCap::Discovery::Agents::#{name}").new(ctx)
+      BetterCap::Loader.load("BetterCap::Discovery::Agents::#{name}").new(ctx, address)
     end
     ctx.packets.wait_empty( ctx.timeout )
-  end
-
-  # Search for the MAC address associated to +ip_address+ inside the +cap+
-  # PacketFu::Capture object.
-  def get_mac_from_capture( cap, ip_address )
-    cap.stream.each do |p|
-      arp_response = PacketFu::Packet.parse(p)
-      target_mac = arp_response.arp_saddr_mac if arp_response.arp_saddr_ip == ip_address
-      break target_mac unless target_mac.nil?
-    end
   end
 
 end

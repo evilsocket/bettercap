@@ -18,18 +18,26 @@ module Agents
 # Base class for BetterCap::Discovery::Agents.
 class Base
   # Initialize the agent using the +ctx+ BetterCap::Context instance.
-  def initialize( ctx )
+  # If +address+ is not nil only that ip will be probed.
+  def initialize( ctx, address = nil )
     @ctx       = ctx
     @ifconfig  = ctx.ifconfig
     @local_ip  = @ifconfig[:ip_saddr]
+    @address   = address
 
-    net = ip = @ifconfig[:ip4_obj]
-    # loop each ip in our subnet and push it to the queue
-    while net.include?ip
-      unless skip_address?(ip)
-        @ctx.packets.push( get_probe(ip) )
+    if @address.nil?
+      net = ip = @ifconfig[:ip4_obj]
+      # loop each ip in our subnet and push it to the queue
+      while net.include?ip
+        unless skip_address?(ip)
+          @ctx.packets.push( get_probe(ip) )
+        end
+        ip = ip.succ
       end
-      ip = ip.succ
+    else
+      unless skip_address?(@address)
+        @ctx.packets.push( get_probe(@address) )
+      end
     end
   end
 
