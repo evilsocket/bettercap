@@ -126,7 +126,7 @@ class StreamLogger
       msg << "\n[#{'BODY'.green}]\n\n"
 
       case request['Content-Type']
-      when 'application/x-www-form-urlencoded'
+      when /application\/x-www-form-urlencoded.*/i
         msg << self.dump_form( request )
 
       when 'gzip'
