@@ -45,7 +45,7 @@ class Proxy
 
     BasicSocket.do_not_reverse_lookup = true
 
-    @pool = ThreadPool.new( 4, 16 ) do |client|
+    @pool = ThreadPool.new( 4, 64 ) do |client|
        client_worker client
     end
   end
