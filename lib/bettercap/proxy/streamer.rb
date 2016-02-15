@@ -26,7 +26,7 @@ class Streamer
   # Return true if the +request+ was stripped.
   def was_stripped?(request, client)
     if @ctx.options.sslstrip
-      request.client, request.client_port = get_client_details( !( request.port == 443 ), client )
+      request.client, _ = get_client_details( !( request.port == 443 ), client )
       return @sslstrip.was_stripped?(request)
     end
     false
@@ -45,9 +45,9 @@ class Streamer
   def handle( request, client, redirects = 0 )
     response = Response.new
     is_https = request.port == 443
-    request.client, request.client_port = get_client_details( is_https, client )
+    request.client, _ = get_client_details( is_https, client )
 
-    Logger.debug "Handling #{request.verb} request from #{request.client}:#{request.client_port} ..."
+    Logger.debug "Handling #{request.method} request from #{request.client} ..."
 
     begin
       r = nil
@@ -59,7 +59,7 @@ class Streamer
         # call modules on_pre_request
         @processor.call( request, nil )
 
-        self.send( "do_#{request.verb}", request, response )
+        self.send( "do_#{request.method}", request, response )
       else
         response = r
       end
@@ -67,7 +67,7 @@ class Streamer
       if response.textual?
         StreamLogger.log_http( request, response )
       else
-        Logger.debug "[#{request.client}] -> #{request.host}#{request.url} [#{response.code}]"
+        Logger.debug "[#{request.client}] -> #{request.to_url} [#{response.code}]"
       end
 
       if @ctx.options.sslstrip
@@ -87,7 +87,8 @@ class Streamer
 
       client.write response.to_s
     rescue NoMethodError => e
-      Logger.warn "Could not handle #{request.verb} request from #{request.client}:#{request.client_port} ..."
+      Logger.warn "Could not handle #{request.method} request from #{request.client} ..."
+      puts request.to_s
       Logger.exception e
     end
   end
@@ -108,7 +109,7 @@ class Streamer
   # Use a Net::HTTP object in order to perform the +req+ BetterCap::Proxy::Request
   # object, will return a BetterCap::Proxy::Response object instance.
   def perform_proxy_request(req, res)
-    path         = req.url
+    path         = req.path
     response     = nil
     http         = Net::HTTP.new( req.host, req.port )
     http.use_ssl = ( req.port == 443 )

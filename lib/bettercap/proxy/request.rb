@@ -15,12 +15,10 @@ module BetterCap
 module Proxy
 # HTTP request parser.
 class Request
-  # Patched request lines.
-  attr_reader :lines
-  # HTTP verb.
-  attr_reader :verb
-  # Request URL.
-  attr_reader :url
+  # HTTP method.
+  attr_reader :method
+  # Request path + query.
+  attr_reader :path
   # Hostname.
   attr_reader :host
   # Request port.
@@ -33,21 +31,18 @@ class Request
   attr_accessor :body
   # Client address.
   attr_accessor :client
-  # Client port.
-  attr_accessor :client_port
 
   # Initialize this object setting #port to +default_port+.
   def initialize( default_port = 80 )
     @lines  = []
-    @verb   = nil
-    @url    = nil
+    @method   = nil
+    @path    = nil
     @host   = nil
     @port   = default_port
     @headers = {}
     @content_length = 0
     @body   = nil
     @client = ""
-    @client_port = 0
   end
 
   # Read lines from the +sock+ socket and parse them.
@@ -94,55 +89,62 @@ class Request
     Logger.debug "  REQUEST LINE: '#{line}'"
 
     # is this the first line '<VERB> <URI> HTTP/<VERSION>' ?
-    if @url.nil? and line =~ /^(\w+)\s+(\S+)\s+HTTP\/[\d\.]+\s*$/
-      @verb    = $1
-      @url     = $2
-
+    if line =~ /^(\w+)\s+(\S+)\s+HTTP\/[\d\.]+\s*$/
+      @method = $1
+      @path   = $2
       # fix url
-      if @url.include? '://'
-        uri = URI::parse @url
-        @url = "#{uri.path}" + ( uri.query ? "?#{uri.query}" : '' )
+      if @path.include? '://'
+        uri = URI::parse @path
+        @path = "#{uri.path}" + ( uri.query ? "?#{uri.query}" : '' )
       end
 
-      line = "#{@verb} #{@url} HTTP/1.1"
-    # get the host header value
-    elsif line =~ /^Host:\s*(.*)$/
-      @host = $1
-      if host =~ /([^:]*):([0-9]*)$/
-        @host = $1
-        @port = $2.to_i
+    # collect and fix headers
+    elsif line =~ /^([^:\s]+)\s*:\s*(.+)$/i
+      name = $1
+      value = $2
+
+      case name
+      when 'Host'
+        @host = value
+        if @host =~ /([^:]*):([0-9]*)$/
+          @host = $1
+          @port = $2.to_i
+        end
+      when 'Content-Length'
+        @content_length = value.to_i
+      # we don't want to have hundreds of threads running
+      when 'Connection'
+        value = 'close'
+      when 'Proxy-Connection'
+        name = 'Connection'
+      # disable gzip, chunked, etc encodings
+      when 'Accept-Encoding'
+        value = 'identity'
       end
-    # parse content length, this will speed up data streaming
-    elsif line =~ /^Content-Length:\s+(\d+)\s*$/i
-      @content_length = $1.to_i
-    # we don't want to have hundreds of threads running
-    elsif line =~ /^Connection: keep-alive/i
-      line = 'Connection: close'
-    elsif line =~ /^Proxy-Connection: (.+)/i
-      line = "Connection: #{$1}"
-    # disable gzip, chunked, etc encodings
-    elsif line =~ /^Accept-Encoding:.*/i
-      line = 'Accept-Encoding: identity'
-    end
 
-    # collect headers
-    if line =~ /^([^:\s]+)\s*:\s*(.+)$/i
-      @headers[$1] = $2
+      @headers[name] = value
     end
-
-    @lines << line
   end
 
   # Return true if this is a POST request, otherwise false.
   def post?
-    @verb == 'POST'
+    @method == 'POST'
   end
 
   # Return a string representation of the HTTP request.
   def to_s
-    @lines.join("\n") + "\n" + ( @body || '' )
+    raw = "#{@method} #{@path} HTTP/1.1\n"
+
+    @headers.each do |name,value|
+      raw << "#{name}: #{value}\n"
+    end
+
+    raw << "\n"
+    raw << ( @body || '' )
+    raw
   end
 
+  # Return SCHEMA://HOST/
   def base_url
     schema = if port == 443 then 'https' else 'http' end
     "#{schema}://#{@host}/"
@@ -151,7 +153,7 @@ class Request
   # Return the full request URL trimming it at +max_length+ characters.
   def to_url(max_length = 50)
     schema = if port == 443 then 'https' else 'http' end
-    url = "#{schema}://#{@host}#{@url}"
+    url = "#{schema}://#{@host}#{@path}"
     unless max_length.nil?
       url = url.slice(0..max_length) + '...' unless url.length <= max_length
     end
@@ -160,37 +162,23 @@ class Request
 
   # Return the value of header with +name+ or an empty string.
   def [](name)
-    if @headers.include?(name) then @headers[name] else "" end
+    ( @headers.has_key?(name) ? @headers[name] : "" )
   end
 
   # If the header with +name+ is found, then a +value+ is assigned to it.
   # If +value+ is null and the header is found, it will be removed.
   def []=(name, value)
-    found = false
-    @lines.each_with_index do |line,i|
-      if line =~ /^#{name}:\s*.+$/i
-        found = true
-        if value.nil?
-          @headers.delete(name)
-          @lines.delete_at(i)
-        else
-          @headers[name] = value
-          @lines[i] = "#{name}: #{value}"
-        end
-        break
+    if @headers.has_key?(name)
+      if value.nil?
+        @headers.delete(name)
+      else
+        @headers[name] = value
       end
-    end
-
-    if name == 'Host'
-      @host = value
-    end
-
-    if !found and !value.nil?
+    elsif !value.nil?
       @headers[name] = value
-      @lines << "#{name}: #{value}"
     end
 
-    @lines.reject!(&:empty?)
+    @host = value if name == 'Host'
   end
 end
 end

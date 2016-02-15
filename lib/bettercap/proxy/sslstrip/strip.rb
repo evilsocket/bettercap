@@ -165,7 +165,7 @@ class Strip
     unless @cookies.is_clean?(request)
       Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Sending expired cookies for '#{request.host}'."
       expired = @cookies.get_expired_headers!(request)
-      response = Response.redirect( "http://#{request.host}#{request.url}", expired )
+      response = Response.redirect( request.to_url(nil), expired )
     end
     response
   end
@@ -205,7 +205,7 @@ class Strip
 
   # Return true if +request+ is a favicon request.
   def is_favicon?(request)
-    ( request.url.include?('.ico') or request.url.include?('favicon') )
+    ( request.path.include?('.ico') or request.path.include?('favicon') )
   end
 
   # If the +response+ is a redirect to a HTTPS location, patch the +response+ and

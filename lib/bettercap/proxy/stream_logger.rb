@@ -146,8 +146,6 @@ class StreamLogger
   # Log a HTTP ( HTTPS if +is_https+ is true ) stream performed by the +client+
   # with the +request+ and +response+ most important informations.
   def self.log_http( request, response )
-    is_https   = request.port == 443
-    request_s  = "#{is_https ? 'https' : 'http'}://#{request.host}#{request.url}"
     response_s = "( #{response.content_type} )"
     request_s  = request.to_url( request.post?? nil : @@MAX_REQ_SIZE )
     code       = response.code[0]
@@ -158,7 +156,7 @@ class StreamLogger
       response_s += " [#{response.code}]"
     end
 
-    Logger.raw "[#{self.addr2s(request.client)}] #{request.verb.light_blue} #{request_s} #{response_s}"
+    Logger.raw "[#{self.addr2s(request.client)}] #{request.method.light_blue} #{request_s} #{response_s}"
     # Log post body if the POST sniffer is enabled.
     if Context.get.post_sniffer_enabled?
       self.log_post( request )
