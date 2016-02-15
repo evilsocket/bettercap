@@ -139,6 +139,8 @@ class Proxy
       Logger.exception e
     rescue Errno::EPIPE => ep
       Logger.debug "Connection closed while serving client."
+    rescue EOFError => eof
+      Logger.debug "EOFError while serving client."
     rescue Exception => e
       Logger.warn "Error while serving client: #{e.message}"
       Logger.exception e
