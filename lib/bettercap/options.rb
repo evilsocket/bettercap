@@ -468,7 +468,6 @@ class Options
         valid << Network::Target.new(t)
 
       elsif Network.is_range?(t)
-        #tmp = IPAddr.new(t)
         first, last_part = t.split('-')
         last = first.split('.')[0..2].join('.') + ".#{last_part}"
         first = IPAddr.new(first)
