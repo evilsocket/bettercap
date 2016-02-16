@@ -35,7 +35,10 @@ class Base
         ip = ip.succ
       end
     else
-      unless skip_address?(@address)
+      if skip_address?(@address)
+        Logger.debug "Skipping #{@address} ..."
+      else
+        Logger.debug "Probing #{@address} ..."
         @ctx.packets.push( get_probe(@address) )
       end
     end
@@ -46,11 +49,20 @@ class Base
   # Return true if +ip+ must be skipped during discovery, otherwise false.
   def skip_address?(ip)
     # don't send probes to the gateway
-    ( ip == @ctx.gateway or \
-      # don't send probes to our device
-      ip == @local_ip or \
-      # don't stress endpoints we already discovered
-      !@ctx.find_target( ip.to_s, nil ).nil? )
+    if ip == @ctx.gateway
+      return true
+    # don't send probes to our device
+    elsif ip == @local_ip
+      return true
+    # don't stress endpoints we already discovered
+    else
+      target = @ctx.find_target( ip.to_s, nil )
+      # known target?
+      return false if target.nil?
+      # do we still need to get the mac for this target?
+      return ( target.mac.nil?? false : true )
+    end
+
   end
 
   # Each Discovery::Agent::Base derived class should implement this method.
