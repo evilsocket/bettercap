@@ -18,10 +18,12 @@ module Servers
 
 # Class to wrap RubyDNS::RuleBasedServer and add some utility methods.
 class DnsWrapper < RubyDNS::RuleBasedServer
+  # List of redirection rules.
   attr_accessor :rules
-
+  # we need this in order to add rules at runtime.
   @@instance = nil
 
+  # Return the active instance of this object.
   def self.get
     @@instance
   end
@@ -69,6 +71,7 @@ class DNSD
     end
   end
 
+  # Add a rule to the DNS resolver at runtime.
   def add_rule( exp, addr )
     Logger.debug "[#{'DNS'.green}] Adding rule: '#{exp}' -> '#{addr}' ..."
     block = Proc.new do |transaction|
