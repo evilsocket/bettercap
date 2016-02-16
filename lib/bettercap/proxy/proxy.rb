@@ -98,6 +98,9 @@ class Proxy
     while @running do
       begin
         @pool << @server.accept
+      rescue OpenSSL::SSL::SSLError => se
+        Logger.debug("Error while accepting #{@type} connection.")
+        Logger.exception(se)
       rescue Exception => e
         Logger.warn("Error while accepting #{@type} connection: #{e.inspect}") if @running
       end
