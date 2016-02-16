@@ -368,7 +368,7 @@ class Options
     ctx.options.starting_message
 
     unless ctx.options.gateway.nil?
-      raise BetterCap::Error, "The specified gateway '#{ctx.options.gateway}' is not a valid IPv4 address." unless Network.is_ip?(ctx.options.gateway)
+      raise BetterCap::Error, "The specified gateway '#{ctx.options.gateway}' is not a valid IPv4 address." unless Network::Validator.is_ip?(ctx.options.gateway)
       ctx.gateway = ctx.options.gateway
       Logger.debug("Targetting manually specified gateway #{ctx.gateway}")
     end
@@ -418,7 +418,7 @@ class Options
   # or more invalid IP addresses are specified.
   def parse_ignore!(value)
     @ignore = value.split(",")
-    valid = @ignore.select { |target| Network.is_ip?(target) }
+    valid = @ignore.select { |target| Network::Validator.is_ip?(target) }
 
     raise BetterCap::Error, "Invalid ignore addresses specified." if valid.empty?
 
@@ -435,7 +435,7 @@ class Options
   # Setter for the #custom_proxy or #custom_https_proxy attribute, will raise a
   # BetterCap::Error if +value+ is not a valid IP address.
   def parse_custom_proxy!(value, https=false)
-    raise BetterCap::Error, 'Invalid custom HTTP upstream proxy address specified.' unless Network.is_ip?(value)
+    raise BetterCap::Error, 'Invalid custom HTTP upstream proxy address specified.' unless Network::Validator.is_ip?(value)
     if https
       @custom_proxy = value
     else
@@ -464,26 +464,19 @@ class Options
     targets = @target.split(",")
 
     targets.each do |t|
-      if Network.is_ip?(t) or Network.is_mac?(t)
+      if Network::Validator.is_ip?(t) or Network::Validator.is_mac?(t)
         valid << Network::Target.new(t)
 
-      elsif Network.is_range?(t)
-        first, last_part = t.split('-')
-        last = first.split('.')[0..2].join('.') + ".#{last_part}"
-        first = IPAddr.new(first)
-        last  = IPAddr.new(last)
-
-        loop do
-          valid << Network::Target.new(first.to_s)
-          break if first == last
-          first = first.succ
+      elsif Network::Validator.is_range?(t)
+        Network::Validator.each_in_range( t ) do |address|
+          valid << Network::Target.new(address)
         end
 
-      elsif Network.is_netmask?(t)
-        mask = IPAddr.new(t)
-        mask.to_range.each do |o|
-          valid << Network::Target.new(o.to_s)
+      elsif Network::Validator.is_netmask?(t)
+        Network::Validator.each_in_netmask(t) do |address|
+          valid << Network::Target.new(address)
         end
+
       else
         raise BetterCap::Error, "Invalid target specified '#{t}', valid formats are IP addresses, "\
                                 "MAC addresses, IP ranges ( 192.168.1.1-30 ) or netmasks ( 192.168.1.1/24 ) ."
@@ -497,8 +490,7 @@ class Options
   # BetterCap::Error if an invalid spoofer name was specified.
   def parse_spoofers
     spoofers = []
-    spoofer_modules_names = @spoofer.split(",")
-    spoofer_modules_names.each do |module_name|
+    @spoofer.split(",").each do |module_name|
       spoofers << Spoofers::Base.get_by_name( module_name )
     end
     spoofers

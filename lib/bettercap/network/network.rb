@@ -16,37 +16,6 @@ module BetterCap
 # Handles various network related tasks.
 module Network
 class << self
-  IP_ADDRESS_REGEX = '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
-
-  # Return true if +ip+ is a valid IP address, otherwise false.
-  def is_ip?(ip)
-    if /\A(#{IP_ADDRESS_REGEX})\Z/ =~ ip.to_s
-      return $~.captures.all? {|i| i.to_i < 256}
-    end
-    false
-  end
-
-  # Return true if +r+ is a valid IP address range ( 192.168.1.1-93 ), otherwise false.
-  def is_range?(r)
-    if /\A(#{IP_ADDRESS_REGEX})\-(\d{1,3})\Z/ =~ r.to_s
-      return $~.captures.all? {|i| i.to_i < 256}
-    end
-    false
-  end
-
-  # Return true if +n+ is a valid IP netmask range ( 192.168.1.1/24 ), otherwise false.
-  def is_netmask?(n)
-    if /\A(#{IP_ADDRESS_REGEX})\/(\d+)\Z/ =~ n.to_s
-      return $~.captures.all? {|i| i.to_i < 256}
-    end
-    false
-  end
-
-  # Return true if +mac+ is a valid MAC address, otherwise false.
-  def is_mac?(mac)
-    ( /^[a-f0-9]{1,2}\:[a-f0-9]{1,2}\:[a-f0-9]{1,2}\:[a-f0-9]{1,2}\:[a-f0-9]{1,2}\:[a-f0-9]{1,2}$/i =~ mac.to_s )
-  end
-
   # Return the current network gateway or nil.
   def get_gateway
     nstat = Shell.execute('netstat -nr')
@@ -55,8 +24,8 @@ class << self
     Logger.debug "NETSTAT:\n#{nstat}"
 
     nstat.split(/\n/).select {|n| n =~ /UG/ }.each do |line|
-      line.scan(/(#{IP_ADDRESS_REGEX})/).each do |m|
-        return m[0] unless m[0] == '0.0.0.0'
+      Network::Validator.each_ip(line) do |address|
+        return address
       end
     end
     nil
@@ -128,7 +97,7 @@ class << self
     end
     ctx.packets.wait_empty( ctx.timeout )
   end
-
 end
+
 end
 end

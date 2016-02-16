@@ -10,7 +10,6 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require 'bettercap/logger'
 require 'socket'
 
 module BetterCap
@@ -45,13 +44,15 @@ class Target
   # ip address will be parsed from the computer ARP cache and updated
   # accordingly.
   def initialize( ip, mac=nil )
-    if Network.is_ip?(ip)
-      @ip = ip
+    if Network::Validator.is_ip?(ip)
+      @ip         = ip
       @ip_refresh = false
-    else
+    elsif Network::Validator.is_mac?(ip)
       @ip         = nil
       mac         = ip
       @ip_refresh = true
+    else
+      raise BetterCap::Error, "'#{ip}' is not a valid IP or MAC address."
     end
 
     @mac      = Target.normalized_mac(mac) unless mac.nil?

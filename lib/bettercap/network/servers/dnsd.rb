@@ -108,7 +108,8 @@ class DNSD
           address = Context.get.ifconfig[:ip_saddr].to_s
         end
 
-        raise BetterCap::Error, "Invalid IPv4 address '#{address}' on line #{lineno + 1} of '#{filename}'." unless Network.is_ip?(address)
+        raise BetterCap::Error, "Invalid IPv4 address '#{address}' on line #{lineno + 1} of '#{filename}'." \
+          unless Network::Validator.is_ip?(address)
 
         begin
           hosts[ Regexp.new(expression) ] = address
