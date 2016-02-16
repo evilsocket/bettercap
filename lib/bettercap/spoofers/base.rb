@@ -109,7 +109,7 @@ private
     hw = Network.get_hw_address( @ctx, @ctx.gateway )
     raise BetterCap::Error, "Couldn't determine router MAC" if hw.nil?
     @gateway = Network::Target.new( @ctx.gateway, hw )
-
+    @ctx.gateway_mac_resolved = true
     Logger.info "[#{'GATEWAY'.green}] #{@gateway.to_s(false)}"
   end
 
