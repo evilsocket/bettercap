@@ -367,6 +367,11 @@ class Options
 
     ctx.options.starting_message
 
+    if ctx.options.sslstrip and ctx.options.dnsd
+      raise BetterCap::Error, "SSL Stripping and builtin DNS server are mutually exclusive features, " \
+                              "either use the --no-sslstrip option or remove the --dns option."
+    end
+
     unless ctx.options.gateway.nil?
       raise BetterCap::Error, "The specified gateway '#{ctx.options.gateway}' is not a valid IPv4 address." unless Network::Validator.is_ip?(ctx.options.gateway)
       ctx.gateway = ctx.options.gateway

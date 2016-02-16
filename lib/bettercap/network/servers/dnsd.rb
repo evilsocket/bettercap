@@ -18,10 +18,19 @@ module Servers
 
 # Class to wrap RubyDNS::RuleBasedServer and add some utility methods.
 class DnsWrapper < RubyDNS::RuleBasedServer
+  attr_accessor :rules
+
+  @@instance = nil
+
+  def self.get
+    @@instance
+  end
+
   # Instantiate a server with a block.
   def initialize(options = {}, &block)
     super(options,&block)
     @rules = options[:rules]
+    @@instance = self
   end
   # Give a name and a record type, try to match a rule and use it for processing the given arguments.
   def process(name, resource_class, transaction)
@@ -35,7 +44,7 @@ class DNSD
   # Initialize the DNS server with the specified +address+ and tcp/udp +port+.
   # The server will load +hosts_filename+ composed by 'regexp -> ip' entries
   # to do custom DNS spoofing/resolution.
-  def initialize( hosts_filename, address = '0.0.0.0', port = 5300 )
+  def initialize( hosts_filename = nil, address = '0.0.0.0', port = 5300 )
     @port    = port
     @address = address
     @server  = nil
@@ -46,16 +55,28 @@ class DNSD
       [:tcp, address, port]
     ]
 
-    DNSD.parse_hosts( hosts_filename ).each do |exp,addr|
-      block = Proc.new do |transaction|
-        Logger.info "[#{transaction.options[:peer]} > #{'DNS'.green}] Received request for '#{transaction.question.to_s.yellow}', sending spoofed reply #{addr.yellow} ..."
-        transaction.respond!(addr)
+    unless hosts_filename.nil?
+      DNSD.parse_hosts( hosts_filename ).each do |exp,addr|
+        block = Proc.new do |transaction|
+          Logger.info "[#{transaction.options[:peer]} > #{'DNS'.green}] Received request for '#{transaction.question.to_s.yellow}', sending spoofed reply #{addr.yellow} ..."
+          transaction.respond!(addr)
+        end
+
+        @rules << RubyDNS::RuleBasedServer::Rule.new( [ exp, Resolv::DNS::Resource::IN::A ], block )
       end
 
-      @rules << RubyDNS::RuleBasedServer::Rule.new( [ exp, Resolv::DNS::Resource::IN::A ], block )
+      Logger.warn "Empty hosts file for DNS server." if @rules.empty?
+    end
+  end
+
+  def add_rule( exp, addr )
+    Logger.debug "[#{'DNS'.green}] Adding rule: '#{exp}' -> '#{addr}' ..."
+    block = Proc.new do |transaction|
+      Logger.info "[#{transaction.options[:peer]} > #{'DNS'.green}] Received request for '#{transaction.question.to_s.yellow}', sending spoofed reply #{addr.yellow} ..."
+      transaction.respond!(addr)
     end
 
-    Logger.warn "Empty hosts file for DNS server." if @rules.empty?
+    DnsWrapper.get.rules << RubyDNS::RuleBasedServer::Rule.new( [ Regexp.new(exp), Resolv::DNS::Resource::IN::A ], block )
   end
 
   # Start the server.
@@ -63,7 +84,14 @@ class DNSD
     Logger.info "[#{'DNS'.green}] Starting on #{@address}:#{@port} ( #{@rules.size} redirection rule#{if @rules.size > 1 then 's' else '' end} ) ..."
 
     @thread = Thread.new {
-      RubyDNS::run_server(:listen => @ifaces, :asynchronous => true, :server_class => DnsWrapper, :rules => @rules ) do
+      options = {
+        :listen => @ifaces,
+        :asynchronous => true,
+        :server_class => DnsWrapper,
+        :rules => @rules
+      }
+
+      RubyDNS::run_server( options ) do
         # Suppress RubyDNS logging.
         @logger.level = ::Logger::ERROR
         @upstream ||= RubyDNS::Resolver.new([[:udp, "8.8.8.8", 53], [:tcp, "8.8.8.8", 53]])

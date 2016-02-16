@@ -39,6 +39,16 @@ class StrippedObject
     @stripped = stripped
   end
 
+  # Return the #original hostname.
+  def original_hostname
+    URI::parse(@original).hostname
+  end
+
+  # Return the #stripped hostname.
+  def stripped_hostname
+    URI::parse(@stripped).hostname
+  end
+
   # Return a normalized version of +url+.
   def self.normalize( url, schema = 'https' )
     # add schema if needed
@@ -95,6 +105,8 @@ class Strip
     @stripped = []
     @cookies  = CookieMonitor.new
     @favicon  = Response.from_file( File.dirname(__FILE__) + '/lock.ico', 'image/x-icon' )
+    @resolver = BetterCap::Network::Servers::DNSD.new
+    @resolver.start
   end
 
   # Return true if the +request+ was stripped.
@@ -227,7 +239,7 @@ class Strip
     if response['Location'].start_with?('https://')
       original, stripped = StrippedObject.process( response['Location'] )
 
-      @stripped << StrippedObject.new( request.client, original, stripped )
+      add_stripped_object StrippedObject.new( request.client, original, stripped )
 
       # If MAX_REDIRECTS is reached, the 'Location' header will be used.
       response['Location'] = stripped
@@ -275,10 +287,18 @@ class Strip
 
       links.each do |l|
         original, stripped = l
-        @stripped << StrippedObject.new( request.client, original, stripped )
+        add_stripped_object StrippedObject.new( request.client, original, stripped )
         response.body.gsub!( original, stripped )
       end
     end
+  end
+
+  private
+
+  def add_stripped_object( o )
+    @stripped << o
+    # make sure we're able to resolve the stripped domain
+    @resolver.add_rule( o.stripped_hostname, IPSocket.getaddress( o.original_hostname ) )
   end
 end
 
