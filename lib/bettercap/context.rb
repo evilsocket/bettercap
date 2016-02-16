@@ -25,6 +25,7 @@ class Context
   attr_accessor :firewall
   # Network gateway IP address.
   attr_accessor :gateway
+  # A boolean value indicating if the gateway mac address was already resolved.
   attr_accessor :gateway_mac_resolved
   # A list of BetterCap::Target objects which is periodically updated.
   attr_accessor :targets

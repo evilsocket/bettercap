@@ -48,9 +48,9 @@ class Base
 
   # Return true if +ip+ must be skipped during discovery, otherwise false.
   def skip_address?(ip)
-    # don't send probes to the gateway
-    if ip == @ctx.gateway and @ctx.gateway_mac_resolved
-      return true
+    # don't send probes to the gateway if we already have its MAC.
+    if ip == @ctx.gateway
+      return @ctx.gateway_mac_resolved
     # don't send probes to our device
     elsif ip == @local_ip
       return true
