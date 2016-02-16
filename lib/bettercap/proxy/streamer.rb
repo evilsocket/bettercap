@@ -76,7 +76,7 @@ class Streamer
           if redirects < SSLStrip::Strip::MAX_REDIRECTS
             return self.handle( request, client, redirects + 1 )
           else
-            Logger.info "[#{'SSLSTRIP'.yellow} #{request.client}] Detected HTTPS redirect loop for '#{request.host}'."
+            Logger.info "[#{'SSLSTRIP'.red} #{request.client}] Detected HTTPS redirect loop for '#{request.host}'."
           end
         end
       end
@@ -87,7 +87,6 @@ class Streamer
       client.write response.to_s
     rescue NoMethodError => e
       Logger.warn "Could not handle #{request.method} request from #{request.client} ..."
-      puts request.to_s
       Logger.exception e
     end
   end

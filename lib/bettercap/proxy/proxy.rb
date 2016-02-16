@@ -46,7 +46,12 @@ class Proxy
     BasicSocket.do_not_reverse_lookup = true
 
     @pool = ThreadPool.new( 4, 64 ) do |client|
+      begin
        client_worker client
+      rescue Exception => e
+        Logger.warn "Client worker errort: #{e.message}"
+        Logger.exception e
+      end
     end
   end
 
@@ -112,7 +117,10 @@ class Proxy
   # Return true if the +request+ host header contains one of this computer
   # ip addresses.
   def is_self_request?(request)
-    @local_ips.include? IPSocket.getaddress(request.host)
+    begin
+      return @local_ips.include? IPSocket.getaddress(request.host)
+    rescue; end
+    false
   end
 
   # Handle a new +client+.
@@ -123,6 +131,8 @@ class Proxy
       Logger.debug 'Reading request ...'
 
       request.read(client)
+
+      Logger.debug 'Request parsed.'
 
       # stripped request
       if @streamer.was_stripped?( request, client )
@@ -138,8 +148,8 @@ class Proxy
       Logger.debug "#{@type} client served."
 
     rescue SocketError => se
-      Logger.debug "Socket error while serving client: #{e.message}"
-      Logger.exception e
+      Logger.debug "Socket error while serving client: #{se.message}"
+      # Logger.exception se
     rescue Errno::EPIPE => ep
       Logger.debug "Connection closed while serving client."
     rescue EOFError => eof

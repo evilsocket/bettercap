@@ -63,7 +63,7 @@ class PacketQueue
   def dispatch_udp_packet(packet)
     ip, port, data = packet
     @mutex.synchronize {
-      Logger.debug "Sending UDP data packet to #{ip}:#{port} ..."
+      # Logger.debug "Sending UDP data packet to #{ip}:#{port} ..."
       @udp.send( data, 0, ip, port )
     }
   end
@@ -71,7 +71,7 @@ class PacketQueue
   # Use the global Pcap injection instance to send the +packet+.
   def dispatch_raw_packet(packet)
     @mutex.synchronize {
-      Logger.debug "Sending #{packet.class.name} packet ..."
+      # Logger.debug "Sending #{packet.class.name} packet ..."
       @stream.inject( packet.headers[0].to_s )
     }
   end

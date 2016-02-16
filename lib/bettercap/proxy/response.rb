@@ -155,13 +155,18 @@ class Response
     found = false
     @headers.each_with_index do |header,i|
       if header =~ /^#{name}:\s*.+$/i
-        @headers[i] = "#{name}: #{value}"
+        if value.nil?
+          @headers.delete(i)
+        else
+          @headers[i] = "#{name}: #{value}"
+        end
+
         found = true
         break
       end
     end
 
-    unless found
+    unless found or value.nil?
       @headers << "#{name}: #{value}"
     end
   end

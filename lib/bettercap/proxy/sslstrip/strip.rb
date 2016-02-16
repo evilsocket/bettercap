@@ -28,7 +28,8 @@ class StrippedObject
   SUBDOMAIN_REPLACES = {
     'www'     => 'wwwww',
     'webmail' => 'wwebmail',
-    'mail'    => 'wmail'
+    'mail'    => 'wmail',
+    'm'       => 'wmobile'
   }.freeze
 
   # Create an instance with the given arguments.
@@ -100,7 +101,7 @@ class Strip
   def was_stripped?(request)
     url = request.base_url
     @stripped.each do |s|
-      if s.client == request.client and s.stripped == url
+      if s.client == request.client and s.stripped.start_with?(url)
         return true
       end
     end
@@ -109,7 +110,7 @@ class Strip
 
   def unstrip( request, url )
     @stripped.each do |s|
-      if s.client == request.client and s.stripped == url
+      if s.client == request.client and s.stripped.start_with?(url)
         return s.original
       end
     end
@@ -140,6 +141,7 @@ class Strip
       return true
     end
 
+    process_headers!(response)
     process_body!( request, response )
 
     # do not retry the request.
@@ -148,13 +150,23 @@ class Strip
 
   private
 
-  # Clean some headers from +request+.
-  def process_headers!(request)
-    request['Accept-Encoding']           = nil
-    request['If-None-Match']             = nil
-    request['If-Modified-Since']         = nil
-    request['Upgrade-Insecure-Requests'] = nil
-    request['Pragma']                    = 'no-cache'
+  # Clean some headers from +r+.
+  def process_headers!(r)
+    # clean request
+    if r.is_a?(BetterCap::Proxy::Request)
+      r['Accept-Encoding']           = nil
+      r['If-None-Match']             = nil
+      r['If-Modified-Since']         = nil
+      r['Upgrade-Insecure-Requests'] = nil
+      r['Pragma']                    = 'no-cache'
+    # clean response
+    else
+      r['X-Frame-Options']           = nil
+      r['X-Content-Type-Options']    = nil
+      r['X-Xss-Protection']          = nil
+      r['Strict-Transport-Security'] = nil
+      r['Content-Security-Policy']   = nil
+    end
   end
 
   # If +request+ has unknown session cookies, create a client redirection
@@ -179,7 +191,7 @@ class Strip
       # i.e: http://wwww.facebook.com/
       url        = StrippedObject.normalize( stripped, 'http' )
       # i.e: www.facebook.com
-      unstripped = unstrip( request, url ).gsub( 'https://', '' ).gsub('/', '' )
+      unstripped = unstrip( request, url ).gsub( 'https://', '' ).gsub( 'http://', '' ).gsub( /\/.*/, '' )
 
       # loop each header and fix the stripped url if needed,
       # this will fix headers such as Host, Referer, Origin, etc.

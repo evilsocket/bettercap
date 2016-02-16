@@ -149,16 +149,14 @@ class Request
     raw
   end
 
-  # Return SCHEMA://HOST/
+  # Return SCHEMA://HOST
   def base_url
-    schema = if port == 443 then 'https' else 'http' end
-    "#{schema}://#{@host}/"
+    "#{port == 443 ? 'https' : 'http'}://#{@host}"
   end
 
   # Return the full request URL trimming it at +max_length+ characters.
   def to_url(max_length = 50)
-    schema = if port == 443 then 'https' else 'http' end
-    url = "#{schema}://#{@host}#{@path}"
+    url = "#{base_url}#{@path}"
     unless max_length.nil?
       url = url.slice(0..max_length) + '...' unless url.length <= max_length
     end
