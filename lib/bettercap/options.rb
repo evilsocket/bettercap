@@ -548,14 +548,14 @@ class Options
     on = '✔'.green
     off = '✘'.red
     status = {
-      'spoofing'    => if has_spoofer? then on else off end,
-      'discovery'   => if !target.nil? or arpcache then off else on end,
-      'sniffer'     => if sniffer then on else off end,
-      'http-proxy'  => if proxy then on else off end,
-      'https-proxy' => if proxy_https then on else off end,
-      'sslstrip'    => if proxy and sslstrip then on else off end,
-      'http-server' => if httpd then on else off end,
-      'dns-server'  => if dnsd then on else off end
+      'spoofing'    => ( has_spoofer? ? on : off ),
+      'discovery'   => ( ( !target.nil? or arpcache ) ? off : on ),
+      'sniffer'     => ( sniffer ? on : off ),
+      'http-proxy'  => ( proxy ? on : off ),
+      'https-proxy' => ( proxy_https ? on : off ),
+      'sslstrip'    => ( ( proxy and sslstrip ) ? on : off ),
+      'http-server' => ( httpd ? on : off ),
+      'dns-server'  => ( ( sslstrip or dnsd ) ? on : off )
     }
 
     msg = "Starting [ "
