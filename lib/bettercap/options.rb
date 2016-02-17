@@ -79,6 +79,8 @@ class Options
   attr_accessor :custom_https_proxy
   # Custom HTTPS transparent proxy port.
   attr_accessor :custom_https_proxy_port
+  # Custom list of redirections.
+  attr_accessor :custom_redirections
   # If true, BetterCap::Network::Servers::HTTPD will be enabled.
   attr_accessor :httpd
   # The port to bind HTTP server to.
@@ -144,6 +146,8 @@ class Options
 
     @custom_https_proxy = nil
     @custom_https_proxy_port = 8083
+
+    @custom_redirections = []
 
     @sslstrip = true
 
@@ -312,6 +316,10 @@ class Options
         ctx.options.custom_https_proxy_port = v.to_i
       end
 
+      opts.on( '--custom-redirection RULE', 'Apply a custom port redirection, the format of the rule is "PROTOCOL ORIGINAL_PORT NEW_PORT". For instance "TCP 21 2100" will redirect all TCP traffic going to port 21, to port 2100.' ) do |v|
+        ctx.options.parse_redirection!( v )
+      end
+
       opts.on( '--httpd', 'Enable HTTP server, default to false.' ) do
         ctx.options.httpd = true
       end
@@ -448,6 +456,19 @@ class Options
     end
   end
 
+  # Parse a custom redirection rule.
+  def parse_redirection!(rule)
+    if rule =~ /^((TCP)|(UDP))\s+(\d+)\s+(\d+)$/i
+      @custom_redirections << {
+        :proto => $1.upcase,
+        :from  => $4.to_i,
+        :to    => $5.to_i
+      }
+    else
+      raise BetterCap::Error, 'Invalid custom redirection rule specified.'
+    end
+  end
+
   # Parse a comma separated list of ports and return an array containing only
   # valid ports, raise BetterCap::Error if that array is empty.
   def parse_ports(value)
@@ -538,6 +559,10 @@ class Options
       @https_ports.each do |port|
         redirections << redir( @custom_https_proxy, port, @custom_https_proxy_port )
       end
+    end
+
+    @custom_redirections.each do |r|
+      redirections << redir( ifconfig[:ip_saddr], r[:from], r[:to], r[:proto] )
     end
 
     redirections
