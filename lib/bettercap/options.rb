@@ -580,7 +580,7 @@ class Options
       'https-proxy' => ( proxy_https ? on : off ),
       'sslstrip'    => ( ( proxy and sslstrip ) ? on : off ),
       'http-server' => ( httpd ? on : off ),
-      'dns-server'  => ( ( sslstrip or dnsd ) ? on : off )
+      'dns-server'  => ( ( ( proxy and sslstrip ) or dnsd ) ? on : off )
     }
 
     msg = "Starting [ "
