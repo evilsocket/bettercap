@@ -511,7 +511,7 @@ class Options
   def get_redirections ifconfig
     redirections = []
 
-    if @dnsd or @proxy
+    if @dnsd or ( @proxy and @sslstrip )
       redirections << redir( ifconfig[:ip_saddr], 53, @dnsd_port )
       redirections << redir( ifconfig[:ip_saddr], 53, @dnsd_port, 'UDP' )
     end
