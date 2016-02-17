@@ -28,9 +28,11 @@ Object.send :remove_const, :Config rescue nil
 Config = RbConfig
 
 def bettercap_autoload( path = '' )
-  dir = File.dirname(__FILE__) + "/bettercap/#{path}"
-  deps = []
-  files = []
+  dir    = File.dirname(__FILE__) + "/bettercap/#{path}"
+  deps   = []
+  files  = []
+  monkey = []
+
   Dir[dir+"**/*.rb"].each do |filename|
     filename = filename.gsub( dir, '' ).gsub('.rb', '')
     filename = "bettercap/#{path}#{filename}"
@@ -38,13 +40,15 @@ def bettercap_autoload( path = '' )
     unless filename =~ /.+\/inject[a-z]+$/i
       if filename.end_with?('/base')
         deps << filename
+      elsif filename.include?('monkey')
+        monkey << filename
       else
         files << filename
       end
     end
   end
 
-  ( deps + files ).each do |file|
+  ( deps + files + monkey ).each do |file|
     require file
   end
 end
