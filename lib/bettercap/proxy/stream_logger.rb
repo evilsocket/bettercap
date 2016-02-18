@@ -146,7 +146,7 @@ class StreamLogger
   def self.log_http( request, response )
     response_s = "( #{response.content_type} )"
     request_s  = request.to_url( request.post?? nil : @@MAX_REQ_SIZE )
-    code       = response.code[0]
+    code       = response.code.to_s[0]
 
     if @@CODE_COLORS.has_key? code
       response_s += " [#{response.code}]".send( @@CODE_COLORS[ code ] )

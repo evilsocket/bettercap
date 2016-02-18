@@ -258,8 +258,15 @@ class Strip
         # we know this session, do not kill it!
         @cookies.add!( request )
         # remove the 'secure' descriptor from every cookie
-        response.each_header('Set-Cookie') do |value,i|
-          response.headers[i] = "Set-Cookie: #{value.gsub( /secure/, '' )}"
+        cookies = response['Set-Cookie']
+        cookies = cookies.is_a?(Array)? cookies : ( cookies.empty?? [] : [cookies] )
+
+        unless cookies.empty?
+          clean = []
+          cookies.each do |cookie|
+            clean << cookie.gsub( /secure/, '' )
+          end
+          response['Set-Cookie'] = clean
         end
 
         # do not retry request
@@ -276,6 +283,10 @@ class Strip
     begin
       response.body.scan( HTTPS_URL_RE ).uniq.each do |link|
         if link[0].include?('.')
+          # yeah, some idiots are using \ instead of / as a path -.-
+          if link[0].end_with?('\\')
+            link[0][-1] = '/'
+          end
           links << StrippedObject.process( link[0] )
         end
       end

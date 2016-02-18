@@ -15,6 +15,12 @@ module BetterCap
 module Proxy
 # HTTP response parser.
 class Response
+  # HTTP protocol version
+  attr_accessor :version
+  # Response status code.
+  attr_accessor :code
+  # Response status message
+  attr_accessor :status
   # Response content type.
   attr_reader :content_type
   # Response charset, default to UTF-8.
@@ -25,10 +31,6 @@ class Response
   attr_reader :chunked
   # A list of response headers.
   attr_accessor :headers
-  # Response status code.
-  attr_accessor :code
-  # True if the parser finished to parse the headers, otherwise false.
-  attr_reader :headers_done
   # Response body.
   attr_accessor :body
 
@@ -67,12 +69,14 @@ class Response
 
   # Initialize this response object state.
   def initialize
+    @version = '1.1'
+    @code = 200
+    @status = 'OK'
     @content_type = nil
     @charset = 'UTF-8'
     @content_length = nil
-    @body = ''
-    @code = nil
-    @headers = []
+    @body = nil
+    @headers = {}
     @headers_done = false
     @chunked = false
   end
@@ -100,37 +104,54 @@ class Response
   def <<(line)
     # we already parsed the heders, collect response body
     if @headers_done
+      @body = '' if @body.nil?
       @body << line.force_encoding( @charset )
     else
-      Logger.debug "  RESPONSE LINE: '#{line.chomp}'"
+      chomped = line.chomp
+      Logger.debug "  RESPONSE LINE: '#{chomped}'"
 
-      # parse the response status
-      if @code.nil? and line =~ /^HTTP\/[\d\.]+\s+(.+)/
-        @code = $1.chomp
+      # is this the first line 'HTTP/<VERSION> <CODE> <STATUS>' ?
+      if chomped =~ /^HTTP\/([\d\.]+)\s+(\d+)\s+(.+)$/
+        @version = $1
+        @code    = $2.to_i
+        @status  = $3
 
-      # parse the content type
-      elsif line =~ /^Content-Type:\s*([^;]+).*/i
-        @content_type = $1.chomp
-        if line =~ /^.+;\s*charset=(.+)/i
-          @charset = $1.chomp
+      # collect and fix headers
+      elsif chomped =~ /^([^:\s]+)\s*:\s*(.+)$/i
+        name = $1
+        value = $2
+
+        if name == 'Content-Type'
+          @content_type = value
+          if value =~ /^(.+);\s*charset=(.+)/i
+            @content_type = $1
+            @charset = $2.chomp
+          end
+        elsif name == 'Content-Length'
+          @content_length = value.to_i
+        # check if we have a chunked encoding
+        elsif name == 'Transfer-Encoding' and value == 'chunked'
+          @chunked = true
+          name     = nil
+          value    = nil
         end
 
-      # parse content length
-      elsif line =~ /^Content-Length:\s+(\d+)\s*$/i
-        @content_length = $1.to_i
-
-      # check if we have a chunked encoding
-      elsif line =~ /^Transfer-Encoding:\s*chunked.*$/i
-        @chunked = true
-        line = nil
-
+        unless name.nil? or value.nil?
+          if @headers.has_key?(name)
+            #@headers[name] << value
+            if @headers.is_a?(Array)
+              @headers[name] << value
+            else
+              @headers[name] = [ @headers[name], value ]
+            end
+          else
+            @headers[name] = value
+          end
+        end
       # last line, we're done with the headers
-      elsif line.chomp.empty?
+      elsif chomped.empty?
         @headers_done = true
-
       end
-
-      @headers << line.chomp unless line.nil?
     end
   end
 
@@ -141,62 +162,43 @@ class Response
 
   # Return the value of header with +name+ or an empty string.
   def [](name)
-    @headers.each do |header|
-      if header =~ /^#{name}:\s*(.+)$/i
-        return $1
-      end
-    end
-    ""
+    ( @headers.has_key?(name) ? @headers[name] : "" )
   end
 
   # If the header with +name+ is found, then a +value+ is assigned to it,
   # otherwise it's created.
   def []=(name, value)
-    found = false
-    @headers.each_with_index do |header,i|
-      if header =~ /^#{name}:\s*.+$/i
-        if value.nil?
-          @headers.delete(i)
-        else
-          @headers[i] = "#{name}: #{value}"
-        end
-
-        found = true
-        break
+    if @headers.has_key?(name)
+      if value.nil?
+        @headers.delete(name)
+      else
+        @headers[name] = value
       end
-    end
-
-    unless found or value.nil?
-      @headers << "#{name}: #{value}"
-    end
-  end
-
-  def each_header(name)
-    @headers.each_with_index do |header,i|
-      if header =~ /^#{name}:\s*(.+)$/i
-        yield( $1, i )
-      end
+    elsif !value.nil?
+      @headers[name] = value
     end
   end
 
   # Return a string representation of this response object, patching the
   # Content-Length header if the #body was modified.
   def to_s
-    if textual?
-      @headers.map! do |header|
-        # update content length in case the body was
-        # modified
-        if header =~ /Content-Length:\s*(\d+)/i
-          Logger.debug "Updating response content length from #{$1} to #{@body.bytesize}"
-
-          "Content-Length: #{@body.bytesize}"
-        else
-          header
-        end
-      end
+    # update content length in case the body was modified.
+    if @headers.has_key?('Content-Length')
+      @headers['Content-Length'] = @body.nil?? 0 : @body.bytesize
     end
 
-    @headers.join("\n") + "\n" + ( @body || "\n" )
+    s = "HTTP/#{@version} #{@code} #{@status}\n"
+    @headers.each do |name,value|
+      if value.is_a?(Array)
+        value.each do |v|
+          s << "#{name}: #{v}\n"
+        end
+      else
+        s << "#{name}: #{value}\n"
+      end
+    end
+    s << "\n" + ( @body.nil?? "\n" : @body )
+    s
   end
 end
 
