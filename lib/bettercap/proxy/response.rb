@@ -138,8 +138,7 @@ class Response
 
         unless name.nil? or value.nil?
           if @headers.has_key?(name)
-            #@headers[name] << value
-            if @headers.is_a?(Array)
+            if @headers[name].is_a?(Array)
               @headers[name] << value
             else
               @headers[name] = [ @headers[name], value ]
@@ -176,6 +175,24 @@ class Response
       end
     elsif !value.nil?
       @headers[name] = value
+    end
+  end
+
+  # Search for header +name+ and apply a gsub substitution:
+  #   value.gsub( +search+, +replace+ )
+  def patch_header!( name, search, replace )
+    value = self[name]
+    unless value.empty?
+      patched = []
+      if value.is_a?(Array)
+        value.each do |v|
+          patched << v.gsub( search, replace )
+        end
+      else
+        patched << value.gsub( search, replace )
+      end
+
+      self[name] = patched
     end
   end
 

