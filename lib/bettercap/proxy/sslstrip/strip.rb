@@ -307,9 +307,14 @@ class Strip
   private
 
   def add_stripped_object( o )
-    @stripped << o
-    # make sure we're able to resolve the stripped domain
-    @resolver.add_rule( o.stripped_hostname, IPSocket.getaddress( o.original_hostname ) )
+    begin
+      stripped_hostname = o.stripped_hostname
+      @stripped << o
+      # make sure we're able to resolve the stripped domain
+      @resolver.add_rule( stripped_hostname, IPSocket.getaddress( o.original_hostname ) )
+    rescue Exception => e
+      Logger.exception(e)
+    end
   end
 end
 
