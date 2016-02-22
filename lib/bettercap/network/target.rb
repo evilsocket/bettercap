@@ -38,6 +38,7 @@ class Target
   NBNS_REQUEST = "\x82\x28\x0\x0\x0\x1\x0\x0\x0\x0\x0\x0\x20\x43\x4B\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x41\x0\x0\x21\x0\x1"
 
   @@prefixes = nil
+  @@lock = Mutex.new
 
   # Create a +Target+ object given its +ip+ and (optional) +mac+ address.
   # The +ip+ argument could also be a MAC address itself, in this case the
@@ -143,17 +144,19 @@ private
 
   # Lookup the given +mac+ address in order to find its vendor.
   def self.lookup_vendor( mac )
-    if @@prefixes == nil
-      Logger.debug 'Preloading hardware vendor prefixes ...'
+    @@lock.synchronize {
+      if @@prefixes.nil?
+        Logger.debug 'Preloading hardware vendor prefixes ...'
 
-      @@prefixes = {}
-      filename = File.dirname(__FILE__) + '/hw-prefixes'
-      File.open( filename ).each do |line|
-        if line =~ /^([A-F0-9]{6})\s(.+)$/
-          @@prefixes[$1] = $2
+        @@prefixes = {}
+        filename = File.dirname(__FILE__) + '/hw-prefixes'
+        File.open( filename ).each do |line|
+          if line =~ /^([A-F0-9]{6})\s(.+)$/
+            @@prefixes[$1] = $2
+          end
         end
       end
-    end
+    }
 
     @@prefixes[ mac.split(':')[0,3].join('').upcase ]
   end
