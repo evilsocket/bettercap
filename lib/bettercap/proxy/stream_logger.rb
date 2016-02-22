@@ -27,6 +27,7 @@ class StreamLogger
   }
 
   @@services = nil
+  @@lock = Mutex.new
 
   # Search for the +addr+ IP address inside the list of collected targets and return
   # its compact string representation ( @see BetterCap::Target#to_s_compact ).
@@ -47,15 +48,17 @@ class StreamLogger
 
   # Given +proto+ and +port+ return the network service name if possible.
   def self.service( proto, port )
-    if @@services.nil?
-      @@services = { :tcp => {}, :udp => {} }
-      filename = File.dirname(__FILE__) + '/../network/services'
-      File.open( filename ).each do |line|
-        if line =~ /([^\s]+)\s+(\d+)\/([a-z]+).*/i
-          @@services[$3.to_sym][$2.to_i] = $1
+    @@lock.synchronize {
+      if @@services.nil?
+        @@services = { :tcp => {}, :udp => {} }
+        filename = File.dirname(__FILE__) + '/../network/services'
+        File.open( filename ).each do |line|
+          if line =~ /([^\s]+)\s+(\d+)\/([a-z]+).*/i
+            @@services[$3.to_sym][$2.to_i] = $1
+          end
         end
       end
-    end
+    }
 
     if @@services.has_key?(proto) and @@services[proto].has_key?(port)
       @@services[proto][port]
