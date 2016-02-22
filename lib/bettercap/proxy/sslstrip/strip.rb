@@ -101,11 +101,12 @@ class Strip
   HTTPS_URL_RE  = /(https:\/\/[^"'\/]+)/i
 
   # Create an instance of this object.
-  def initialize
+  def initialize( ctx )
     @stripped = []
     @cookies  = CookieMonitor.new
     @favicon  = Response.from_file( File.dirname(__FILE__) + '/lock.ico', 'image/x-icon' )
-    @resolver = BetterCap::Network::Servers::DNSD.new
+    @resolver = BetterCap::Network::Servers::DNSD.new( nil, ctx.ifconfig[:ip_saddr], ctx.options.dnsd_port )
+
     @resolver.start
   end
 

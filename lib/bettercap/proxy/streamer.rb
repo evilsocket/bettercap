@@ -20,7 +20,7 @@ class Streamer
   def initialize( processor )
     @processor = processor
     @ctx       = Context.get
-    @sslstrip  = SSLStrip::Strip.new if @ctx.options.sslstrip
+    @sslstrip  = SSLStrip::Strip.new( @ctx ) if @ctx.options.sslstrip
   end
 
   # Return true if the +request+ was stripped.
