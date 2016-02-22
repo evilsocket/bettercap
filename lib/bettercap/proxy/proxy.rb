@@ -49,7 +49,7 @@ class Proxy
       begin
        client_worker client
       rescue Exception => e
-        Logger.warn "Client worker errort: #{e.message}"
+        Logger.warn "Client worker error: #{e.message}"
         Logger.exception e
       end
     end
