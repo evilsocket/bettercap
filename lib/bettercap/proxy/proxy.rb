@@ -22,18 +22,19 @@ class Proxy
   # use the specified +processor+ routine for each request.
   # If +is_https+ is true a HTTPS proxy will be created, otherwise a HTTP one.
   def initialize( address, port, is_https, processor )
-    @socket      = nil
-    @address     = address
-    @port        = port
-    @is_https    = is_https
-    @type        = is_https ? 'HTTPS' : 'HTTP'
-    @sslserver   = nil
-    @sslcontext  = nil
-    @server      = nil
-    @main_thread = nil
-    @running     = false
-    @streamer    = Streamer.new processor
-    @local_ips   = []
+    @socket        = nil
+    @address       = address
+    @port          = port
+    @is_https      = is_https
+    @type          = is_https ? 'HTTPS' : 'HTTP'
+    @upstream_port = is_https ? 443 : 80
+    @sslserver     = nil
+    @sslcontext    = nil
+    @server        = nil
+    @main_thread   = nil
+    @running       = false
+    @streamer      = Streamer.new processor
+    @local_ips     = []
 
     begin
       @local_ips = Socket.ip_address_list.collect { |x| x.ip_address }
@@ -125,7 +126,7 @@ class Proxy
 
   # Handle a new +client+.
   def client_worker( client )
-    request = Request.new @is_https ? 443 : 80
+    request = Request.new @upstream_port
 
     begin
       Logger.debug 'Reading request ...'
