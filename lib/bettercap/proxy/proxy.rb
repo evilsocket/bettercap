@@ -42,7 +42,10 @@ class Proxy
 
     BasicSocket.do_not_reverse_lookup = true
 
-    @pool = ThreadPool.new( 4, 64 ) do |client|
+    tmin = System.cpu_count
+    tmax = tmin * 16
+
+    @pool = ThreadPool.new( tmin, tmax ) do |client|
       begin
        client_worker client
       rescue Exception => e
