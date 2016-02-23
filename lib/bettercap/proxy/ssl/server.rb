@@ -46,7 +46,7 @@ class Server
       Logger.debug "[#{'SSL'.green}] Server-Name-Indication for '#{hostname}'"
 
       ctx      = OpenSSL::SSL::SSLContext.new
-      ctx.cert = @authority.clone( hostname )
+      ctx.cert = @authority.spoof( hostname )
       ctx.key  = @authority.key
 
       ctx

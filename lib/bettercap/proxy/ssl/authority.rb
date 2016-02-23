@@ -140,7 +140,7 @@ class Authority
 
   # Fetch the certificate from +hostname+:+port+, sign it with our own CA and
   # return it.
-  def clone( hostname, port = 443 )
+  def spoof( hostname, port = 443 )
     @lock.synchronize {
       unless @cache.has_key?(hostname)
         # 1. fetch real server certificate
