@@ -377,6 +377,11 @@ class Options
                               "either use the --no-sslstrip option or remove the --dns option."
     end
 
+    if ctx.options.has_proxy_module? and ( !ctx.options.proxy and !ctx.options.proxy_https )
+      raise BetterCap::Error, "A proxy module was specified but none of the HTTP or HTTPS proxies are " \
+                              "enabled, specify --proxy or --proxy-https options."
+    end
+
     unless ctx.options.gateway.nil?
       raise BetterCap::Error, "The specified gateway '#{ctx.options.gateway}' is not a valid IPv4 address." unless Network::Validator.is_ip?(ctx.options.gateway)
       ctx.gateway = ctx.options.gateway

@@ -40,8 +40,6 @@ class Module
 
   # Load the module with +name+.
   def self.load(ctx, opts, name)
-    ctx.options.proxy = true
-
     if self.is_builtin?(name)
       ctx.options.proxy_module = "#{@@path}/#{name}.rb"
     else
