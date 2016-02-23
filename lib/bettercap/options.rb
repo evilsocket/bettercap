@@ -263,7 +263,6 @@ class Options
       end
 
       opts.on( '--proxy-https', "Enable HTTPS proxy and redirects all HTTPS requests to it, default to #{'false'.yellow}." ) do
-        ctx.options.proxy = true
         ctx.options.proxy_https = true
       end
 
@@ -281,13 +280,11 @@ class Options
       end
 
       opts.on( '--proxy-https-port PORT', "Set HTTPS proxy port, default to #{ctx.options.proxy_https_port.to_s.yellow}." ) do |v|
-        ctx.options.proxy = true
         ctx.options.proxy_https = true
         ctx.options.proxy_https_port = v.to_i
       end
 
       opts.on( '--proxy-pem FILE', "Use a custom PEM CA certificate file for the HTTPS proxy, default to #{Proxy::SSL::Authority::DEFAULT.yellow} ." ) do |v|
-        ctx.options.proxy = true
         ctx.options.proxy_https = true
         ctx.options.proxy_pem_file = File.expand_path v
       end
