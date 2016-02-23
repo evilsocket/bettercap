@@ -175,11 +175,11 @@ class Options
         ctx.options.gateway = v
       end
 
-      opts.on( '-I', '--interface IFACE', 'Network interface name - default: ' + ctx.options.iface.to_s ) do |v|
+      opts.on( '-I', '--interface IFACE', 'Network interface name - default: ' + ctx.options.iface.to_s.yellow ) do |v|
         ctx.options.iface = v
       end
 
-      opts.on( '-S', '--spoofer NAME', 'Spoofer module to use, available: ' + Spoofers::Base.available.join(', ') + ' - default: ' + ctx.options.spoofer ) do |v|
+      opts.on( '-S', '--spoofer NAME', "Spoofer module to use, available: #{Spoofers::Base.available.map{|x| x.yellow }.join(', ')} - default: #{ctx.options.spoofer.yellow}." ) do |v|
         ctx.options.spoofer = v
       end
 
@@ -203,7 +203,7 @@ class Options
         ctx.options.debug = true
       end
 
-      opts.on( '-L', '--local', 'Parse packets coming from/to the address of this computer ( NOTE: Will set -X to true ), default to false.' ) do
+      opts.on( '-L', '--local', "Parse packets coming from/to the address of this computer ( NOTE: Will set -X to true ), default to #{'false'.yellow}." ) do
         ctx.options.local = true
         ctx.options.sniffer = true
       end
@@ -227,7 +227,7 @@ class Options
         ctx.options.sniffer_filter = v
       end
 
-      opts.on( '-P', '--parsers PARSERS', 'Comma separated list of packet parsers to enable, "*" for all ( NOTE: Will set -X to true ), available: ' + Parsers::Base.available.join(', ') + ' - default: *' ) do |v|
+      opts.on( '-P', '--parsers PARSERS', "Comma separated list of packet parsers to enable, '*' for all ( NOTE: Will set -X to true ), available: #{Parsers::Base.available.map { |x| x.yellow }.join(', ')} - default: #{'*'.yellow}" ) do |v|
         ctx.options.sniffer = true
         ctx.options.parsers = Parsers::Base.from_cmdline(v)
       end
@@ -238,15 +238,15 @@ class Options
         ctx.options.custom_parser = Regexp.new(v)
       end
 
-      opts.on( '--silent', 'Suppress every message which is not an error or a warning, default to false.' ) do
+      opts.on( '--silent', "Suppress every message which is not an error or a warning, default to #{'false'.yellow}." ) do
         ctx.options.silent = true
       end
 
-      opts.on( '--no-discovery', 'Do not actively search for hosts, just use the current ARP cache, default to false.' ) do
+      opts.on( '--no-discovery', "Do not actively search for hosts, just use the current ARP cache, default to #{'false'.yellow}." ) do
         ctx.options.arpcache = true
       end
 
-      opts.on( '--no-spoofing', 'Disable spoofing, alias for --spoofer NONE.' ) do
+      opts.on( '--no-spoofing', "Disable spoofing, alias for #{'--spoofer NONE'.yellow}." ) do
         ctx.options.spoofer = 'NONE'
       end
 
@@ -258,41 +258,41 @@ class Options
         ctx.options.half_duplex = true
       end
 
-      opts.on( '--proxy', 'Enable HTTP proxy and redirects all HTTP requests to it, default to false.' ) do
+      opts.on( '--proxy', "Enable HTTP proxy and redirects all HTTP requests to it, default to #{'false'.yellow}." ) do
         ctx.options.proxy = true
       end
 
-      opts.on( '--proxy-https', 'Enable HTTPS proxy and redirects all HTTPS requests to it, default to false.' ) do
+      opts.on( '--proxy-https', "Enable HTTPS proxy and redirects all HTTPS requests to it, default to #{'false'.yellow}." ) do
         ctx.options.proxy = true
         ctx.options.proxy_https = true
       end
 
-      opts.on( '--proxy-port PORT', 'Set HTTP proxy port, default to ' + ctx.options.proxy_port.to_s + ' .' ) do |v|
+      opts.on( '--proxy-port PORT', "Set HTTP proxy port, default to #{ctx.options.proxy_port.to_s.yellow}." ) do |v|
         ctx.options.proxy = true
         ctx.options.proxy_port = v.to_i
       end
 
-      opts.on( '--http-ports PORT1,PORT2', 'Comma separated list of HTTP ports to redirect to the proxy, default to ' + ctx.options.http_ports.join(', ') + ' .' ) do |v|
+      opts.on( '--http-ports PORT1,PORT2', "Comma separated list of HTTP ports to redirect to the proxy, default to #{ctx.options.http_ports.map{|x| x.to_s.yellow }.join(', ')}." ) do |v|
         ctx.options.http_ports = ctx.options.parse_ports( v )
       end
 
-      opts.on( '--https-ports PORT1,PORT2', 'Comma separated list of HTTPS ports to redirect to the proxy, default to ' + ctx.options.https_ports.join(', ') + ' .' ) do |v|
+      opts.on( '--https-ports PORT1,PORT2', "Comma separated list of HTTPS ports to redirect to the proxy, default to #{ctx.options.https_ports.map{|x| x.to_s.yellow }.join(', ')}." ) do |v|
         ctx.options.https_ports = ctx.options.parse_ports( v )
       end
 
-      opts.on( '--proxy-https-port PORT', 'Set HTTPS proxy port, default to ' + ctx.options.proxy_https_port.to_s + ' .' ) do |v|
+      opts.on( '--proxy-https-port PORT', "Set HTTPS proxy port, default to #{ctx.options.proxy_https_port.to_s.yellow}." ) do |v|
         ctx.options.proxy = true
         ctx.options.proxy_https = true
         ctx.options.proxy_https_port = v.to_i
       end
 
-      opts.on( '--proxy-pem FILE', 'Use a custom PEM certificate file for the HTTPS proxy.' ) do |v|
+      opts.on( '--proxy-pem FILE', "Use a custom PEM CA certificate file for the HTTPS proxy, default to #{Proxy::SSL::Authority::DEFAULT.yellow} ." ) do |v|
         ctx.options.proxy = true
         ctx.options.proxy_https = true
         ctx.options.proxy_pem_file = File.expand_path v
       end
 
-      opts.on( '--proxy-module MODULE', 'Ruby proxy module to load, either a custom file or one of the following: ' + Proxy::Module.available.join(', ') + ' .' ) do |v|
+      opts.on( '--proxy-module MODULE', "Ruby proxy module to load, either a custom file or one of the following: #{Proxy::Module.available.map{|x| x.yellow}.join(', ')}." ) do |v|
         Proxy::Module.load(ctx, opts, v)
       end
 
@@ -300,7 +300,7 @@ class Options
         ctx.options.parse_custom_proxy!(v)
       end
 
-      opts.on( '--custom-proxy-port PORT', 'Specify a port for the custom HTTP upstream proxy, default to ' + ctx.options.custom_proxy_port.to_s + ' .' ) do |v|
+      opts.on( '--custom-proxy-port PORT', "Specify a port for the custom HTTP upstream proxy, default to #{ctx.options.custom_proxy_port.to_s.yellow}." ) do |v|
         ctx.options.custom_proxy_port = v.to_i
       end
 
@@ -312,19 +312,19 @@ class Options
         ctx.options.parse_custom_proxy!( v, true )
       end
 
-      opts.on( '--custom-https-proxy-port PORT', 'Specify a port for the custom HTTPS upstream proxy, default to ' + ctx.options.custom_https_proxy_port.to_s + ' .' ) do |v|
+      opts.on( '--custom-https-proxy-port PORT', "Specify a port for the custom HTTPS upstream proxy, default to #{ctx.options.custom_https_proxy_port.to_s.yellow}." ) do |v|
         ctx.options.custom_https_proxy_port = v.to_i
       end
 
-      opts.on( '--custom-redirection RULE', 'Apply a custom port redirection, the format of the rule is "PROTOCOL ORIGINAL_PORT NEW_PORT". For instance "TCP 21 2100" will redirect all TCP traffic going to port 21, to port 2100.' ) do |v|
+      opts.on( '--custom-redirection RULE', "Apply a custom port redirection, the format of the rule is #{'PROTOCOL ORIGINAL_PORT NEW_PORT'.yellow}. For instance #{'TCP 21 2100'.yellow} will redirect all TCP traffic going to port 21, to port 2100." ) do |v|
         ctx.options.parse_redirection!( v )
       end
 
-      opts.on( '--httpd', 'Enable HTTP server, default to false.' ) do
+      opts.on( '--httpd', "Enable HTTP server, default to #{'false'.yellow}." ) do
         ctx.options.httpd = true
       end
 
-      opts.on( '--httpd-port PORT', 'Set HTTP server port, default to ' + ctx.options.httpd_port.to_s +  '.' ) do |v|
+      opts.on( '--httpd-port PORT', "Set HTTP server port, default to #{ctx.options.httpd_port.to_s.yellow}." ) do |v|
         ctx.options.httpd = true
         ctx.options.httpd_port = v.to_i
       end
@@ -334,11 +334,11 @@ class Options
         ctx.options.dnsd_file = File.expand_path v
       end
 
-      opts.on( '--dns-port PORT', 'Set DNS server port, default to ' + ctx.options.dnsd_port.to_s +  '.' ) do |v|
+      opts.on( '--dns-port PORT', "Set DNS server port, default to #{ctx.options.dnsd_port.to_s.yellow}." ) do |v|
         ctx.options.dnsd_port = v.to_i
       end
 
-      opts.on( '--httpd-path PATH', 'Set HTTP server path, default to ' + ctx.options.httpd_path +  '.' ) do |v|
+      opts.on( '--httpd-path PATH', "Set HTTP server path, default to #{ctx.options.httpd_path.yellow} ." ) do |v|
         ctx.options.httpd = true
         ctx.options.httpd_path = v
       end
