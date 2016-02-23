@@ -95,32 +95,31 @@ class Streamer
 
   private
 
-  # List of security headers to remove from any response.
+  # List of security headers to remove/patch from any response.
   # Thanks to Mazin Ahmed ( @mazen160 )
-  SECURITY_HEADERS = [
-    'X-Frame-Options',
-    'X-Content-Type-Options',
-    'Strict-Transport-Security',
-    'X-WebKit-CSP',
-    'Public-Key-Pins',
-    'Public-Key-Pins-Report-Only',
-    'X-Content-Security-Policy',
-    'Content-Security-Policy-Report-Only',
-    'Content-Security-Policy',
-    'X-Download-Options',
-    'X-Permitted-Cross-Domain-Policies',
-    'Allow-Access-From-Same-Origin',
-    'Access-Control-Allow-Origin',
-    'Access-Control-Allow-Methods',
-    'Access-Control-Allow-Headers',
-    'X-XSS-Protection',
-    'X-Xss-Protection'
-  ].freeze
+  SECURITY_HEADERS = {
+    'X-Frame-Options'                     => nil,
+    'X-Content-Type-Options'              => nil,
+    'Strict-Transport-Security'           => nil,
+    'X-WebKit-CSP'                        => nil,
+    'Public-Key-Pins'                     => nil,
+    'Public-Key-Pins-Report-Only'         => nil,
+    'X-Content-Security-Policy'           => nil,
+    'Content-Security-Policy-Report-Only' => nil,
+    'Content-Security-Policy'             => nil,
+    'X-Download-Options'                  => nil,
+    'X-Permitted-Cross-Domain-Policies'   => nil,
+    'Allow-Access-From-Same-Origin'       => '*',
+    'Access-Control-Allow-Origin'         => '*',
+    'Access-Control-Allow-Methods'        => '*',
+    'Access-Control-Allow-Headers'        => '*',
+    'X-Xss-Protection'                    => '0'
+  }.freeze
 
   # Strip out a few security headers from +response+.
   def strip_security( response )
-    SECURITY_HEADERS.each do |name|
-      response[name] = nil
+    SECURITY_HEADERS.each do |name,value|
+      response[name] = value
     end
   end
 
