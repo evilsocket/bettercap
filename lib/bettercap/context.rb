@@ -37,9 +37,9 @@ class Context
   attr_accessor :httpd
   # Instance of BetterCap::Network::Servers::DNSD class.
   attr_accessor :dnsd
-  # Instance of OpenSSL::X509::Certificate class used
+  # Instance of Proxy::SSL::Authority class used
   # for the HTTPS transparent proxy.
-  attr_accessor :certificate
+  attr_accessor :authority
   # Set to true if the program is running, to false if a shutdown was
   # scheduled by the user which pressed CTRL+C
   attr_accessor :running
@@ -77,7 +77,7 @@ class Context
     @spoofer         = nil
     @httpd           = nil
     @dnsd            = nil
-    @certificate     = nil
+    @authority       = nil
     @proxies         = []
     @redirections    = []
     @discovery       = Discovery::Thread.new self
@@ -251,16 +251,7 @@ class Context
     @proxies << Proxy::Proxy.new( @ifconfig[:ip_saddr], @options.proxy_port, false, @proxy_processor )
     # create HTTPS proxy
     if @options.proxy_https
-      # We're not acting as a normal HTTPS proxy, thus we're not
-      # able to handle CONNECT requests, thus we don't know the
-      # hostname the client is going to connect to.
-      # We can only use a self signed certificate.
-      if @options.proxy_pem_file.nil?
-        @certificate = Proxy::CertStore.get_selfsigned
-      else
-        @certificate = Proxy::CertStore.from_file @options.proxy_pem_file
-      end
-
+      @authority = Proxy::SSL::Authority.new( @options.proxy_pem_file )
       @proxies << Proxy::Proxy.new( @ifconfig[:ip_saddr], @options.proxy_https_port, true, @proxy_processor )
     end
 

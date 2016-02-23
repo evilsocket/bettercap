@@ -22,7 +22,9 @@ require 'colorize'
 require 'packetfu'
 require 'pcaprub'
 require 'ipaddr'
+require 'openssl'
 require 'uri'
+require 'net/http'
 
 Object.send :remove_const, :Config rescue nil
 Config = RbConfig
