@@ -52,12 +52,22 @@ class Authority
 
     Logger.info "[#{'SSL'.green}] Loading HTTPS Certification Authority from '#{filename}' ..."
 
-    pem = File.read(filename)
+    begin
+      pem = File.read(filename)
 
-    @certificate = OpenSSL::X509::Certificate.new(pem)
-    @key         = OpenSSL::PKey::RSA.new(pem)
-    @store       = {}
-    @lock        = Mutex.new
+      @certificate = OpenSSL::X509::Certificate.new(pem)
+      @key         = OpenSSL::PKey::RSA.new(pem)
+      @store       = {}
+      @lock        = Mutex.new
+    rescue Errno::ENOENT
+      raise BetterCap::Error, "'#{filename}' - No such file or directory."
+
+    rescue OpenSSL::X509::CertificateError
+      raise BetterCap::Error, "'#{filename}' - Missing or invalid certificate."
+
+    rescue OpenSSL::PKey::RSAError
+      raise BetterCap::Error, "'#{filename}' - Missing or invalid key."
+    end
   end
 
   # Fetch the certificate from +hostname+:+port+, sign it with our own CA and
