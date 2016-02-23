@@ -19,6 +19,7 @@ Encoding.default_internal = Encoding::UTF_8
 
 require 'base64'
 require 'colorize'
+require 'digest'
 require 'ipaddr'
 require 'json'
 require 'net/dns'

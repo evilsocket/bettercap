@@ -35,6 +35,73 @@ class Fetcher < Net::HTTP
   end
 end
 
+# Used as an on-disk cache of server certificates.
+class Store
+  # The store path.
+  PATH = File.dirname(__FILE__) + '/.store/'
+
+  # Create an instance of this class.
+  def initialize
+    unless File.directory?( Store::PATH )
+      Logger.info "[#{'SSL'.green}] Initializing certificates store '#{Store::PATH}' ..."
+      FileUtils.mkdir_p( Store::PATH )
+    end
+
+    @store = {}
+    @lock  = Mutex.new
+  end
+
+  # Find the +hostname+:+port+ certificate and return it.
+  def find( hostname, port )
+    key = Digest::SHA256.hexdigest( "#{hostname}_#{port}" )
+
+    @lock.synchronize {
+      unless @store.has_key?(key)
+        # Certificate not available in memory, search it in the store PATH.
+        filename = File.join( Store::PATH, key )
+        s_cert = load_from_file( filename )
+        # Not available on disk too, fetch it from the server and save it.
+        if s_cert.nil?
+          Logger.info "[#{'SSL'.green}] Fetching certificate from #{hostname}:#{port} ..."
+
+          s_cert = Fetcher.fetch( hostname, port )
+          save_to_file( s_cert, filename )
+        else
+          Logger.info "[#{'SSL'.green}] Loaded HTTPS certificate for '#{hostname}' from store."
+        end
+
+        @store[key] = s_cert
+      end
+    }
+
+    @store[key]
+  end
+
+  private
+
+  # Load and return a certificate from +filename+ if it exists, also check if
+  # the certificate is expired, in which case it will remove it and return nil.
+  def load_from_file( filename )
+    cert = nil
+    if File.exist?(filename)
+      data = File.read(filename)
+      cert = OpenSSL::X509::Certificate.new(data)
+      # Check if expired.
+      now = Time.now
+      if now < cert.not_before or now > cert.not_after
+        File.delete( filename )
+        cert = nil
+      end
+    end
+    cert
+  end
+
+  # Save the +cert+ certificate to +filename+ encoded as PEM.
+  def save_to_file( cert, filename )
+    File.open( filename, "w+" ) { |file| file.write(cert.to_pem) }
+  end
+end
+
 # This class represents bettercap's HTTPS CA.
 class Authority
   # Default CA file.
@@ -57,7 +124,8 @@ class Authority
 
       @certificate = OpenSSL::X509::Certificate.new(pem)
       @key         = OpenSSL::PKey::RSA.new(pem)
-      @store       = {}
+      @store       = Store.new
+      @cache       = {}
       @lock        = Mutex.new
     rescue Errno::ENOENT
       raise BetterCap::Error, "'#{filename}' - No such file or directory."
@@ -74,25 +142,18 @@ class Authority
   # return it.
   def clone( hostname, port = 443 )
     @lock.synchronize {
-      unless @store.has_key?(hostname)
-        Logger.info "[#{'SSL'.green}] Fetching certificate from #{hostname}:#{port} ..."
-
+      unless @cache.has_key?(hostname)
         # 1. fetch real server certificate
-        s_cert = Fetcher.fetch( hostname, port )
-
-        Logger.debug "[#{'SSL'.green}] #{s_cert.to_pem}"
-
+        s_cert = @store.find( hostname, port )
         # 2. Sign it with our CA.
         s_cert.public_key = @key.public_key
         s_cert.issuer     = @certificate.subject
         s_cert.sign( @key, OpenSSL::Digest::SHA256.new )
-
         # 3. Profit ^_^
-        @store[hostname] = s_cert
+        @cache[hostname] = s_cert
       end
     }
-
-    @store[hostname]
+    @cache[hostname]
   end
 end
 
