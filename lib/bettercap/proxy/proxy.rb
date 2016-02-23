@@ -34,8 +34,8 @@ class Proxy
     @server        = nil
     @main_thread   = nil
     @running       = false
-    @streamer      = Streamer.new processor
     @local_ips     = []
+    @streamer      = Streamer.new( processor, need_sslstrip? )
 
     begin
       @local_ips = Socket.ip_address_list.collect { |x| x.ip_address }
@@ -178,6 +178,11 @@ class Proxy
     end
 
     client.close
+  end
+
+  # Return true if sslstrip is needed for this proxy instance.
+  def need_sslstrip?
+    ( Context.get.options.sslstrip and !@is_https )
   end
 end
 

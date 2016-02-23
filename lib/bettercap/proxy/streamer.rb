@@ -17,10 +17,10 @@ module Proxy
 # Handle data streaming between clients and servers for the BetterCap::Proxy::Proxy.
 class Streamer
   # Initialize the class with the given +processor+ routine.
-  def initialize( processor )
+  def initialize( processor, sslstrip )
     @processor = processor
     @ctx       = Context.get
-    @sslstrip  = SSLStrip::Strip.new( @ctx ) if @ctx.options.sslstrip
+    @sslstrip  = SSLStrip::Strip.new( @ctx ) if sslstrip
   end
 
   # Return true if the +request+ was stripped.
