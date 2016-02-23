@@ -25,7 +25,7 @@ class Streamer
 
   # Return true if the +request+ was stripped.
   def was_stripped?(request, client)
-    if @ctx.options.sslstrip
+    if @sslstrip
       request.client, _ = get_client_details( client )
       return @sslstrip.was_stripped?(request)
     end
@@ -50,7 +50,7 @@ class Streamer
 
     begin
       r = nil
-      if @ctx.options.sslstrip
+      if @sslstrip
         r = @sslstrip.preprocess( request )
       end
 
@@ -69,7 +69,7 @@ class Streamer
         Logger.debug "[#{request.client}] -> #{request.to_url} [#{response.code}]"
       end
 
-      if @ctx.options.sslstrip
+      if @sslstrip
         # do we need to retry the request?
         if @sslstrip.process( request, response ) == true
           # https redirect loop?
@@ -80,6 +80,9 @@ class Streamer
           end
         end
       end
+
+      # Strip out a few security headers.
+      strip_security( response )
 
       # call modules on_request
       @processor.call( request, response )
@@ -92,6 +95,35 @@ class Streamer
   end
 
   private
+
+  # List of security headers to remove from any response.
+  # Thanks to Mazin Ahmed ( @mazen160 )
+  SECURITY_HEADERS = [
+    'X-Frame-Options',
+    'X-Content-Type-Options',
+    'Strict-Transport-Security',
+    'X-WebKit-CSP',
+    'Public-Key-Pins',
+    'Public-Key-Pins-Report-Only',
+    'X-Content-Security-Policy',
+    'Content-Security-Policy-Report-Only',
+    'Content-Security-Policy',
+    'X-Download-Options',
+    'X-Permitted-Cross-Domain-Policies',
+    'Allow-Access-From-Same-Origin',
+    'Access-Control-Allow-Origin',
+    'Access-Control-Allow-Methods',
+    'Access-Control-Allow-Headers',
+    'X-XSS-Protection',
+    'X-Xss-Protection'
+  ].freeze
+
+  # Strip out a few security headers from +response+.
+  def strip_security( response )
+    SECURITY_HEADERS.each do |name|
+      response[name] = nil
+    end
+  end
 
   # Return the +client+ ip address and port.
   def get_client_details( client )
