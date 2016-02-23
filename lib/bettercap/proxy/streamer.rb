@@ -10,7 +10,6 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require 'bettercap/logger'
 
 module BetterCap
 module Proxy

@@ -10,8 +10,6 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require 'bettercap/firewalls/base'
-require 'bettercap/shell'
 
 module BetterCap
 module Firewalls

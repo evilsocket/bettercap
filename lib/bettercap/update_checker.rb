@@ -10,11 +10,6 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require 'bettercap/version'
-require 'bettercap/error'
-require 'bettercap/logger'
-require 'net/http'
-require 'json'
 
 module BetterCap
 # This class is responsible for fetching the latest version of

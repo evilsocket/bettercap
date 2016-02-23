@@ -10,9 +10,6 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require 'bettercap/spoofers/base'
-require 'net/dns'
-require 'resolv'
 
 module BetterCap
 module Spoofers

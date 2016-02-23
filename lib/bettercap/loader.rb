@@ -1,12 +1,15 @@
 # encoding: UTF-8
 =begin
+
 BETTERCAP
+
 Author : Simone 'evilsocket' Margaritelli
 Email  : evilsocket@gmail.com
 Blog   : http://www.evilsocket.net/
+
 This project is released under the GPL 3 license.
+
 =end
-require 'bettercap/error'
 
 module BetterCap
 # This class is responsible for dynamically loading modules.

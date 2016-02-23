@@ -11,8 +11,6 @@ This project is released under the GPL 3 license.
 
 =end
 
-require 'bettercap/error'
-
 module BetterCap
 # This class holds global states and data, moreover it exposes high level
 # methods to manipulate the program behaviour.

@@ -17,14 +17,24 @@
 Encoding.default_external = Encoding::UTF_8
 Encoding.default_internal = Encoding::UTF_8
 
-require 'optparse'
+require 'base64'
 require 'colorize'
+require 'ipaddr'
+require 'json'
+require 'net/dns'
+require 'net/http'
+require 'openssl'
+require 'optparse'
 require 'packetfu'
 require 'pcaprub'
-require 'ipaddr'
-require 'openssl'
+require 'resolv'
+require 'rubydns'
+require 'socket'
+require 'stringio'
+require 'thread'
 require 'uri'
-require 'net/http'
+require 'webrick'
+require 'zlib'
 
 Object.send :remove_const, :Config rescue nil
 Config = RbConfig

@@ -10,9 +10,6 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require 'bettercap/logger'
-require 'colorize'
-require 'packetfu'
 
 module BetterCap
 # Class responsible of loading BetterCap::Parsers instances and performing

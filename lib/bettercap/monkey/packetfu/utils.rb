@@ -16,8 +16,6 @@ This project is released under the GPL 3 license.
 # regular expression.
 #
 # ORIGINAL: https://github.com/packetfu/packetfu/blob/master/lib/packetfu/utils.rb#L204
-require 'bettercap/logger'
-
 module PacketFu
   class Packet
     def eth2s(which = :src)
@@ -29,7 +27,7 @@ module PacketFu
       end
     end
   end
-  
+
   class Utils
     def self.ifconfig(iface='eth0')
       ret = {}

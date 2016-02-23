@@ -10,7 +10,6 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require 'bettercap/spoofers/base'
 
 module BetterCap
 module Spoofers
@@ -81,7 +80,7 @@ class Arp < Base
 
     @ctx.targets.each do |target|
       unless target.ip.nil? or target.mac.nil?
-        5.times do 
+        5.times do
           spoof(target)
           sleep 0.3
         end

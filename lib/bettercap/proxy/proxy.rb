@@ -11,9 +11,6 @@ This project is released under the GPL 3 license.
 
 =end
 
-require 'socket'
-require 'uri'
-
 module BetterCap
 module Proxy
 # Transparent proxy class.

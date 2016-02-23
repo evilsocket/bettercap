@@ -10,9 +10,6 @@ Blog   : http://www.evilsocket.net/
 This project is released under the GPL 3 license.
 
 =end
-require 'zlib'
-require 'stringio'
-require 'json'
 
 module BetterCap
 # Raw or http streams pretty logging.
