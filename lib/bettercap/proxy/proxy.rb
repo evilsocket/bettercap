@@ -25,10 +25,8 @@ class Proxy
     @is_https      = is_https
     @type          = is_https ? 'HTTPS' : 'HTTP'
     @upstream_port = is_https ? 443 : 80
-    @sslserver     = nil
-    @sslcontext    = nil
-    @sslauthority  = nil
     @server        = nil
+    @sslserver     = nil
     @main_thread   = nil
     @running       = false
     @local_ips     = []
@@ -57,9 +55,14 @@ class Proxy
   # Start this proxy instance.
   def start
     begin
-      @server = @socket = TCPServer.new( @address, @port )
+      @socket = TCPServer.new( @address, @port )
 
-      setup_ssl! if @is_https
+      if @is_https
+        @sslserver = SSL::Server.new( @socket )
+        @server    = @sslserver.io
+      else
+        @server    = @socket
+      end
 
       @main_thread = Thread.new &method(:server_thread)
     rescue Exception => e
@@ -83,31 +86,6 @@ class Proxy
   end
 
   private
-
-  # Method used to setup HTTPS related objects.
-  def setup_ssl!
-    @sslauthority    = Context.get.authority
-    @sslcontext      = OpenSSL::SSL::SSLContext.new
-    @sslcontext.cert = @sslauthority.certificate
-    @sslcontext.key  = @sslauthority.key
-
-    # If the client supports SNI ( https://en.wikipedia.org/wiki/Server_Name_Indication )
-    # we'll receive the hostname it wants to connect to in this callback.
-    # Use the CA we already have loaded ( or generated ) to sign a new
-    # certificate at runtime with the correct 'Common Name' and create a new SSL
-    # context with it.
-    @sslcontext.servername_cb = proc { |sslsocket, hostname|
-      Logger.debug "[#{'SSL'.green}] Server-Name-Indication for '#{hostname}'"
-
-      ctx      = OpenSSL::SSL::SSLContext.new
-      ctx.cert = @sslauthority.clone( hostname )
-      ctx.key  = @sslauthority.key
-
-      ctx
-    }
-
-    @server = @sslserver = OpenSSL::SSL::SSLServer.new( @socket, @sslcontext )
-  end
 
   # Main server thread, will accept incoming connections and push them to
   # the thread pool.

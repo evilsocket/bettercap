@@ -1,0 +1,55 @@
+# encoding: UTF-8
+=begin
+
+BETTERCAP
+
+Author : Simone 'evilsocket' Margaritelli
+Email  : evilsocket@gmail.com
+Blog   : http://www.evilsocket.net/
+
+This project is released under the GPL 3 license.
+
+=end
+
+module BetterCap
+module Proxy
+module SSL
+
+# Little utility class to handle SSLServer creation.
+class Server
+  # The SSL certification authority.
+  attr_reader :authority
+  # Main SSLContext instance.
+  attr_reader :context
+  # Socket I/O object.
+  attr_reader :io
+
+  # Create an instance from the TCPSocket +socket+.
+  def initialize( socket )
+    @authority    = Context.get.authority
+    @context      = OpenSSL::SSL::SSLContext.new
+    @context.cert = @authority.certificate
+    @context.key  = @authority.key
+
+    # If the client supports SNI ( https://en.wikipedia.org/wiki/Server_Name_Indication )
+    # we'll receive the hostname it wants to connect to in this callback.
+    # Use the CA we already have loaded ( or generated ) to sign a new
+    # certificate at runtime with the correct 'Common Name' and create a new SSL
+    # context with it.
+    @context.servername_cb = proc { |sslsocket, hostname|
+      Logger.debug "[#{'SSL'.green}] Server-Name-Indication for '#{hostname}'"
+
+      ctx      = OpenSSL::SSL::SSLContext.new
+      ctx.cert = @authority.clone( hostname )
+      ctx.key  = @authority.key
+
+      ctx
+    }
+
+    @io = OpenSSL::SSL::SSLServer.new( socket, @context )
+  end
+end
+
+end
+end
+end
