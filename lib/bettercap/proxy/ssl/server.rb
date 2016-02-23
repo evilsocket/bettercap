@@ -35,7 +35,13 @@ class Server
     # we'll receive the hostname it wants to connect to in this callback.
     # Use the CA we already have loaded ( or generated ) to sign a new
     # certificate at runtime with the correct 'Common Name' and create a new SSL
-    # context with it.
+    # context with it, these are the steps:
+    #
+    # 1. Get hostname from SNI.
+    # 2. Fetch upstream certificate from the real server.
+    # 3. Resign it with our own CA.
+    # 4. Create a new context with the new spoofed certificate.
+    # 5. Profit ^_^
     @context.servername_cb = proc { |sslsocket, hostname|
       Logger.debug "[#{'SSL'.green}] Server-Name-Indication for '#{hostname}'"
 
