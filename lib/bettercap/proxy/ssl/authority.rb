@@ -38,7 +38,7 @@ end
 # Used as an on-disk cache of server certificates.
 class Store
   # The store path.
-  PATH = File.dirname(__FILE__) + '/.store/'
+  PATH = File.join( Dir.home, '.bettercap', 'certificates' )
 
   # Create an instance of this class.
   def initialize
@@ -105,7 +105,8 @@ end
 # This class represents bettercap's HTTPS CA.
 class Authority
   # Default CA file.
-  DEFAULT = File.dirname(__FILE__) + '/bettercap-ca.pem'
+  DEFAULT = File.join( Dir.home, '.bettercap', 'bettercap-ca.pem' )
+
   # CA certificate.
   attr_reader :certificate
   # CA key.
@@ -115,6 +116,7 @@ class Authority
   # +filename+ which is expected to be a PEM formatted file.
   # If +filename+ is nil, Authority::DEFAULT will be used instead.
   def initialize( filename = nil )
+    install_ca
     filename ||= Authority::DEFAULT
 
     Logger.info "[#{'SSL'.green}] Loading HTTPS Certification Authority from '#{filename}' ..."
@@ -154,6 +156,18 @@ class Authority
       end
     }
     @cache[hostname]
+  end
+
+  def install_ca
+    unless File.exist?( Authority::DEFAULT )
+      root   = File.join( Dir.home, '.bettercap' )
+      source = File.dirname(__FILE__) + '/bettercap-ca.pem'
+
+      Logger.info "[#{'SSL'.green}] Installing CA to #{root} ..."
+
+      FileUtils.mkdir_p( root )
+      FileUtils.cp( source, root )
+    end
   end
 end
 
