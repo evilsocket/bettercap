@@ -96,10 +96,22 @@ class Proxy
     Logger.info "[#{@type.green}] Proxy starting on #{@address}:#{@port} ...\n"
 
     @running = true
+    sockets  = [ @server ]
 
     while @running do
       begin
-        @pool << @server.accept
+        IO.select(sockets).first.each do |sock|
+          begin
+            if io = sock.accept_nonblock
+              @pool << io
+            end
+          rescue SystemCallError
+            # nothing
+          rescue Errno::ECONNABORTED
+            # client closed the socket even before accept
+            io.close rescue nil
+          end
+        end
       rescue OpenSSL::SSL::SSLError => se
         Logger.debug("Error while accepting #{@type} connection ( #{se.message} ).")
       rescue Exception => e
