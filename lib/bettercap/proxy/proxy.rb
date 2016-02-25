@@ -15,10 +15,9 @@ module BetterCap
 module Proxy
 # Transparent proxy class.
 class Proxy
-  # Initialize the transparent proxy, making it listen on +address+:+port+ and
-  # use the specified +processor+ routine for each request.
+  # Initialize the transparent proxy, making it listen on +address+:+port+.
   # If +is_https+ is true a HTTPS proxy will be created, otherwise a HTTP one.
-  def initialize( address, port, is_https, processor )
+  def initialize( address, port, is_https )
     @socket        = nil
     @address       = address
     @port          = port
@@ -30,7 +29,7 @@ class Proxy
     @main_thread   = nil
     @running       = false
     @local_ips     = []
-    @streamer      = Streamer.new( processor, need_sslstrip? )
+    @streamer      = Streamer.new( need_sslstrip? )
 
     begin
       @local_ips = Socket.ip_address_list.collect { |x| x.ip_address }

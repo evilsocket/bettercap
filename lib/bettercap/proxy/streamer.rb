@@ -15,9 +15,8 @@ module BetterCap
 module Proxy
 # Handle data streaming between clients and servers for the BetterCap::Proxy::Proxy.
 class Streamer
-  # Initialize the class with the given +processor+ routine.
-  def initialize( processor, sslstrip )
-    @processor = processor
+  # Initialize the class.
+  def initialize( sslstrip )
     @ctx       = Context.get
     @sslstrip  = SSLStrip::Strip.new( @ctx ) if sslstrip
   end
@@ -55,7 +54,7 @@ class Streamer
 
       if r.nil?
         # call modules on_pre_request
-        @processor.call( request, nil )
+        process( request )
 
         self.send( "do_#{request.method}", request, response )
       else
@@ -84,7 +83,7 @@ class Streamer
       strip_security( response )
 
       # call modules on_request
-      @processor.call( request, response )
+      process( request, response )
 
       client.write response.to_s
     rescue NoMethodError => e
@@ -94,6 +93,31 @@ class Streamer
   end
 
   private
+
+  # Run proxy modules.
+  def process( request, response = nil )
+    # loop each loaded module and execute if enabled
+    BetterCap::Proxy::Module.modules.each do |mod|
+      if mod.enabled?
+        # we need to save the original response in case something
+        # in the module will go wrong
+        original = response
+
+        begin
+          if response.nil?
+            mod.on_pre_request request
+          else
+            mod.on_request request, response
+          end
+        rescue Exception => e
+          Logger.warn "Error with proxy module: #{e.message}"
+          Logger.exception e
+
+          response = original
+        end
+      end
+    end
+  end
 
   # List of security headers to remove/patch from any response.
   # Thanks to Mazin Ahmed ( @mazen160 )

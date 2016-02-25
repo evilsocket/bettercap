@@ -71,7 +71,6 @@ class Context
     @gateway         = nil
     @gateway_mac_resolved = false
     @targets         = []
-    @proxy_processor = nil
     @spoofer         = nil
     @httpd           = nil
     @dnsd            = nil
@@ -213,47 +212,18 @@ class Context
   def create_proxies!
     if @options.has_proxy_module?
       Proxy::Module.register_modules
-
       raise BetterCap::Error, "#{@options.proxy_module} is not a valid bettercap proxy module." if Proxy::Module.modules.empty?
-    end
-
-    @proxy_processor = Proc.new do |request,response|
-      if Proxy::Module.modules.empty?
-        Logger.debug 'WARNING: No proxy module loaded, skipping request.'
-      else
-        # loop each loaded module and execute if enabled
-        Proxy::Module.modules.each do |mod|
-          if mod.enabled?
-            # we need to save the original response in case something
-            # in the module will go wrong
-            original = response
-
-            begin
-              if response.nil?
-                mod.on_pre_request request
-              else
-                mod.on_request request, response
-              end
-            rescue Exception => e
-              Logger.warn "Error with proxy module: #{e.message}"
-              Logger.exception e
-
-              response = original
-            end
-          end
-        end
-      end
     end
 
     # create HTTP proxy
     if @options.proxy
-      @proxies << Proxy::Proxy.new( @ifconfig[:ip_saddr], @options.proxy_port, false, @proxy_processor )
+      @proxies << Proxy::Proxy.new( @ifconfig[:ip_saddr], @options.proxy_port, false )
     end
 
     # create HTTPS proxy
     if @options.proxy_https
       @authority = Proxy::SSL::Authority.new( @options.proxy_pem_file )
-      @proxies << Proxy::Proxy.new( @ifconfig[:ip_saddr], @options.proxy_https_port, true, @proxy_processor )
+      @proxies << Proxy::Proxy.new( @ifconfig[:ip_saddr], @options.proxy_https_port, true )
     end
 
     @proxies.each do |proxy|
