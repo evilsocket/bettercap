@@ -81,7 +81,7 @@ class Arp < Base
     @ctx.targets.each do |target|
       unless target.ip.nil? or target.mac.nil?
         5.times do
-          spoof(target)
+          spoof(target, true)
           sleep 0.3
         end
       end
@@ -94,11 +94,11 @@ class Arp < Base
   # restore its ARP cache instead.
   def spoof( target, restore = false )
     if restore
-      send_spoofed_packet( @gateway.ip, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
-      send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @gateway.ip, @gateway.mac ) unless @ctx.options.half_duplex
-    else
       send_spoofed_packet( @gateway.ip, @gateway.mac, target.ip, target.mac )
       send_spoofed_packet( target.ip, target.mac, @gateway.ip, @gateway.mac ) unless @ctx.options.half_duplex
+    else
+      send_spoofed_packet( @gateway.ip, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
+      send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @gateway.ip, @gateway.mac ) unless @ctx.options.half_duplex
     end
   end
 
@@ -106,7 +106,7 @@ class Arp < Base
   def arp_spoofer
     spoof_loop(1) { |target|
       unless target.ip.nil? or target.mac.nil?
-        spoof(target, true)
+        spoof(target)
       end
     }
   end
