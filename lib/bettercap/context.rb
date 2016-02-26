@@ -35,9 +35,6 @@ class Context
   attr_accessor :httpd
   # Instance of BetterCap::Network::Servers::DNSD class.
   attr_accessor :dnsd
-  # Instance of Proxy::SSL::Authority class used
-  # for the HTTPS transparent proxy.
-  attr_accessor :authority
   # Set to true if the program is running, to false if a shutdown was
   # scheduled by the user which pressed CTRL+C
   attr_accessor :running
@@ -74,7 +71,6 @@ class Context
     @spoofer         = nil
     @httpd           = nil
     @dnsd            = nil
-    @authority       = nil
     @proxies         = []
     @redirections    = []
     @discovery       = Discovery::Thread.new self
@@ -222,7 +218,6 @@ class Context
 
     # create HTTPS proxy
     if @options.proxy_https
-      @authority = Proxy::SSL::Authority.new( @options.proxy_pem_file )
       @proxies << Proxy::Proxy.new( @ifconfig[:ip_saddr], @options.proxy_https_port, true )
     end
 

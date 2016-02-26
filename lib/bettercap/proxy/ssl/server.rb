@@ -26,7 +26,7 @@ class Server
 
   # Create an instance from the TCPSocket +socket+.
   def initialize( socket )
-    @authority    = Context.get.authority
+    @authority    = Authority.new( Context.get.options.proxy_pem_file )
     @context      = OpenSSL::SSL::SSLContext.new
     @context.cert = @authority.certificate
     @context.key  = @authority.key
