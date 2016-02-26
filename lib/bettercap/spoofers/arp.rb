@@ -67,8 +67,6 @@ class Arp < Base
     raise 'ARP spoofer is not running' unless @running
 
     Logger.debug 'Stopping ARP spoofer ...'
-    Logger.debug "Resetting packet forwarding to #{@forwarding} ..."
-    @ctx.firewall.enable_forwarding( @forwarding )
 
     @running = false
     begin
@@ -86,6 +84,10 @@ class Arp < Base
         end
       end
     end
+
+    Logger.debug "Resetting packet forwarding to #{@forwarding} ..."
+
+    @ctx.firewall.enable_forwarding( @forwarding )
   end
 
   private
