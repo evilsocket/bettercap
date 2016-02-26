@@ -311,7 +311,7 @@ class Strip
       original_address  = IPSocket.getaddress( o.original_hostname )
       @stripped << o
       # make sure we're able to resolve the stripped domain
-      @resolver.add_rule( stripped_hostname, original_address )
+      @resolver.add_rule!( stripped_hostname, original_address )
     rescue Exception => e
       Logger.exception(e)
     end

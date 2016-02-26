@@ -30,7 +30,7 @@ class DnsWrapper < RubyDNS::RuleBasedServer
   # Instantiate a server with a block.
   def initialize(options = {}, &block)
     super(options,&block)
-    @rules = options[:rules]
+    @rules     = []
     @@instance = self
   end
   # Give a name and a record type, try to match a rule and use it for processing the given arguments.
@@ -48,31 +48,18 @@ class DNSD
   def initialize( hosts_filename = nil, address = '0.0.0.0', port = 5300 )
     @port    = port
     @address = address
+    @hosts   = hosts_filename
     @server  = nil
-    @rules   = []
-    @thread  = nil
     @ifaces  = [
       [:udp, address, port],
       [:tcp, address, port]
     ]
-
-    unless hosts_filename.nil?
-      DNSD.parse_hosts( hosts_filename ).each do |exp,addr|
-        block = Proc.new do |transaction|
-          Logger.info "[#{transaction.options[:peer]} > #{'DNS'.green}] Received request for '#{transaction.question.to_s.yellow}', sending spoofed reply #{addr.yellow} ..."
-          transaction.respond!(addr)
-        end
-
-        @rules << RubyDNS::RuleBasedServer::Rule.new( [ exp, Resolv::DNS::Resource::IN::A ], block )
-      end
-
-      Logger.warn "Empty hosts file for DNS server." if @rules.empty?
-    end
   end
 
   # Add a rule to the DNS resolver at runtime.
-  def add_rule( exp, addr )
+  def add_rule!( exp, addr )
     Logger.debug "[#{'DNS'.green}] Adding rule: '#{exp}' -> '#{addr}' ..."
+
     block = Proc.new do |transaction|
       Logger.info "[#{transaction.options[:peer]} > #{'DNS'.green}] Received request for '#{transaction.question.to_s.yellow}', sending spoofed reply #{addr.yellow} ..."
       transaction.respond!(addr)
@@ -83,37 +70,35 @@ class DNSD
 
   # Start the server.
   def start
-    Logger.info "[#{'DNS'.green}] Starting on #{@address}:#{@port} ( #{@rules.size} redirection rule#{if @rules.size > 1 then 's' else '' end} ) ..."
+    Logger.info "[#{'DNS'.green}] Starting on #{@address}:#{@port} ..."
 
-    @thread = Thread.new {
-      options = {
-        :listen => @ifaces,
-        :asynchronous => true,
-        :server_class => DnsWrapper,
-        :rules => @rules
-      }
-
-      RubyDNS::run_server( options ) do
-        # Suppress RubyDNS logging.
-        @logger.level = ::Logger::ERROR
-        @upstream ||= RubyDNS::Resolver.new([[:udp, "8.8.8.8", 53], [:tcp, "8.8.8.8", 53]])
-
-        # Default DNS handler
-        otherwise do |transaction|
-          Logger.debug "[#{transaction.options[:peer]} > #{'DNS'.green}] Received request for '#{transaction.question.to_s.yellow}' -> upstream DNS"
-          transaction.passthrough!(@upstream)
-        end
-      end
+    options = {
+      :listen => @ifaces,
+      :asynchronous => true,
+      :server_class => DnsWrapper
     }
+
+    RubyDNS::run_server( options ) do
+      # Suppress RubyDNS logging.
+      @logger.level = ::Logger::ERROR
+      @upstream ||= RubyDNS::Resolver.new([[:udp, "8.8.8.8", 53], [:tcp, "8.8.8.8", 53]])
+
+      # Default DNS handler
+      otherwise do |transaction|
+        Logger.debug "[#{transaction.options[:peer]} > #{'DNS'.green}] Received request for '#{transaction.question.to_s.yellow}' -> upstream DNS"
+        transaction.passthrough!(@upstream)
+      end
+    end
+
+    unless @hosts.nil?
+      DNSD.parse_hosts( @hosts ).each do |exp,addr|
+        add_rule!( exp, addr )
+      end
+    end
   end
 
   # Stop the server.
-  def stop
-    Logger.info "Stopping DNS server ..."
-    begin
-      @thread.kill
-    rescue; end
-  end
+  def stop; end
 
   # Parse hosts from +filename+, example host file:
   #
@@ -142,7 +127,7 @@ class DNSD
           unless Network::Validator.is_ip?(address)
 
         begin
-          hosts[ Regexp.new(expression) ] = address
+          hosts[ expression ] = address
         rescue RegexpError
           raise BetterCap::Error, "Invalid expression '#{expression}' on line #{lineno + 1} of '#{filename}'."
         end
