@@ -96,8 +96,8 @@ class Arp < Base
   # restore its ARP cache instead.
   def spoof( target, restore = false )
     if restore
-      send_spoofed_packet( @gateway.ip, @gateway.mac, target.ip, target.mac )
-      send_spoofed_packet( target.ip, target.mac, @gateway.ip, @gateway.mac ) unless @ctx.options.half_duplex
+      send_spoofed_packet( @gateway.ip, @gateway.mac, target.ip, 'ff:ff:ff:ff:ff:ff' )
+      send_spoofed_packet( target.ip, target.mac, @gateway.ip, 'ff:ff:ff:ff:ff:ff' ) unless @ctx.options.half_duplex
     else
       send_spoofed_packet( @gateway.ip, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
       send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @gateway.ip, @gateway.mac ) unless @ctx.options.half_duplex
