@@ -61,7 +61,7 @@ class Streamer
         response = r
       end
 
-      if response.textual?
+      if response.textual? or request.method == 'DELETE'
         StreamLogger.log_http( request, response )
       else
         Logger.debug "[#{request.client}] -> #{request.to_url} [#{response.code}]"
@@ -184,6 +184,13 @@ class Streamer
   def do_HEAD(req, res)
     perform_proxy_request(req, res) do |http, path, header|
       http.head(path, header)
+    end
+  end
+
+  # Handle a DELETE request, +req+ is the request object and +res+ the response.
+  def do_DELETE(req, res)
+    perform_proxy_request(req, res) do |http, path, header|
+      http.delete(path, header)
     end
   end
 
