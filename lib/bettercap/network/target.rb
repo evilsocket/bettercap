@@ -76,13 +76,13 @@ class Target
 
   # Return a verbose string representation of this object.
   def to_s(padding=true)
-    if padding
-      s = sprintf( '%-15s : %-17s', if @ip.nil? then '???' else @ip end, @mac )
-    else
-      s = sprintf( '%s : %s', if @ip.nil? then '???' else @ip end, @mac )
-    end
+    address = @ip.nil?? '???' : @ip
+    fmt     = padding ? '%-15s : %-17s' : '%s : %s'
+    vendor  = @vendor.nil?? " ( ??? )" : " ( #{@vendor} )"
+
+    s = sprintf( fmt, address, @mac )
     s += " / #{@hostname}" unless @hostname.nil?
-    s += if @vendor.nil? then " ( ??? )" else " ( #{@vendor} )" end
+    s += vendor
     s
   end
 
@@ -111,7 +111,7 @@ class Target
   end
 
   def self.normalized_mac(v)
-    v.split(':').map { |e| if e.size == 2 then e.upcase else "0#{e.upcase}" end }.join(':')
+    v.split(':').map { |e| e.size == 2 ? e.upcase : "0#{e.upcase}" }.join(':')
   end
 
 private

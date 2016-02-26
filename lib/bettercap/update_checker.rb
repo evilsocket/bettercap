@@ -32,7 +32,7 @@ class UpdateChecker
   def self.vton v
     vi = 0.0
     v.split('.').reverse.each_with_index do |e,i|
-      vi += ( e.to_i * 10**i ) - ( if e =~ /[\d+]b/ then 0.5 else 0 end )
+      vi += ( e.to_i * 10**i ) - ( e =~ /[\d+]b/ ? 0.5 : 0 )
     end
     vi
   end

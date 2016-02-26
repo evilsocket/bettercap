@@ -56,7 +56,7 @@ class InjectJS < BetterCap::Proxy::Module
   def on_request( request, response )
     # is it a html page?
     if response.content_type =~ /^text\/html.*/
-      BetterCap::Logger.info "[#{'INJECTJS'.green}] Injecting javascript #{if @@jsdata.nil? then "URL" else "file" end} into #{request.to_url}"
+      BetterCap::Logger.info "[#{'INJECTJS'.green}] Injecting javascript #{@@jsdata.nil?? "URL" : "file"} into #{request.to_url}"
       # inject URL
       if @@jsdata.nil?
         response.body.sub!( '</head>', "<script src=\"#{@@jsurl}\" type=\"text/javascript\"></script></head>" )

@@ -71,13 +71,13 @@ class Thread
       if diff[:new].empty?
         snew = ""
       else
-        snew = "Acquired #{diff[:new].size} new target#{if diff[:new].size > 1 then "s" else "" end}"
+        snew = "Acquired #{diff[:new].size} new target#{diff[:new].size > 1 ? "s" : ""}"
       end
 
       if diff[:lost].empty?
         slost = ""
       else
-        slost = "#{if snew == "" then 'L' else ', l' end}ost #{diff[:lost].size} target#{if diff[:lost].size > 1 then "s" else "" end}"
+        slost = "#{snew.empty?? 'L' : ', l'}ost #{diff[:lost].size} target#{diff[:lost].size > 1 ? "s" : ""}"
       end
 
       Logger.info "#{snew}#{slost} :"

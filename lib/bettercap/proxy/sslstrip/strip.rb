@@ -293,7 +293,7 @@ class Strip
     rescue; end
 
     unless links.empty?
-      Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Stripping #{links.size} HTTPS link#{if links.size > 1 then 's' else '' end} inside '#{request.to_url}'."
+      Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Stripping #{links.size} HTTPS link#{links.size > 1 ? 's' : ''} inside '#{request.to_url}'."
 
       links.each do |l|
         original, stripped = l
