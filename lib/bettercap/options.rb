@@ -452,9 +452,9 @@ class Options
   def parse_custom_proxy!(value, https=false)
     raise BetterCap::Error, 'Invalid custom HTTP upstream proxy address specified.' unless Network::Validator.is_ip?(value)
     if https
-      @custom_proxy = value
-    else
       @custom_https_proxy = value
+    else
+      @custom_proxy = value
     end
   end
 
