@@ -156,6 +156,10 @@ class Context
     ( @options.sniffer and @options.parsers.include?('POST') )
   end
 
+  def need_gateway?
+    ( @options.arp_cache == false or @options.has_spoofer? )
+  end
+
   # Stop every running daemon that was started and reset system state.
   def finalize
     @running = false
