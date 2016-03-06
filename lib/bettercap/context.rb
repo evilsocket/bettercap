@@ -157,7 +157,7 @@ class Context
   end
 
   def need_gateway?
-    ( @options.arp_cache == false or @options.has_spoofer? )
+    ( @options.arpcache == false or @options.has_spoofer? )
   end
 
   # Stop every running daemon that was started and reset system state.
