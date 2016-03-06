@@ -12,7 +12,7 @@ This project is released under the GPL 3 license.
 
 module BetterCap
 module Firewalls
-# OpenBSD Firewall class; for now, it's a direct copy of the OSX firewall
+  # OpenBSD Firewall class; for now, it's a direct copy of the OSX firewall
 class OpenBSD < Base
   # If +enabled+ is true will enable packet forwarding, otherwise it will
   # disable it.

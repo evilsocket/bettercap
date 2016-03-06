@@ -26,7 +26,7 @@ class Base
         @@instance = Firewalls::OSX.new
       elsif RUBY_PLATFORM =~ /linux/
         @@instance = Firewalls::Linux.new
-      elseif RUBY_PLATFORM =~ /openbsd/
+      elsif RUBY_PLATFORM =~ /openbsd/
         @@instance = Firewalls::OpenBSD.new
       else
         raise BetterCap::Error, 'Unsupported operating system'
