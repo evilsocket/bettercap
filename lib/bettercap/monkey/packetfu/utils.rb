@@ -55,6 +55,8 @@ module PacketFu
           ret = linux_ifconfig iface, data
         when /darwin/i
           ret = darwin_ifconfig iface, data
+	when /openbsd/i
+	  ret = openbsd_ifconfig iface, data
         end
       end
 
@@ -171,5 +173,37 @@ module PacketFu
 
       ret
     end
+
+    def self.openbsd_ifconfig(iface='em0',ifconfig_data)
+      BetterCap::Logger.debug "OpenBSD ifconfig #{iface}:\n#{ifconfig_data}"
+
+      ret = {}
+      real_iface = ifconfig_data.first
+      ret[:iface] = real_iface.split(':')[0]
+
+      ifconfig_data.each do |s|
+        case s
+          when /lladdr[\s]([0-9a-fA-F:]{17})/i
+            ret[:eth_saddr] = $1
+            ret[:eth_src] = EthHeader.mac2str(ret[:eth_saddr])
+          when /inet[\s]*([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)(.*Mask[\s]+(0x[a-f0-9]+))?/i
+            imask = 0
+            if $3
+              imask = $3.to_i(16).to_s(2).count("1")
+            end
+
+            ret[:ip_saddr] = $1
+            ret[:ip_src] = [IPAddr.new($1).to_i].pack("N")
+            ret[:ip4_obj] = IPAddr.new($1)
+            ret[:ip4_obj] = ret[:ip4_obj].mask(imask) if imask
+          when /inet6[\s]*([0-9a-fA-F:\x2f]+)/
+            ret[:ip6_saddr] = $1
+            ret[:ip6_obj] = IPAddr.new($1)
+        end
+      end
+
+      ret
+    end
+
   end
 end
