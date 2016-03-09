@@ -36,6 +36,7 @@ require 'thread'
 require 'uri'
 require 'webrick'
 require 'zlib'
+require 'em-proxy'
 
 Object.send :remove_const, :Config rescue nil
 Config = RbConfig

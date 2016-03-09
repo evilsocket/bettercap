@@ -15,7 +15,7 @@ module BetterCap
 module Proxy
 module HTTP
 
-# Transparent proxy class.
+# Transparent HTTP proxy class.
 class Proxy
   # Initialize the transparent proxy, making it listen on +address+:+port+.
   # If +is_https+ is true a HTTPS proxy will be created, otherwise a HTTP one.

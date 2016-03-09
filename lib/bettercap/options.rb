@@ -71,6 +71,12 @@ class Options
   attr_accessor :proxy_module
   # If true, sslstrip is enabled.
   attr_accessor :sslstrip
+
+  attr_accessor :tcp_proxy
+  attr_accessor :tcp_proxy_port
+  attr_accessor :tcp_proxy_upstream_address
+  attr_accessor :tcp_proxy_upstream_port
+
   # Custom HTTP transparent proxy address.
   attr_accessor :custom_proxy
   # Custom HTTP transparent proxy port.
@@ -140,6 +146,11 @@ class Options
     @proxy_https_port = 8083
     @proxy_pem_file = nil
     @proxy_module = nil
+
+    @tcp_proxy = false
+    @tcp_proxy_port = nil
+    @tcp_proxy_upstream_address = nil
+    @tcp_proxy_upstream_port = nil
 
     @custom_proxy = nil
     @custom_proxy_port = 8080
@@ -293,6 +304,26 @@ class Options
         Proxy::HTTP::Module.load(ctx, opts, v)
       end
 
+      opts.on( '--tcp-proxy', 'Enable TCP proxy ( requires other --tcp-proxy-* options to be specified ).' ) do
+        ctx.options.tcp_proxy = true
+      end
+
+      opts.on( '--tcp-proxy-port PORT', 'Set local TCP proxy port.' ) do |v|
+        ctx.options.tcp_proxy      = true
+        ctx.options.tcp_proxy_port = v.to_i
+      end
+
+      opts.on( '--tcp-proxy-upstream-address ADDRESS', 'Set TCP proxy upstream server address.' ) do |v|
+        raise BetterCap::Error, 'Invalid TCP proxy upstream server address specified.' unless Network::Validator.is_ip?(v)
+        ctx.options.tcp_proxy                  = true
+        ctx.options.tcp_proxy_upstream_address = v
+      end
+
+      opts.on( '--tcp-proxy-upstream-port PORT', 'Set TCP proxy upstream server port.' ) do |v|
+        ctx.options.tcp_proxy               = true
+        ctx.options.tcp_proxy_upstream_port = v.to_i
+      end
+
       opts.on( '--custom-proxy ADDRESS', 'Use a custom HTTP upstream proxy instead of the builtin one.' ) do |v|
         ctx.options.parse_custom_proxy!(v)
       end
@@ -390,6 +421,12 @@ class Options
 
     unless ctx.options.target.nil?
       ctx.targets = ctx.options.parse_targets
+    end
+
+    if ctx.options.tcp_proxy
+      raise BetterCap::Error, "No TCP proxy port specified ( --tcp-proxy-port PORT )." if ctx.options.tcp_proxy_port.nil?
+      raise BetterCap::Error, "No TCP proxy upstream server address specified ( --tcp-proxy-upstream-address ADDRESS )." if ctx.options.tcp_proxy_upstream_address.nil?
+      raise BetterCap::Error, "No TCP proxy upstream server port specified ( --tcp-proxy-upstream-port PORT )." if ctx.options.tcp_proxy_upstream_port.nil?
     end
 
     # Load firewall instance, network interface informations and detect the
@@ -551,6 +588,10 @@ class Options
       end
     end
 
+    if @tcp_proxy
+      redirections << redir( ifconfig[:ip_saddr], @tcp_proxy_upstream_port, @tcp_proxy_port )
+    end
+
     if @custom_proxy
       @http_ports.each do |port|
         redirections << redir( @custom_proxy, port, @custom_proxy_port )
@@ -578,6 +619,7 @@ class Options
       'spoofing'    => ( has_spoofer? ? on : off ),
       'discovery'   => ( ( !target.nil? or arpcache ) ? off : on ),
       'sniffer'     => ( sniffer ? on : off ),
+      'tcp-proxy'   => ( @tcp_proxy ? on : off ),
       'http-proxy'  => ( proxy ? on : off ),
       'https-proxy' => ( proxy_https ? on : off ),
       'sslstrip'    => ( ( proxy and sslstrip ) ? on : off ),

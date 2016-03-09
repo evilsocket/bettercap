@@ -138,8 +138,8 @@ class Context
     end
 
     # Start proxies and setup port redirection.
-    if @options.proxy or @options.proxy_https
-      if @options.has_http_sniffer_enabled?
+    if @options.proxy or @options.proxy_https or @options.tcp_proxy
+      if ( @options.proxy or @options.proxy_https ) and @options.has_http_sniffer_enabled?
         BetterCap::Logger.warn "WARNING: Both HTTP transparent proxy and URL parser are enabled, you're gonna see duplicated logs."
       end
       create_proxies!
@@ -229,6 +229,11 @@ class Context
     # create HTTPS proxy
     if @options.proxy_https
       @proxies << Proxy::HTTP::Proxy.new( @ifconfig[:ip_saddr], @options.proxy_https_port, true )
+    end
+
+    # create TCP proxy
+    if @options.tcp_proxy
+      @proxies << Proxy::TCP::Proxy.new( @ifconfig[:ip_saddr], @options.tcp_proxy_port, @options.tcp_proxy_upstream_address, @options.tcp_proxy_upstream_port )
     end
 
     @proxies.each do |proxy|
