@@ -13,6 +13,8 @@ This project is released under the GPL 3 license.
 
 module BetterCap
 module Proxy
+module HTTP
+
 # Transparent proxy class.
 class Proxy
   # Initialize the transparent proxy, making it listen on +address+:+port+.
@@ -175,5 +177,6 @@ class Proxy
   end
 end
 
+end
 end
 end

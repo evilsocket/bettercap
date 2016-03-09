@@ -13,6 +13,7 @@ This project is released under the GPL 3 license.
 
 module BetterCap
 module Proxy
+module HTTP
 module SSL
 
 # Little utility class to handle SSLServer creation.
@@ -56,6 +57,7 @@ class Server
   end
 end
 
+end
 end
 end
 end

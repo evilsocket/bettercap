@@ -13,6 +13,8 @@ This project is released under the GPL 3 license.
 
 module BetterCap
 module Proxy
+module HTTP
+
 # HTTP response parser.
 class Response
   # HTTP protocol version
@@ -219,5 +221,6 @@ class Response
   end
 end
 
+end
 end
 end

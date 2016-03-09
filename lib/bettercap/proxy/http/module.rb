@@ -13,6 +13,8 @@ This project is released under the GPL 3 license.
 
 module BetterCap
 module Proxy
+module HTTP
+
 # Base class for transparent proxy modules.
 class Module
   @@path    = File.dirname(__FILE__) + '/modules/'
@@ -83,7 +85,7 @@ class Module
 
   private
 
-  # Loop each available BetterCap::Proxy::Proxy module and yield each
+  # Loop each available BetterCap::Proxy::HTTP::Proxy module and yield each
   # one of them for the given code block.
   def self.each_module
       old_verbose, $VERBOSE = $VERBOSE, nil
@@ -96,6 +98,8 @@ class Module
     ensure
       $VERBOSE = old_verbose
   end
+end
+
 end
 end
 end

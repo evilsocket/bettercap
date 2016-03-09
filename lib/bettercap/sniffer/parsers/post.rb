@@ -19,7 +19,7 @@ class Post < Base
     s = pkt.to_s
     if s =~ /POST\s+[^\s]+\s+HTTP.+/
       begin
-        req = BetterCap::Proxy::Request.parse(pkt.payload)
+        req = BetterCap::Proxy::HTTP::Request.parse(pkt.payload)
         # the packet could be incomplete
         unless req.body.nil? or req.body.empty?
           StreamLogger.log_raw( pkt, "POST", req.to_url(1000) )

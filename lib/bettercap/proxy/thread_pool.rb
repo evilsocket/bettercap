@@ -13,7 +13,7 @@ This project is released under the GPL 3 license.
 
 module BetterCap
 module Proxy
-# Thread pool class used by the BetterCap::Proxy::Proxy.
+# Thread pool class used by the BetterCap::Proxy::*.
 # Tnx to Puma ThreadPool!
 class ThreadPool
 

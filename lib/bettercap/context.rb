@@ -217,18 +217,18 @@ class Context
   # is needed in order to run proxy modules.
   def create_proxies!
     if @options.has_proxy_module?
-      Proxy::Module.register_modules
-      raise BetterCap::Error, "#{@options.proxy_module} is not a valid bettercap proxy module." if Proxy::Module.modules.empty?
+      Proxy::HTTP::Module.register_modules
+      raise BetterCap::Error, "#{@options.proxy_module} is not a valid bettercap proxy module." if Proxy::HTTP::Module.modules.empty?
     end
 
     # create HTTP proxy
     if @options.proxy
-      @proxies << Proxy::Proxy.new( @ifconfig[:ip_saddr], @options.proxy_port, false )
+      @proxies << Proxy::HTTP::Proxy.new( @ifconfig[:ip_saddr], @options.proxy_port, false )
     end
 
     # create HTTPS proxy
     if @options.proxy_https
-      @proxies << Proxy::Proxy.new( @ifconfig[:ip_saddr], @options.proxy_https_port, true )
+      @proxies << Proxy::HTTP::Proxy.new( @ifconfig[:ip_saddr], @options.proxy_https_port, true )
     end
 
     @proxies.each do |proxy|

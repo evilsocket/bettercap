@@ -13,6 +13,7 @@ This project is released under the GPL 3 license.
 
 module BetterCap
 module Proxy
+module HTTP
 module SSL
 
 # Simple wrapper class used to fetch a server HTTPS certificate.
@@ -171,6 +172,7 @@ class Authority
   end
 end
 
+end
 end
 end
 end

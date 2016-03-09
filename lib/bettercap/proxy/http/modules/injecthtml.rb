@@ -12,7 +12,7 @@ This project is released under the GPL 3 license.
 =end
 
 # This proxy module will take care of HTML code injection.
-class InjectHTML < BetterCap::Proxy::Module
+class InjectHTML < BetterCap::Proxy::HTTP::Module
   # URL of the iframe if --html-iframe-url was specified.
   @@iframe = nil
   # HTML data to be injected.
@@ -39,7 +39,7 @@ class InjectHTML < BetterCap::Proxy::Module
     raise BetterCap::Error, "No --html-data or --html-iframe-url options specified for the proxy module." if @@data.nil? and @@iframe.nil?
   end
 
-  # Called by the BetterCap::Proxy::Proxy processor on each HTTP +request+ and
+  # Called by the BetterCap::Proxy::HTTP::Proxy processor on each HTTP +request+ and
   # +response+.
   def on_request( request, response )
     # is it a html page?

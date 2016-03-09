@@ -13,6 +13,7 @@ This project is released under the GPL 3 license.
 
 module BetterCap
 module Proxy
+module HTTP
 module SSLStrip
 
 # Represent a stripped url associated to the client that requested it.
@@ -184,7 +185,7 @@ class Strip
 
   # Clean some headers from +r+.
   def process_headers!(r)
-    what = r.is_a?(BetterCap::Proxy::Request) ? :req : :res
+    what = r.is_a?(BetterCap::Proxy::HTTP::Request) ? :req : :res
     HEADERS_TO_PATCH[what].each do |key,value|
       r[key] = value;
     end
@@ -318,6 +319,7 @@ class Strip
   end
 end
 
+end
 end
 end
 end

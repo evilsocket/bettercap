@@ -12,7 +12,7 @@ This project is released under the GPL 3 license.
 =end
 
 # This proxy module will take care of Javascript code injection.
-class InjectJS < BetterCap::Proxy::Module
+class InjectJS < BetterCap::Proxy::HTTP::Module
   # JS data to be injected.
   @@jsdata = nil
   # JS file URL to be injected.
@@ -51,7 +51,7 @@ class InjectJS < BetterCap::Proxy::Module
     raise BetterCap::Error, "No --js-file, --js-url or --js-data options specified for the proxy module." if @@jsdata.nil? and @@jsurl.nil?
   end
 
-  # Called by the BetterCap::Proxy::Proxy processor on each HTTP +request+ and
+  # Called by the BetterCap::Proxy::HTTP::Proxy processor on each HTTP +request+ and
   # +response+.
   def on_request( request, response )
     # is it a html page?

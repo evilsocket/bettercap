@@ -284,13 +284,13 @@ class Options
         ctx.options.proxy_https_port = v.to_i
       end
 
-      opts.on( '--proxy-pem FILE', "Use a custom PEM CA certificate file for the HTTPS proxy, default to #{Proxy::SSL::Authority::DEFAULT.yellow} ." ) do |v|
+      opts.on( '--proxy-pem FILE', "Use a custom PEM CA certificate file for the HTTPS proxy, default to #{Proxy::HTTP::SSL::Authority::DEFAULT.yellow} ." ) do |v|
         ctx.options.proxy_https = true
         ctx.options.proxy_pem_file = File.expand_path v
       end
 
-      opts.on( '--proxy-module MODULE', "Ruby proxy module to load, either a custom file or one of the following: #{Proxy::Module.available.map{|x| x.yellow}.join(', ')}." ) do |v|
-        Proxy::Module.load(ctx, opts, v)
+      opts.on( '--proxy-module MODULE', "Ruby proxy module to load, either a custom file or one of the following: #{Proxy::HTTP::Module.available.map{|x| x.yellow}.join(', ')}." ) do |v|
+        Proxy::HTTP::Module.load(ctx, opts, v)
       end
 
       opts.on( '--custom-proxy ADDRESS', 'Use a custom HTTP upstream proxy instead of the builtin one.' ) do |v|

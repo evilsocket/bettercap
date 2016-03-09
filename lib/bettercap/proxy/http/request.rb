@@ -13,6 +13,8 @@ This project is released under the GPL 3 license.
 
 module BetterCap
 module Proxy
+module HTTP
+
 # HTTP request parser.
 class Request
   # HTTP method.
@@ -183,6 +185,8 @@ class Request
 
     @host = value if name == 'Host'
   end
+end
+
 end
 end
 end

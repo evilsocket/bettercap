@@ -13,6 +13,7 @@ This project is released under the GPL 3 license.
 
 module BetterCap
 module Proxy
+module HTTP
 module SSLStrip
 
 # Class to handle a cookies for sslstrip.
@@ -60,6 +61,7 @@ class CookieMonitor
   end
 end
 
+end
 end
 end
 end

@@ -13,7 +13,9 @@ This project is released under the GPL 3 license.
 
 module BetterCap
 module Proxy
-# Handle data streaming between clients and servers for the BetterCap::Proxy::Proxy.
+module HTTP
+
+# Handle data streaming between clients and servers for the BetterCap::Proxy::HTTP::Proxy.
 class Streamer
   # Initialize the class.
   def initialize( sslstrip )
@@ -97,7 +99,7 @@ class Streamer
   # Run proxy modules.
   def process( request, response = nil )
     # loop each loaded module and execute if enabled
-    BetterCap::Proxy::Module.modules.each do |mod|
+    BetterCap::Proxy::HTTP::Module.modules.each do |mod|
       if mod.enabled?
         # we need to save the original response in case something
         # in the module will go wrong
@@ -153,8 +155,8 @@ class Streamer
     [ client_ip, client_port ]
   end
 
-  # Use a Net::HTTP object in order to perform the +req+ BetterCap::Proxy::Request
-  # object, will return a BetterCap::Proxy::Response object instance.
+  # Use a Net::HTTP object in order to perform the +req+ BetterCap::Proxy::HTTP::Request
+  # object, will return a BetterCap::Proxy::HTTP::Response object instance.
   def perform_proxy_request(req, res)
     path         = req.path
     response     = nil
@@ -201,6 +203,7 @@ class Streamer
     end
   end
 
+end
 end
 end
 end
