@@ -35,12 +35,7 @@ module PacketFu
 
       BetterCap::Logger.debug "ifconfig #{iface}"
 
-      if BetterCap::Shell.available?('ip')
-        BetterCap::Logger.debug "Using iproute2"
-
-        data = BetterCap::Shell.ip(iface)
-        ret = linux_ip iface, data
-      else
+      if BetterCap::Shell.available?('ifconfig')
         BetterCap::Logger.debug "Using ifconfig"
 
         data = BetterCap::Shell.ifconfig(iface)
@@ -58,6 +53,13 @@ module PacketFu
 	      when /openbsd/i
 	        ret = openbsd_ifconfig iface, data
         end
+      elsif BetterCap::Shell.available?('ip')
+        BetterCap::Logger.debug "Using iproute2"
+
+        data = BetterCap::Shell.ip(iface)
+        ret = linux_ip iface, data
+      else
+        raise BetterCap::Error, 'Unsupported operating system'
       end
 
       ret
