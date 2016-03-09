@@ -91,10 +91,23 @@ class StreamLogger
     msg
   end
 
-  def self.dump_raw( data )
-    msg = ''
-    data.each_byte do |b|
-      msg << ( b.chr =~ /[[:print:]]/ ? b.chr : '.' ).yellow
+  def self.hexdump( data, opts = {} )
+    bytes     = data
+    msg       = ''
+    line_size = opts[:line_size] || 16
+    padding   = opts[:padding] || ''
+
+    while bytes
+      line  = bytes[0,line_size]
+      bytes = bytes[line_size,bytes.length]
+      d     = ''
+
+      line.each_byte {|i| d += "%02X " % i}
+      d += '   ' * (line_size-line.length)
+      d += ' '
+      line.each_byte{|i| d += ( i.chr =~ /[[:print:]]/ ? i.chr : '.' ) }
+
+      msg += "#{padding}#{d}\n"
     end
     msg
   end
@@ -102,7 +115,7 @@ class StreamLogger
   def self.dump_gzip( request )
     msg = ''
     uncompressed = Zlib::GzipReader.new(StringIO.new(request.body)).read
-    self.dump_raw( uncompressed )
+    self.hexdump( uncompressed )
   end
 
   def self.dump_json( request )
@@ -134,7 +147,7 @@ class StreamLogger
         msg << self.dump_json( request )
 
       else
-        msg << self.dump_raw( request.body )
+        msg << self.hexdump( request.body )
       end
 
       Logger.raw "#{msg}\n"
