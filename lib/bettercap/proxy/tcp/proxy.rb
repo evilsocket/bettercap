@@ -15,6 +15,16 @@ module BetterCap
 module Proxy
 module TCP
 
+# http://stackoverflow.com/questions/161510/pass-parameter-by-reference-in-ruby
+class Event
+  attr_accessor :ip, :port, :data
+  def initialize( ip, port, data = nil )
+    @ip   = ip
+    @port = port
+    @data = data
+  end
+end
+
 # Transparent TCP proxy class.
 class Proxy
   attr_reader :address
@@ -51,28 +61,36 @@ class Proxy
       ::Proxy.start(:host => @address, :port => @port) do |conn|
         conn.server :srv, :host => up_addr, :port => up_port
 
-        # modify / process request stream
+        # ip -> upstream
         conn.on_data do |data|
           ip, port = peer
-          Logger.info "[#{'TCP PROXY'.green}] #{ip} -> #{'upstream'.yellow}:#{up_port} ( #{data.bytesize} bytes )"
+          event    = Event.new( ip, port, data )
 
-          BetterCap::Proxy::TCP::Module.on_data( ip, port, data )
+          Logger.info "[#{'TCP PROXY'.green}] #{ip} -> #{'upstream'.yellow}:#{up_port} ( #{event.data.bytesize} bytes )"
+
+          BetterCap::Proxy::TCP::Module.on_data( event )
+          event.data
         end
 
-        # modify / process response stream
+        # upstream -> ip
         conn.on_response do |backend, resp|
           ip, port = peer
-          Logger.info "[#{'TCP PROXY'.green}] #{'upstream'.yellow}:#{up_port} -> #{ip} ( #{resp.bytesize} bytes )"
+          event    = Event.new( ip, port, resp )
 
-          BetterCap::Proxy::TCP::Module.on_response( ip, port, resp )
+          Logger.info "[#{'TCP PROXY'.green}] #{'upstream'.yellow}:#{up_port} -> #{ip} ( #{event.data.bytesize} bytes )"
+
+          BetterCap::Proxy::TCP::Module.on_response( event )
+          event.data
         end
 
-        # termination logic
+        # termination
         conn.on_finish do |backend, name|
           ip, port = peer
+          event    = Event.new( ip, port )
+
           Logger.info "[#{'TCP PROXY'.green}] #{ip}:#{port} connection closed."
 
-          BetterCap::Proxy::TCP::Module.on_finish( ip, port )
+          BetterCap::Proxy::TCP::Module.on_finish( event )
           unbind
         end
       end

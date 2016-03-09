@@ -46,25 +46,21 @@ class Module
       end
     end
 
-    def on_data( ip, port, data )
-      backup = data
+    def on_data( event )
       @@loaded.each do |name,mod|
-        data = mod.on_data( ip, port, data )
+        mod.on_data( event )
       end
-      ( data || backup )
     end
 
-    def on_response( ip, port, data )
-      backup = data
+    def on_response( event )
       @@loaded.each do |name,mod|
-        data = mod.on_response( ip, port, data )
+        mod.on_response( event )
       end
-      ( data || backup )
     end
 
-    def on_finish( ip, port )
+    def on_finish( event )
       @@loaded.each do |name,mod|
-        mod.on_finish( ip, port )
+        mod.on_finish( event )
       end
     end
   end
