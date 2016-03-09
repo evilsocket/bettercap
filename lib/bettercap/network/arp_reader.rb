@@ -80,7 +80,11 @@ class ArpReader
 
   # Parse a single ARP cache +line+ related to the +iface+ network interface.
   def self.parse_cache_line( iface, line )
-    /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{iface}.*/i.match(line)
+    if RUBY_PLATFORM =~ /openbsd/i
+      /([0-9\.]+)\s+([a-f0-9:]+)\s+#{iface}\s+.*/i.match(line)
+    else
+      /[^\s]+\s+\(([0-9\.]+)\)\s+at\s+([a-f0-9:]+).+#{iface}.*/i.match(line)
+    end
   end
 end
 end
