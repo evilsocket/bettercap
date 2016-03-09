@@ -208,7 +208,7 @@ class Context
   def enable_port_redirection!
     @redirections = @options.get_redirections(@ifconfig)
     @redirections.each do |r|
-      Logger.debug "Redirecting #{r.protocol} traffic from port #{r.src_port} to #{r.dst_address}:#{r.dst_port}"
+      Logger.debug "Redirecting #{r.protocol} traffic from #{r.src_address.nil? ? '*' : r.src_address}:#{r.src_port} to #{r.dst_address}:#{r.dst_port}"
       @firewall.add_port_redirection( r )
     end
   end

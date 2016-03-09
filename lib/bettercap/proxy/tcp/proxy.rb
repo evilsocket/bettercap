@@ -31,7 +31,7 @@ class Proxy
   end
 
   def start
-    Logger.info "[#{'TCP'.green}] Proxy starting on #{@address}:#{@port} ( -> #{@upstream_address}:#{@upstream_port} ) ..."
+    Logger.info "[#{'TCP PROXY'.green}] Starting on #{@address}:#{@port} ( -> #{@upstream_address}:#{@upstream_port} ) ..."
     @worker = Thread.new &method(:worker)
   end
 
@@ -44,7 +44,6 @@ class Proxy
   private
 
   def worker
-    Logger.info "[#{'TCP'.green}] Proxy worker thread started."
     begin
       up_addr = @upstream_address
       up_port = @upstream_port
@@ -54,19 +53,26 @@ class Proxy
 
         # modify / process request stream
         conn.on_data do |data|
-          p [:on_data, data]
-          data
+          ip, port = peer
+          Logger.info "[#{'TCP PROXY'.green}] #{ip} -> #{'upstream'.yellow}:#{up_port} ( #{data.bytesize} bytes )"
+
+          BetterCap::Proxy::TCP::Module.on_data( ip, port, data )
         end
 
         # modify / process response stream
         conn.on_response do |backend, resp|
-          p [:on_response, backend, resp]
-          resp
+          ip, port = peer
+          Logger.info "[#{'TCP PROXY'.green}] #{'upstream'.yellow}:#{up_port} -> #{ip} ( #{resp.bytesize} bytes )"
+
+          BetterCap::Proxy::TCP::Module.on_response( ip, port, resp )
         end
 
         # termination logic
         conn.on_finish do |backend, name|
-          p [:on_finish, name]
+          ip, port = peer
+          Logger.info "[#{'TCP PROXY'.green}] #{ip}:#{port} connection closed."
+
+          BetterCap::Proxy::TCP::Module.on_finish( ip, port )
           unbind
         end
       end

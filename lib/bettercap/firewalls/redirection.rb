@@ -18,6 +18,8 @@ class Redirection
   attr_reader :interface
   # Protocol name.
   attr_reader :protocol
+  # Source address.
+  attr_reader :src_address
   # Source port.
   attr_reader :src_port
   # Destination address.
@@ -26,10 +28,11 @@ class Redirection
   attr_reader :dst_port
 
   # Create the redirection rule for the specified +interface+ and +protocol+.
-  # Redirect *:+src_port+ to +dst_address+:+dst_port+
-  def initialize( interface, protocol, src_port, dst_address, dst_port )
+  # Redirect +src_address+:+src_port+ to +dst_address+:+dst_port+
+  def initialize( interface, protocol, src_address, src_port, dst_address, dst_port )
     @interface   = interface
     @protocol    = protocol
+    @src_address = src_address
     @src_port    = src_port
     @dst_address = dst_address
     @dst_port    = dst_port

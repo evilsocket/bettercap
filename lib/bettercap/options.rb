@@ -76,6 +76,7 @@ class Options
   attr_accessor :tcp_proxy_port
   attr_accessor :tcp_proxy_upstream_address
   attr_accessor :tcp_proxy_upstream_port
+  attr_accessor :tcp_proxy_module
 
   # Custom HTTP transparent proxy address.
   attr_accessor :custom_proxy
@@ -148,9 +149,10 @@ class Options
     @proxy_module = nil
 
     @tcp_proxy = false
-    @tcp_proxy_port = nil
+    @tcp_proxy_port = 2222
     @tcp_proxy_upstream_address = nil
     @tcp_proxy_upstream_port = nil
+    @tcp_proxy_module = nil
 
     @custom_proxy = nil
     @custom_proxy_port = 8080
@@ -308,7 +310,12 @@ class Options
         ctx.options.tcp_proxy = true
       end
 
-      opts.on( '--tcp-proxy-port PORT', 'Set local TCP proxy port.' ) do |v|
+      opts.on( '--tcp-proxy-module MODULE', "Ruby TCP proxy module to load." ) do |v|
+        ctx.options.tcp_proxy_module = File.expand_path(v)
+        Proxy::TCP::Module.load(ctx, opts, ctx.options.tcp_proxy_module)
+      end
+
+      opts.on( '--tcp-proxy-port PORT', "Set local TCP proxy port, default to #{ctx.options.tcp_proxy_port.to_s.yellow} ." ) do |v|
         ctx.options.tcp_proxy      = true
         ctx.options.tcp_proxy_port = v.to_i
       end
@@ -563,7 +570,11 @@ class Options
 
   # Helper method to create a Firewalls::Redirection object.
   def redir( address, port, to, proto = 'TCP' )
-    Firewalls::Redirection.new( @iface, proto, port, address, to )
+    Firewalls::Redirection.new( @iface, proto, nil, port, address, to )
+  end
+
+  def redir_single( from, address, port, to, proto = 'TCP' )
+    Firewalls::Redirection.new( @iface, proto, from, port, address, to )
   end
 
   # Create a list of BetterCap::Firewalls::Redirection objects which are needed
@@ -589,7 +600,7 @@ class Options
     end
 
     if @tcp_proxy
-      redirections << redir( ifconfig[:ip_saddr], @tcp_proxy_upstream_port, @tcp_proxy_port )
+      redirections << redir_single( @tcp_proxy_upstream_address, ifconfig[:ip_saddr], @tcp_proxy_upstream_port, @tcp_proxy_port )
     end
 
     if @custom_proxy

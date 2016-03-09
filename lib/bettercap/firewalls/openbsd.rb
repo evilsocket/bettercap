@@ -48,7 +48,7 @@ class OpenBSD < Base
     config_file = "/tmp/bettercap_pf_#{Process.pid}.conf"
 
     File.open( config_file, 'a+t' ) do |f|
-      f.write "rdr pass on #{r.interface} proto #{r.protocol} from any to any port #{r.src_port} -> #{r.dst_address} port #{r.dst_port}\n"
+      f.write "rdr pass on #{r.interface} proto #{r.protocol} from any to #{r.src_address.nil? ? 'any' : r.src_address} port #{r.src_port} -> #{r.dst_address} port #{r.dst_port}\n"
     end
 
     # load the rule

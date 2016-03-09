@@ -50,7 +50,7 @@ class Linux < Base
     # accept all
     Shell.execute('iptables -P FORWARD ACCEPT')
     # add redirection
-    Shell.execute("iptables -t nat -A PREROUTING -i #{r.interface} -p #{r.protocol} --dport #{r.src_port} -j DNAT --to #{r.dst_address}:#{r.dst_port}")
+    Shell.execute("iptables -t nat -A PREROUTING -i #{r.interface} -p #{r.protocol} #{r.src_address.nil? ? '' : r.src_address} --dport #{r.src_port} -j DNAT --to #{r.dst_address}:#{r.dst_port}")
   end
 
   # Remove the +r+ BetterCap::Firewalls::Redirection port redirection object.
@@ -58,7 +58,7 @@ class Linux < Base
     # remove post route
     Shell.execute('iptables -t nat -D POSTROUTING -s 0/0 -j MASQUERADE')
     # remove redirection
-    Shell.execute("iptables -t nat -D PREROUTING -i #{r.interface} -p #{r.protocol} --dport #{r.src_port} -j DNAT --to #{r.dst_address}:#{r.dst_port}")
+    Shell.execute("iptables -t nat -D PREROUTING -i #{r.interface} -p #{r.protocol} #{r.src_address.nil? ? '' : r.src_address} --dport #{r.src_port} -j DNAT --to #{r.dst_address}:#{r.dst_port}")
   end
 end
 end
