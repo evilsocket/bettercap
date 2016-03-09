@@ -62,6 +62,7 @@ class Proxy
     begin
       up_addr = @upstream_address
       up_port = @upstream_port
+      up_svc  = BetterCap::StreamLogger.service( :tcp, @upstream_port )
 
       ::Proxy.start(:host => @address, :port => @port) do |conn|
         conn.server :srv, :host => up_addr, :port => up_port
@@ -71,7 +72,7 @@ class Proxy
           ip, port = peer
           event    = Event.new( ip, port, data )
 
-          Logger.info "[#{'TCP PROXY'.green}] #{ip} -> #{'upstream'.yellow}:#{up_port} ( #{event.data.bytesize} bytes )"
+          Logger.info "[#{'TCP PROXY'.green}] #{ip} #{'->'.green} #{'upstream'.yellow}:#{up_svc} ( #{event.data.bytesize} bytes )"
 
           BetterCap::Proxy::TCP::Module.on_data( event )
           event.data
@@ -82,7 +83,7 @@ class Proxy
           ip, port = peer
           event    = Event.new( ip, port, resp )
 
-          Logger.info "[#{'TCP PROXY'.green}] #{'upstream'.yellow}:#{up_port} -> #{ip} ( #{event.data.bytesize} bytes )"
+          Logger.info "[#{'TCP PROXY'.green}] #{'upstream'.yellow}:#{up_svc} #{'->'.green} #{ip} ( #{event.data.bytesize} bytes )"
 
           BetterCap::Proxy::TCP::Module.on_response( event )
           event.data
@@ -93,7 +94,7 @@ class Proxy
           ip, port = peer
           event    = Event.new( ip, port )
 
-          Logger.info "[#{'TCP PROXY'.green}] #{ip}:#{port} connection closed."
+          Logger.info "[#{'TCP PROXY'.green}] #{ip} <- #{'closed'.red} -> #{'upstream'.yellow}:#{up_svc}"
 
           BetterCap::Proxy::TCP::Module.on_finish( event )
           unbind
