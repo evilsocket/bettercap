@@ -15,23 +15,25 @@ module BetterCap
 module Proxy
 module TCP
 
-# Base class for transparent pTCP roxy modules.
+# Base class for transparent TCP proxy modules.
 class Module
-  def on_data( ip, port, data ); end
-  def on_response( ip, port, response ); end
-  def on_finish( ip, port ); end
+  # This callback is called when the target is sending data to the upstream server.
+  # +event+ is an instance of the BetterCap::Proxy::TCP::Event class.
+  def on_data( event ); end
+  # This callback is called when the upstream server is sending data to the target.
+  # +event+ is an instance of the BetterCap::Proxy::TCP::Event class.
+  def on_response( event ); end
+  # This callback is called when the connection is terminated.
+  # +event+ is an instance of the BetterCap::Proxy::TCP::Event class.
+  def on_finish( event ); end
 
+  # Loaded modules.
   @@loaded = {}
 
   class << self
     def inherited(subclass)
       name = subclass.name.upcase
       @@loaded[name] = subclass
-    end
-
-    # Return a list of available spoofers names.
-    def available
-      @@loaded.keys
     end
 
     def load( ctx, opts, file )

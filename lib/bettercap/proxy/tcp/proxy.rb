@@ -15,9 +15,16 @@ module BetterCap
 module Proxy
 module TCP
 
+# Class used to encapsulate ( and keep references ) of a single TCP event-.
 # http://stackoverflow.com/questions/161510/pass-parameter-by-reference-in-ruby
 class Event
-  attr_accessor :ip, :port, :data
+  # The source IP address of this event.
+  attr_accessor :ip
+  # Source port.
+  attr_accessor :port
+  # Reference to the buffer being transmitted.
+  attr_accessor :data
+
   def initialize( ip, port, data = nil )
     @ip   = ip
     @port = port
@@ -27,11 +34,7 @@ end
 
 # Transparent TCP proxy class.
 class Proxy
-  attr_reader :address
-  attr_reader :port
-  attr_reader :upstream_address
-  attr_reader :upstream_port
-
+  # Initialize the TCP proxy with given arguments.
   def initialize( address, port, up_address, up_port )
     @address          = address
     @port             = port
@@ -40,11 +43,13 @@ class Proxy
     @worker           = nil
   end
 
+  # Start the proxy.
   def start
     Logger.info "[#{'TCP PROXY'.green}] Starting on #{@address}:#{@port} ( -> #{@upstream_address}:#{@upstream_port} ) ..."
     @worker = Thread.new &method(:worker)
   end
 
+  # Stop the proxy.
   def stop
     Logger.info "Stopping TCP proxy ..."
     ::Proxy.stop

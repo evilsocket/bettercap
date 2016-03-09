@@ -71,13 +71,16 @@ class Options
   attr_accessor :proxy_module
   # If true, sslstrip is enabled.
   attr_accessor :sslstrip
-
+  # If true, TCP proxy will be enabled.
   attr_accessor :tcp_proxy
+  # TCP proxy local port.
   attr_accessor :tcp_proxy_port
+  # TCP proxy upstream server address.
   attr_accessor :tcp_proxy_upstream_address
+  # TCP proxy upstream server port.
   attr_accessor :tcp_proxy_upstream_port
+  # TCP proxy module to load.
   attr_accessor :tcp_proxy_module
-
   # Custom HTTP transparent proxy address.
   attr_accessor :custom_proxy
   # Custom HTTP transparent proxy port.
@@ -573,6 +576,7 @@ class Options
     Firewalls::Redirection.new( @iface, proto, nil, port, address, to )
   end
 
+  # Helper method to create a Firewalls::Redirection object for a single address ( +from+ ).
   def redir_single( from, address, port, to, proto = 'TCP' )
     Firewalls::Redirection.new( @iface, proto, from, port, address, to )
   end
