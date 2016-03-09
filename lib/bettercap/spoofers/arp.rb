@@ -98,9 +98,22 @@ class Arp < Base
     if restore
       send_spoofed_packet( @gateway.ip, @gateway.mac, target.ip, 'ff:ff:ff:ff:ff:ff' )
       send_spoofed_packet( target.ip, target.mac, @gateway.ip, 'ff:ff:ff:ff:ff:ff' ) unless @ctx.options.half_duplex
+      @ctx.targets.each do |e|
+        unless e.ip.nil? or e.mac.nil? or e.ip == target.ip or e.ip == @gateway.ip
+          send_spoofed_packet( e.ip, e.mac, target.ip, 'ff:ff:ff:ff:ff:ff' )
+        end
+      end
     else
+      # tell the target we're the gateway
       send_spoofed_packet( @gateway.ip, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
+      # tell the gateway we're the target
       send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @gateway.ip, @gateway.mac ) unless @ctx.options.half_duplex
+      # tell the target we're everybody else in the network :D
+      @ctx.targets.each do |e|
+        unless e.ip.nil? or e.mac.nil? or e.ip == target.ip or e.ip == @gateway.ip
+          send_spoofed_packet( e.ip, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
+        end
+      end
     end
   end
 
