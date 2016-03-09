@@ -51,6 +51,12 @@ class Context
     @@instance ||= self.new
   end
 
+  # Runs a minor GC to collect young, short-lived objects.
+  def self.run_gc
+    Logger.debug "Running Ruby garbage collector ..."
+    GC.start( full_mark: false )
+  end
+
   # Initialize the global context object.
   def initialize
     begin

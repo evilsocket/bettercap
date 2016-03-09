@@ -33,6 +33,8 @@ class PacketQueue
 
   # Push a packet to the queue.
   def push(packet)
+    Context.run_gc if @queue.size == 0
+
     @queue.push(packet)
   end
 
