@@ -107,7 +107,7 @@ class Thread
 
       prev = @ctx.targets
 
-      sleep(5) if @ctx.options.arpcache
+      sleep(1) if @ctx.options.arpcache
     end
   end
 end
