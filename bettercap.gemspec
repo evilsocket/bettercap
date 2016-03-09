@@ -13,11 +13,11 @@ Gem::Specification.new do |gem|
   gem.email = %q{evilsocket@gmail.com}
   gem.homepage = %q{http://github.com/evilsocket/bettercap}
 
-  gem.add_dependency( 'colorize', '~> 0.7.5' )
+  gem.add_dependency( 'colorize', '~> 0.7', '>= 0.7.5' )
   gem.add_dependency( 'packetfu', '~> 1.1', '>= 1.1.10' )
-  gem.add_dependency( 'pcaprub', '~> 0.12.0' )
-  gem.add_dependency( 'network_interface', '~> 0.0.1' )
-  gem.add_dependency( 'net-dns', '~> 0.8.0' )
+  gem.add_dependency( 'pcaprub', '~> 0.12', '>= 0.12.0' )
+  gem.add_dependency( 'network_interface', '~> 0.0', '>= 0.0.1' )
+  gem.add_dependency( 'net-dns', '~> 0.8', '>= 0.8.0' )
   gem.add_dependency( 'rubydns', '~> 1.0', '>= 1.0.3' )
 
   gem.files = Dir.glob("*.md") +
