@@ -140,6 +140,9 @@ class StreamLogger
       when /application\/x-www-form-urlencoded.*/i
         msg << self.dump_form( request )
 
+      when /text\/plain.*/i
+        msg << request.body + "\n"
+
       when 'gzip'
         msg << self.dump_gzip( request )
 
