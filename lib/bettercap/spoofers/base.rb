@@ -57,7 +57,7 @@ private
   def sniff_packets( filter )
     begin
       @capture = PacketFu::Capture.new(
-          iface: @ctx.options.iface,
+          iface: @ctx.options.core.iface,
           filter: filter,
           start: true
       )
@@ -108,7 +108,7 @@ private
   def update_gateway!
     hw = Network.get_hw_address( @ctx, @ctx.gateway )
 
-    raise BetterCap::Error, "Couldn't determine router MAC" if ( @ctx.need_gateway? and hw.nil? )
+    raise BetterCap::Error, "Couldn't determine router MAC" if ( @ctx.options.need_gateway? and hw.nil? )
 
     @gateway = Network::Target.new( @ctx.gateway, hw )
 

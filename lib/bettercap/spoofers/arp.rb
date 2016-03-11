@@ -46,12 +46,12 @@ class Arp < Base
 
   # Start the ARP spoofing.
   def start
-    Logger.debug "Starting ARP spoofer ( #{@ctx.options.half_duplex ? 'Half' : 'Full'} Duplex ) ..."
+    Logger.debug "Starting ARP spoofer ( #{@ctx.options.spoof.half_duplex ? 'Half' : 'Full'} Duplex ) ..."
 
     stop() if @running
     @running = true
 
-    if @ctx.options.kill
+    if @ctx.options.spoof.kill
       Logger.warn "Disabling packet forwarding."
       @ctx.firewall.enable_forwarding(false) if @forwarding
     else
@@ -97,7 +97,7 @@ class Arp < Base
   def spoof( target, restore = false )
     if restore
       send_spoofed_packet( @gateway.ip, @gateway.mac, target.ip, 'ff:ff:ff:ff:ff:ff' )
-      send_spoofed_packet( target.ip, target.mac, @gateway.ip, 'ff:ff:ff:ff:ff:ff' ) unless @ctx.options.half_duplex
+      send_spoofed_packet( target.ip, target.mac, @gateway.ip, 'ff:ff:ff:ff:ff:ff' ) unless @ctx.options.spoof.half_duplex
       @ctx.targets.each do |e|
         unless e.ip.nil? or e.mac.nil? or e.ip == target.ip or e.ip == @gateway.ip
           send_spoofed_packet( e.ip, e.mac, target.ip, 'ff:ff:ff:ff:ff:ff' )
@@ -107,7 +107,7 @@ class Arp < Base
       # tell the target we're the gateway
       send_spoofed_packet( @gateway.ip, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
       # tell the gateway we're the target
-      send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @gateway.ip, @gateway.mac ) unless @ctx.options.half_duplex
+      send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @gateway.ip, @gateway.mac ) unless @ctx.options.spoof.half_duplex
       # tell the target we're everybody else in the network :D
       @ctx.targets.each do |e|
         unless e.ip.nil? or e.mac.nil? or e.ip == target.ip or e.ip == @gateway.ip

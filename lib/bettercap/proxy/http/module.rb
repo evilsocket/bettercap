@@ -42,13 +42,13 @@ class Module
   # Load the module with +name+.
   def self.load(ctx, opts, name)
     if self.is_builtin?(name)
-      ctx.options.proxy_module = "#{@@path}/#{name}.rb"
+      ctx.options.proxies.proxy_module = "#{@@path}/#{name}.rb"
     else
-      ctx.options.proxy_module = File.expand_path(name)
+      ctx.options.proxies.proxy_module = File.expand_path(name)
     end
 
     begin
-      require ctx.options.proxy_module
+      require ctx.options.proxies.proxy_module
 
       self.register_options(opts)
     rescue LoadError

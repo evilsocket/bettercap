@@ -173,7 +173,7 @@ class Proxy
 
   # Return true if sslstrip is needed for this proxy instance.
   def need_sslstrip?
-    ( Context.get.options.sslstrip and !@is_https )
+    ( Context.get.options.proxies.sslstrip and !@is_https )
   end
 end
 

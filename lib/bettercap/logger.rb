@@ -23,18 +23,13 @@ module Logger
     @@thread    = nil
 
     # Initialize the logging system.
-    # If +debug+ is true, debug logging will be enabled.
-    # If +logfile+ is not nil, every message will be saved to that file.
-    # If +silent+ is true, all messages will be suppressed if they're not errors
-    # or warnings.
-    # If +with_timestamp+ is true, a timestamp will be prepended to each line.
-    def init( debug, logfile, silent, with_timestamp )
-      @@debug     = debug
-      @@logfile   = logfile
+    def init( ctx )
+      @@debug     = ctx.options.core.debug
+      @@logfile   = ctx.options.core.logfile
+      @@silent    = ctx.options.core.silent
+      @@timestamp = ctx.options.core.log_timestamp
+      @@ctx       = ctx
       @@thread    = Thread.new { worker }
-      @@silent    = silent
-      @@timestamp = with_timestamp
-      @@ctx       = Context.get
     end
 
     # Log the exception +e+, if this is a beta version, log it as a warning,

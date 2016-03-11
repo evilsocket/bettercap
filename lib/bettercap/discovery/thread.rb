@@ -31,7 +31,7 @@ class Thread
   def stop
     @running = false
     if @thread != nil
-      Logger.info( 'Stopping network discovery thread ...' ) unless @ctx.options.arpcache
+      Logger.info( 'Stopping network discovery thread ...' ) unless @ctx.options.core.arpcache
       begin
         @thread.exit
       rescue
@@ -97,17 +97,17 @@ class Thread
   # This method implements the main discovery logic, it will be executed within
   # the spawned thread.
   def worker
-    Logger.debug( 'Network discovery thread started.' ) unless @ctx.options.arpcache
+    Logger.debug( 'Network discovery thread started.' ) unless @ctx.options.core.arpcache
 
     prev = []
     while @running
       @ctx.targets = Network.get_alive_targets(@ctx).sort_by { |t| t.sortable_ip }
 
-      print_differences( prev ) unless @ctx.options.arpcache
+      print_differences( prev ) unless @ctx.options.core.arpcache
 
       prev = @ctx.targets
 
-      sleep(1) if @ctx.options.arpcache
+      sleep(1) if @ctx.options.core.arpcache
     end
   end
 end

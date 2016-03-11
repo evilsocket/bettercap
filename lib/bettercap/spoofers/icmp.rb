@@ -113,7 +113,7 @@ class Icmp < Base
     stop() if @running
     @running = true
 
-    if @ctx.options.kill
+    if @ctx.options.spoof.kill
       Logger.warn "Disabling packet forwarding."
       @ctx.firewall.enable_forwarding(false) if @forwarding
     else

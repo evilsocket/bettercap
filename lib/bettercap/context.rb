@@ -86,13 +86,15 @@ class Context
 
   # Update the Context state parsing network related informations.
   def update!
-    @ifconfig = PacketFu::Utils.ifconfig @options.iface
+    @gateway  = @options.gateway unless @options.core.gateway.nil?
+    @targets  = @options.core.targets unless @options.core.targets.nil?
+    @ifconfig = PacketFu::Utils.ifconfig @options.core.iface
     @gateway  = Network.get_gateway if @gateway.nil?
 
-    raise BetterCap::Error, "Could not determine IPv4 address of '#{@options.iface}', make sure this interface "\
+    raise BetterCap::Error, "Could not determine IPv4 address of '#{@options.core.iface}', make sure this interface "\
                             'is active and connected.' if @ifconfig[:ip4_obj].nil?
 
-    raise BetterCap::Error, "Could not detect the gateway address for interface #{@options.iface}, "\
+    raise BetterCap::Error, "Could not detect the gateway address for interface #{@options.core.iface}, "\
                             'make sure you\'ve specified the correct network interface to use and to have the '\
                             'correct network configuration, this could also happen if bettercap '\
                             'is launched from a virtual environment.' unless Network::Validator.is_ip?(@gateway)
@@ -106,7 +108,9 @@ class Context
     end
     Logger.debug "--------------------------------\n"
 
-    @packets = Network::PacketQueue.new( @ifconfig[:iface], @options.packet_throttle, 4 )
+    @packets = Network::PacketQueue.new( @ifconfig[:iface], @options.core.packet_throttle, 4 )
+    # Spoofers need the context network data to be initialized.
+    @spoofer = @options.spoof.parse_spoofers
   end
 
   # Find a target given its +ip+ and +mac+ addresses inside the #targets
@@ -123,12 +127,12 @@ class Context
   # Start everything!
   def start!
     # Start targets auto discovery.
-    BetterCap::Logger.info( "Targeting the whole subnet #{@ifconfig[:ip4_obj].to_range} ..." ) unless @options.has_spoofer? or @options.arpcache
+    BetterCap::Logger.info( "Targeting the whole subnet #{@ifconfig[:ip4_obj].to_range} ..." ) unless @options.spoof.enabled? or @options.core.arpcache
     @discovery.start
     # give some time to the discovery thread to spawn its workers,
     # this will prevent 'Too many open files' errors to delay host
     # discovery.
-    sleep(1.5) unless @options.arpcache
+    sleep(1.5) unless @options.core.arpcache
 
     # Start network spoofers if any.
     @spoofer.each do |spoofer|
@@ -136,8 +140,8 @@ class Context
     end
 
     # Start proxies and setup port redirection.
-    if @options.proxy or @options.proxy_https or @options.tcp_proxy
-      if ( @options.proxy or @options.proxy_https ) and @options.has_http_sniffer_enabled?
+    if @options.proxies.any?
+      if ( @options.proxies.proxy or @options.proxies.proxy_https ) and @options.sniff.enabled?('URL')
         BetterCap::Logger.warn "WARNING: Both HTTP transparent proxy and URL parser are enabled, you're gonna see duplicated logs."
       end
       create_proxies!
@@ -148,20 +152,12 @@ class Context
     create_servers!
 
     # Start network sniffer.
-    if @options.sniffer
+    if @options.sniff.enabled?
       Sniffer.start self
-    elsif @options.has_spoofer?
+    elsif @options.spoof.enabled? and !@options.proxies.any?
       Logger.warn 'WARNING: Sniffer module was NOT enabled ( -X argument ), this '\
-                  'will cause the MITM to run but no data to be collected.' unless @options.has_spoofer?
+                  'will cause the MITM to run but no data to be collected.'
     end
-  end
-
-  def post_sniffer_enabled?
-    ( @options.sniffer and @options.parsers.include?('POST') )
-  end
-
-  def need_gateway?
-    ( @options.arpcache == false or @options.has_spoofer? )
   end
 
   # Stop every running daemon that was started and reset system state.
@@ -214,24 +210,24 @@ class Context
   # Initialize the needed transparent proxies and the processor routined which
   # is needed in order to run proxy modules.
   def create_proxies!
-    if @options.has_proxy_module?
+    if @options.proxies.has_proxy_module?
       Proxy::HTTP::Module.register_modules
-      raise BetterCap::Error, "#{@options.proxy_module} is not a valid bettercap proxy module." if Proxy::HTTP::Module.modules.empty?
+      raise BetterCap::Error, "#{@options.proxies.proxy_module} is not a valid bettercap proxy module." if Proxy::HTTP::Module.modules.empty?
     end
 
     # create HTTP proxy
-    if @options.proxy
-      @proxies << Proxy::HTTP::Proxy.new( @ifconfig[:ip_saddr], @options.proxy_port, false )
+    if @options.proxies.proxy
+      @proxies << Proxy::HTTP::Proxy.new( @ifconfig[:ip_saddr], @options.proxies.proxy_port, false )
     end
 
     # create HTTPS proxy
-    if @options.proxy_https
-      @proxies << Proxy::HTTP::Proxy.new( @ifconfig[:ip_saddr], @options.proxy_https_port, true )
+    if @options.proxies.proxy_https
+      @proxies << Proxy::HTTP::Proxy.new( @ifconfig[:ip_saddr], @options.proxies.proxy_https_port, true )
     end
 
     # create TCP proxy
-    if @options.tcp_proxy
-      @proxies << Proxy::TCP::Proxy.new( @ifconfig[:ip_saddr], @options.tcp_proxy_port, @options.tcp_proxy_upstream_address, @options.tcp_proxy_upstream_port )
+    if @options.proxies.tcp_proxy
+      @proxies << Proxy::TCP::Proxy.new( @ifconfig[:ip_saddr], @options.proxies.tcp_proxy_port, @options.proxies.tcp_proxy_upstream_address, @options.proxies.tcp_proxy_upstream_port )
     end
 
     @proxies.each do |proxy|
@@ -242,16 +238,16 @@ class Context
   # Initialize and start the needed servers.
   def create_servers!
     # Start local DNS server.
-    if @options.dnsd
-      Logger.warn "Starting DNS server with spoofing disabled, bettercap will only reply to local DNS queries." unless @options.has_spoofer?
+    if @options.servers.dnsd
+      Logger.warn "Starting DNS server with spoofing disabled, bettercap will only reply to local DNS queries." unless @options.spoof.enabled?
 
-      @dnsd = Network::Servers::DNSD.new( @options.dnsd_file, @ifconfig[:ip_saddr], @options.dnsd_port )
+      @dnsd = Network::Servers::DNSD.new( @options.servers.dnsd_file, @ifconfig[:ip_saddr], @options.servers.dnsd_port )
       @dnsd.start
     end
 
     # Start local HTTP server.
-    if @options.httpd
-      @httpd = Network::Servers::HTTPD.new( @options.httpd_port, @options.httpd_path )
+    if @options.servers.httpd
+      @httpd = Network::Servers::HTTPD.new( @options.servers.httpd_port, @options.servers.httpd_path )
       @httpd.start
     end
   end

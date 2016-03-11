@@ -18,7 +18,7 @@ class << self
   # Return the current network gateway or nil.
   def get_gateway
     nstat = Shell.execute('netstat -nr')
-    iface = Context.get.options.iface
+    iface = Context.get.options.core.iface
 
     Logger.debug "NETSTAT:\n#{nstat}"
 
@@ -54,7 +54,7 @@ class << self
   # Return a list of BetterCap::Target objects found on the network, given a
   # BetterCap::Context ( +ctx+ ) and a +timeout+ in seconds for the operation.
   def get_alive_targets( ctx )
-    if ctx.options.should_discover_hosts?
+    if ctx.options.core.should_discover_hosts?
       start_agents( ctx )
     else
       Logger.debug 'Using current ARP cache.'

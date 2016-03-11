@@ -22,7 +22,7 @@ class ArpReader
     targets = []
     self.parse_cache do |ip,mac|
       if ip != ctx.gateway and ip != ctx.ifconfig[:ip_saddr]
-        if ctx.options.ignore_ip?(ip)
+        if ctx.options.core.ignore_ip?(ip)
           Logger.debug "Ignoring #{ip} ..."
         else
           # reuse Target object if it's already a known address

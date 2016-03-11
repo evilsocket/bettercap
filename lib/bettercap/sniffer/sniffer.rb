@@ -64,12 +64,12 @@ class Sniffer
 
   # Return the current PCAP stream.
   def self.stream
-    if @@ctx.options.sniffer_src.nil?
+    if @@ctx.options.sniff.src.nil?
       @@cap.stream
     else
-      Logger.info "[#{'SNIFFER'.green}] Reading packets from #{@@ctx.options.sniffer_src} ..."
+      Logger.info "[#{'SNIFFER'.green}] Reading packets from #{@@ctx.options.sniff.src} ..."
 
-      PacketFu::PcapFile.file_to_array @@ctx.options.sniffer_src
+      PacketFu::PcapFile.file_to_array @@ctx.options.sniff.src
     end
   end
 
@@ -81,7 +81,7 @@ class Sniffer
       # not IP packet
       return true unless pkt.is_ip?
       # skip if local packet and --local|-L was not specified.
-      unless @@ctx.options.local
+      unless @@ctx.options.sniff.local
         return ( pkt.ip_saddr == @@ctx.ifconfig[:ip_saddr] or pkt.ip_daddr == @@ctx.ifconfig[:ip_saddr] )
       end
     rescue; end
@@ -103,7 +103,7 @@ class Sniffer
   def self.append_packet( p )
     begin
       @@pcap.array_to_file(
-          filename: @@ctx.options.sniffer_pcap,
+          filename: @@ctx.options.sniff.pcap,
           array: [p],
           append: true ) unless @@pcap.nil?
     rescue Exception => e
@@ -115,20 +115,20 @@ class Sniffer
   def self.setup( ctx )
     @@ctx = ctx
 
-    unless @@ctx.options.sniffer_pcap.nil?
+    unless @@ctx.options.sniff.pcap.nil?
       @@pcap = PacketFu::PcapFile.new
-      Logger.info "[#{'SNIFFER'.green}] Saving packets to #{@@ctx.options.sniffer_pcap} ."
+      Logger.info "[#{'SNIFFER'.green}] Saving packets to #{@@ctx.options.sniff.pcap} ."
     end
 
-    if @@ctx.options.custom_parser.nil?
-      @@parsers = Parsers::Base.load_by_names @@ctx.options.parsers
+    if @@ctx.options.sniff.custom_parser.nil?
+      @@parsers = Parsers::Base.load_by_names @@ctx.options.sniff.parsers
     else
-      @@parsers = Parsers::Base.load_custom @@ctx.options.custom_parser
+      @@parsers = Parsers::Base.load_custom @@ctx.options.sniff.custom_parser
     end
 
     @@cap = Capture.new(
-        iface: @@ctx.options.iface,
-        filter: @@ctx.options.sniffer_filter,
+        iface: @@ctx.options.core.iface,
+        filter: @@ctx.options.sniff.filter,
         start: true
     )
   end
