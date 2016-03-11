@@ -68,7 +68,7 @@ class Store
           s_cert = Fetcher.fetch( hostname, port )
           save_to_file( s_cert, filename )
         else
-          Logger.info "[#{'SSL'.green}] Loaded HTTPS certificate for '#{hostname}' from store."
+          Logger.debug "[#{'SSL'.green}] Loaded HTTPS certificate for '#{hostname}' from store."
         end
 
         @store[key] = s_cert

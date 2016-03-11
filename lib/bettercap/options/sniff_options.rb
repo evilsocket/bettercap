@@ -50,32 +50,32 @@ class SniffOptions
     end
 
     opts.on( '-L', '--local', "Parse packets coming from/to the address of this computer ( NOTE: Will set -X to true ), default to #{'false'.yellow}." ) do
-      @sniffer = true
+      @enabled = true
       @local = true
     end
 
     opts.on( '--sniffer-source FILE', 'Load packets from the specified PCAP file instead of the interface ( will enable sniffer ).' ) do |v|
-      @sniffer = true
+      @enabled = true
       @src = File.expand_path v
     end
 
     opts.on( '--sniffer-pcap FILE', 'Save all packets to the specified PCAP file ( will enable sniffer ).' ) do |v|
-      @sniffer = true
+      @enabled = true
       @pcap = File.expand_path v
     end
 
     opts.on( '--sniffer-filter EXPRESSION', 'Configure the sniffer to use this BPF filter ( will enable sniffer ).' ) do |v|
-      @sniffer = true
+      @enabled = true
       @filter = v
     end
 
     opts.on( '-P', '--parsers PARSERS', "Comma separated list of packet parsers to enable, '*' for all ( NOTE: Will set -X to true ), available: #{Parsers::Base.available.map { |x| x.yellow }.join(', ')} - default: #{'*'.yellow}" ) do |v|
-      @sniffer = true
+      @enabled = true
       @parsers = Parsers::Base.from_cmdline(v)
     end
 
     opts.on( '--custom-parser EXPRESSION', 'Use a custom regular expression in order to capture and show sniffed data ( NOTE: Will set -X to true ).' ) do |v|
-      @sniffer       = true
+      @enabled       = true
       @parsers       = ['CUSTOM']
       @custom_parser = Regexp.new(v)
     end

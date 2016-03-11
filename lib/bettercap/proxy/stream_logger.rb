@@ -143,10 +143,10 @@ class StreamLogger
       when /text\/plain.*/i
         msg << request.body + "\n"
 
-      when 'gzip'
+      when /gzip.*/i
         msg << self.dump_gzip( request )
 
-      when 'application/json'
+      when /application\/json.*/i
         msg << self.dump_json( request )
 
       else
