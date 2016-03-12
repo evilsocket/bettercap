@@ -85,7 +85,7 @@ class Proxy
 
           Logger.info "[#{'TCP PROXY'.green}] #{ip} #{'->'.green} #{'upstream'.yellow}:#{up_svc} ( #{event.data.bytesize} bytes )"
 
-          BetterCap::Proxy::TCP::Module.on_data( event )
+          Module.dispatch( 'on_data', event )
           event.data
         end
 
@@ -96,7 +96,7 @@ class Proxy
 
           Logger.info "[#{'TCP PROXY'.green}] #{'upstream'.yellow}:#{up_svc} #{'->'.green} #{ip} ( #{event.data.bytesize} bytes )"
 
-          BetterCap::Proxy::TCP::Module.on_response( event )
+          Module.dispatch( 'on_response', event )
           event.data
         end
 
@@ -107,7 +107,7 @@ class Proxy
 
           Logger.info "[#{'TCP PROXY'.green}] #{ip} <- #{'closed'.red} -> #{'upstream'.yellow}:#{up_svc}"
 
-          BetterCap::Proxy::TCP::Module.on_finish( event )
+          Module.dispatch( 'on_finish', event )
           unbind
         end
       end

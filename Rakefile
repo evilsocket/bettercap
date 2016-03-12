@@ -142,7 +142,7 @@ namespace :test do
     puts "Please enter SSH server address:"
     addr = STDIN.gets.chomp
 
-    system( "clear && sudo bettercap -T 192.168.1.6 --no-discovery --tcp-proxy-upstream-address #{addr} --tcp-proxy-upstream-port 22 --tcp-proxy-module test_tcp_module.rb" )
+    system( "clear && sudo bettercap -T 192.168.1.2 --no-discovery --tcp-proxy-upstream-address #{addr} --tcp-proxy-upstream-port 22 --tcp-proxy-module test_tcp_module.rb" )
   end
 
   desc "Test DNS spoofing."
