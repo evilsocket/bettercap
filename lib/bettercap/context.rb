@@ -42,6 +42,8 @@ class Context
   attr_reader   :timeout
   # Instance of BetterCap::PacketQueue.
   attr_reader   :packets
+  # Instance of BetterCap::Memory.
+  attr_reader   :memory
 
   @@instance = nil
 
@@ -49,12 +51,6 @@ class Context
   # was not yet created it will be initialized and returned.
   def self.get
     @@instance ||= self.new
-  end
-
-  # Runs a minor GC to collect young, short-lived objects.
-  def self.run_gc
-    Logger.debug "Running Ruby garbage collector ..."
-    GC.start
   end
 
   # Initialize the global context object.
@@ -82,6 +78,7 @@ class Context
     @discovery       = Discovery::Thread.new self
     @firewall        = Firewalls::Base.get
     @packets         = nil
+    @memory          = Memory.new
   end
 
   # Update the Context state parsing network related informations.

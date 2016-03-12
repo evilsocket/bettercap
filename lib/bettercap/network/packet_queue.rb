@@ -29,13 +29,13 @@ class PacketQueue
     @udp      = UDPSocket.new
     @queue    = Queue.new
     @workers  = (0...nworkers).map { ::Thread.new { worker } }
+    @ctx      = Context.get
   end
 
   # Push a packet to the queue.
   def push(packet)
-    Context.run_gc if @queue.size == 0
-
     @queue.push(packet)
+    @ctx.memory.optimize! if ( @queue.size == 1 )
   end
 
   # Wait for the packet queue to be empty.
