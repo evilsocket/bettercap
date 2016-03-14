@@ -65,12 +65,18 @@ class Sniffer
   # Return the current PCAP stream.
   def self.stream
     if @@ctx.options.sniff.src.nil?
-      @@cap.stream
+      return @@cap.stream
     else
       Logger.info "[#{'SNIFFER'.green}] Reading packets from #{@@ctx.options.sniff.src} ..."
 
-      PacketFu::PcapFile.file_to_array @@ctx.options.sniff.src
+      begin
+        return PacketFu::PcapFile.file_to_array @@ctx.options.sniff.src
+      rescue Exception => e
+        Logger.error "Error while parsing #{@@ctx.options.sniff.src}: #{e.message}"
+        Logger.exception e
+      end
     end
+    return []
   end
 
   # Return true if the +pkt+ packet instance must be skipped.
