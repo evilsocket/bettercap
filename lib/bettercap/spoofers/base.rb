@@ -67,10 +67,10 @@ private
 
     @capture.stream.each do |p|
       begin
-        if not @running
-            Logger.debug 'Stopping thread ...'
-            Thread.exit
-            break
+        unless @running
+          Logger.debug 'Stopping thread ...'
+          Thread.exit
+          break
         end
 
         pkt = PacketFu::Packet.parse p rescue nil

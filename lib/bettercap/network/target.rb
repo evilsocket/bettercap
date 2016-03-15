@@ -76,7 +76,7 @@ class Target
   # a vendor lookup.
   def mac=(value)
     @mac = Target.normalized_mac(value)
-    @vendor = Target.lookup_vendor(@mac) if not @mac.nil?
+    @vendor = Target.lookup_vendor(@mac) unless @mac.nil?
   end
 
   # Return a verbose string representation of this object.
