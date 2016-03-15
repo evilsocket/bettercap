@@ -19,11 +19,9 @@ class PcapHeader
     force_binary(str)
     return self if str.nil?
     str.force_encoding(Encoding::BINARY) if str.respond_to? :force_encoding
-    # Since PcapFile.read uses our endianess, set it to 'big' anyway.
-    self[:endian] = :big
 
     # Handle little endian pcap
-    if str[0,4] == MAGIC_LITTLE.to_s
+    if str[0,4] == self[:magic].to_s
       self[:magic].read str[0,4]
       self[:ver_major].read str[4,2]
       self[:ver_minor].read str[6,2]
@@ -33,6 +31,9 @@ class PcapHeader
       self[:network].read str[20,4]
     # Handle big endian pcap
     elsif str[0,4] == MAGIC_BIG.to_s
+      # Since PcapFile.read uses our endianess, set it to 'big' anyway.
+      self[:endian] = :big
+
       self[:magic].read     str[0,4].reverse
       self[:ver_major].read str[4,2].reverse
       self[:ver_minor].read str[6,2].reverse
