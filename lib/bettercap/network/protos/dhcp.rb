@@ -28,125 +28,6 @@ OP_MESSAGETYPES = {
 }
 
 OP_CONSTANTS = {
-  # DHCP Options
-  :DHCPPad                          => 0,
-  :DHCPSubnetMask                   => 1,
-  :DHCPTimeOffset                   => 2,
-  :DHCPRouter                       => 3,
-  :DHCPTimeServer                   => 4,
-  :DHCPNameServer                   => 5,
-  :DHCPDNS                          => 6,
-  :DHCPLogServer                    => 7,
-  :DHCPQuoteServer                  => 8,
-  :DHCPLPRServer                    => 9,
-  :DHCPImpressServer                => 10,
-  :DHCPRLServer                     => 11,
-  :DHCPHostName                     => 12,
-  :DHCPBootFileSize                 => 13,
-  :DHCPMeritDumpFile                => 14,
-  :DHCPDomainName                   => 15,
-  :DHCPSwapServer                   => 16,
-  :DHCPRootPath                     => 17,
-  :DHCPExtensionsPath               => 18,
-  :DHCPIPForwarding                 => 19,
-  :DHCPNonLocalRouting              => 20,
-  :DHCPPolicyFilter                 => 21,
-  :DHCPMaximumDRSize                => 22, # Datagram reassembly size
-  :DHCPDefaultIPTTL                 => 23,
-  :DHCPPathMTUAgingTimeout          => 24,
-  :DHCPPathMTUPlateauTable          => 25,
-  :DHCPInterfaceMTU                 => 26,
-  :DHCPAllSubnetsLocal              => 27,
-  :DHCPBroadcastAddress             => 28,
-  :DHCPPerformMask                  => 29, # Perform mask discovery
-  :DHCPMaskSupplier                 => 30, # Zelda flashbacks
-  :DHCPPerformRouter                => 31, # Perform router discovery
-  :DHCPRouterSolicitation           => 32, # Router Solicitation Address
-  :DHCPStaticRoutingEnable          => 33,
-  :DHCPTrailerEncap                 => 34, # Trailer Encapsulation
-  :DHCPArpCacheTimeout              => 35,
-  :DHCPEthernetEncap                => 36, # ethernet encapsulation
-  :DHCPDefaultTCPTTL                => 37,
-  :DHCPTCPKeepAliveInt              => 38, # TCP Keepalive interval
-  :DHCPTCPKeepAliveGB               => 39, # TCP Keepalive garbage
-  :DHCPNISDomain                    => 40,
-  :DHCPNISServer                    => 41,
-  :DHCPNTPServers                   => 42,
-  :DHCPVendorSpecificInfo           => 43,
-  :DHCPNetBIOSNameServer            => 44,
-  :DHCPNetBIOSDDS                   => 45,
-  :DHCPNetBIOSNodeType              => 46,
-  :DHCPNetBIOSScope                 => 47,
-  :DHCPXWindowSystemFont            => 48, # XWindow Font server
-  :DHCPXWindowSystemDM              => 49, # Xwindow System Display Server
-  :DHCPRequestedIPAddress           => 50,
-  :DHCPIPAddressLeaseTime           => 51,
-  :DHCPOptionOverload               => 52,
-  :DHCPMessageType                  => 53,
-  :DHCPServerIdentifier             => 54,
-  :DHCPParameters                   => 55,
-  :DHCPMessage                      => 56,
-  :DHCPMaxDHCPMessageSize           => 57,
-  :DHCPRenewTimeValue               => 58,
-  :DHCPRebindingTimeValue           => 59,
-  :DHCPClassIdentifier              => 60,
-  :DHCPClientIdentifier             => 61,
-  :DHCPNetWareIPDomainName          => 62,
-  :DHCPNetWareIPInformation         => 63,
-  :DHCPNISClientDomain              => 64,
-  :DHCPNISServers                   => 65,
-  :DHCPTFTPServerName               => 66,
-  :DHCPBootFileName                 => 67,
-  :DHCPMobileIPHomeAgent            => 68,
-  :DHCPSMTPServer                   => 69,
-  :DHCPPOPServer                    => 70,
-  :DHCPNNTPServer                   => 71,
-  :DHCPDefaultWWWServer             => 72,
-  :DHCPDefaultFingerServer          => 73,
-  :DHCPDefaultIRCServer             => 74,
-  :DHCPStreetTalkServer             => 75,
-  :DHCPStreetTalkDAS                => 76,
-  :DHCPUserClassInformation         => 77,
-  :DHCPSLPDirectoryAgent            => 78,
-  :DHCPSLPServiceScope              => 79,
-  :DHCPRapidCommit                  => 80,
-  :DHCPFQDN                         => 81,
-  :DHCPRelayAgentInformation        => 82,
-  :DHCPInternetStorageNameService   => 83,
-  # ??
-  :DHCPNDSServers                   => 85,
-  :DHCPNDSTreeName                  => 86,
-  :DHCPNDSContext                   => 87,
-  :DHCPBCMCSContDomainNameList      => 88,
-  :DHCPBCMCSContIPV4AddressList     => 89,
-  :DHCPAuthentication               => 90,
-  :DHCPClientLastTransactTime       => 91,
-  :DHCPAssociatedIP                 => 92,
-  :DHCPClientSystemArchType         => 93,
-  :DHCPClientNetworkInterfaceIdent  => 94,
-  :DHCPLDAP                         => 95,
-  # ??
-  :DHCPClientMachineIdent           => 97,
-  :DHCPOGUA                         => 98,
-  # ??
-  :DHCPAutonomousSystemNumber       => 109,
-  # ??
-  :DHCPNetInfoParentServerAddress   => 112,
-  :DHCPNetInfoParentServerTag       => 113,
-  :DHCPURL                          => 114,
-  :DHCPAutoConfigure                => 116,
-  :DHCPNameServiceSearch            => 117,
-  :DHCPSubnetSelection              => 118,
-  :DHCPDNSDomainSearchList          => 119,
-  :DHCPSIPServers                   => 120,
-  :DHCPClasslessStaticRoute         => 121,
-  :DHCPCableLabsClientConfig        => 122,
-  :DHCPGeoConf                      => 123,
-  # ??
-  :DHCPProxyAutoDiscovery           => 252
-}
-
-OP_CONSTANTS_REV = {
   0 => :Pad,
   1 => :SubnetMask,
   2 => :TimeOffset,
@@ -287,21 +168,21 @@ class Packet < Network::Protos::Base
   bytes     :dhcpoptions
 
   def type
-    self.each_option( :MessageType ) do |opt,data|
+    self.each_option( :MessageType ) do |_,data|
       return OP_MESSAGETYPES[ data[0] ]
     end
     OP_MESSAGETYPES[ @op ]
   end
 
   def client_identifier
-    self.each_option( :ClientIdentifier ) do |opt,data|
+    self.each_option( :ClientIdentifier ) do |_,data|
       return data.pack('c*')
     end
   end
 
   def authentication
     # Thank you Wireshark BOOTP dissector!
-    self.each_option( :Authentication ) do |opt,data|
+    self.each_option( :Authentication ) do |_,data|
       auth = {}
 
       auth['Protocol'] = AUTH_PROTOCOLS[ data[0] ]
@@ -333,8 +214,8 @@ class Packet < Network::Protos::Base
       data    = self.dhcpoptions[offset..offset+len-1]
       offset += len
 
-      if sym.nil? or OP_CONSTANTS_REV[opt] == sym
-        yield( OP_CONSTANTS_REV[opt], data )
+      if sym.nil? or OP_CONSTANTS[opt] == sym
+        yield( OP_CONSTANTS[opt], data )
       end
     end
   end
