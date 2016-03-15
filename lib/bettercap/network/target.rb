@@ -67,6 +67,11 @@ class Target
     @ip.split('.').inject(0) {|total,value| (total << 8 ) + value.to_i}
   end
 
+  # Return true if both the ip and mac are not nil.
+  def spoofable?
+    ( !@ip.nil? and !@mac.nil? )
+  end
+
   # +mac+ attribute setter, it will normalize the +value+ and perform
   # a vendor lookup.
   def mac=(value)

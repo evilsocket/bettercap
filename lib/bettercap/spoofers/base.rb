@@ -92,7 +92,7 @@ private
           break
       end
 
-      # Logger.debug "Spoofing #{@ctx.targets.size} targets ..."
+      Logger.debug "Spoofing #{@ctx.targets.size} targets ..."
 
       update_targets!
 
@@ -106,7 +106,7 @@ private
 
   # Get the MAC address of the gateway and update it.
   def update_gateway!
-    if @ctx.gateway.mac.nil?
+    unless @ctx.gateway.spoofable?
       hw = Network.get_hw_address( @ctx, @ctx.gateway.ip )
       raise BetterCap::Error, "Couldn't determine router MAC" if ( @ctx.options.need_gateway? and hw.nil? )
       @ctx.gateway.mac = hw

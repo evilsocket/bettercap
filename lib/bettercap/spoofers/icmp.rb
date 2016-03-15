@@ -193,7 +193,7 @@ class Icmp < Base
   # Main spoofer loop.
   def icmp_spoofer
     spoof_loop(3) { |target|
-      unless target.ip.nil? or target.mac.nil?
+      if target.spoofable?
         send_spoofed_packet target
       end
     }

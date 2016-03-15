@@ -76,7 +76,7 @@ class Arp < Base
     Logger.debug "Restoring ARP table of #{@ctx.targets.size} targets ..."
 
     @ctx.targets.each do |target|
-      unless target.ip.nil? or target.mac.nil?
+      if target.spoofable?
         5.times do
           spoof(target, true)
           sleep 0.3
@@ -98,7 +98,7 @@ class Arp < Base
       send_spoofed_packet( @ctx.gateway.ip, @ctx.gateway.mac, target.ip, 'ff:ff:ff:ff:ff:ff' )
       send_spoofed_packet( target.ip, target.mac, @ctx.gateway.ip, 'ff:ff:ff:ff:ff:ff' ) unless @ctx.options.spoof.half_duplex
       @ctx.targets.each do |e|
-        unless e.ip.nil? or e.mac.nil? or e.ip == target.ip or e.ip == @ctx.gateway.ip
+        if e.spoofable? and e.ip != target.ip and e.ip != @ctx.gateway.ip
           send_spoofed_packet( e.ip, e.mac, target.ip, 'ff:ff:ff:ff:ff:ff' )
         end
       end
@@ -109,7 +109,7 @@ class Arp < Base
       send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @ctx.gateway.ip, @ctx.gateway.mac ) unless @ctx.options.spoof.half_duplex
       # tell the target we're everybody else in the network :D
       @ctx.targets.each do |e|
-        unless e.ip.nil? or e.mac.nil? or e.ip == target.ip or e.ip == @ctx.gateway.ip
+        if e.spoofable? and e.ip != target.ip and e.ip != @ctx.gateway.ip
           send_spoofed_packet( e.ip, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
         end
       end
@@ -119,7 +119,7 @@ class Arp < Base
   # Main spoofer loop.
   def arp_spoofer
     spoof_loop(1) { |target|
-      unless target.ip.nil? or target.mac.nil?
+      if target.spoofable?
         spoof(target)
       end
     }
