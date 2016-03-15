@@ -21,10 +21,8 @@ class Context
   attr_accessor :ifconfig
   # Instance of the current BetterCap::Firewalls class.
   attr_accessor :firewall
-  # Network gateway IP address.
+  # Network gateway ( as an instance of BetterCap::Network::Target ).
   attr_accessor :gateway
-  # A boolean value indicating if the gateway mac address was already resolved.
-  attr_accessor :gateway_mac_resolved
   # A list of BetterCap::Target objects which is periodically updated.
   attr_accessor :targets
   # Instance of BetterCap::Discovery::Thread class.
@@ -62,43 +60,42 @@ class Context
       Logger.exception e
     end
 
-    @running         = true
-    @timeout         = 5
-    @options         = Options.new iface
-    @ifconfig        = nil
-    @firewall        = nil
-    @gateway         = nil
-    @gateway_mac_resolved = false
-    @targets         = []
-    @spoofer         = nil
-    @httpd           = nil
-    @dnsd            = nil
-    @proxies         = []
-    @redirections    = []
-    @discovery       = Discovery::Thread.new self
-    @firewall        = Firewalls::Base.get
-    @packets         = nil
-    @memory          = Memory.new
+    @running      = true
+    @timeout      = 5
+    @options      = Options.new iface
+    @ifconfig     = nil
+    @firewall     = nil
+    @gateway      = nil
+    @targets      = []
+    @spoofer      = nil
+    @httpd        = nil
+    @dnsd         = nil
+    @proxies      = []
+    @redirections = []
+    @discovery    = Discovery::Thread.new self
+    @firewall     = Firewalls::Base.get
+    @packets      = nil
+    @memory       = Memory.new
   end
 
   # Update the Context state parsing network related informations.
   def update!
-    @gateway  = @options.gateway unless @options.core.gateway.nil?
+    gw = @options.core.gateway || Network.get_gateway
+    raise BetterCap::Error, "Could not detect the gateway address for interface #{@options.core.iface}, "\
+                            'make sure you\'ve specified the correct network interface to use and to have the '\
+                            'correct network configuration, this could also happen if bettercap '\
+                            'is launched from a virtual environment.' unless Network::Validator.is_ip?(gw)
+
+    @gateway  = Network::Target.new gw
     @targets  = @options.core.targets unless @options.core.targets.nil?
     @ifconfig = PacketFu::Utils.ifconfig @options.core.iface
-    @gateway  = Network.get_gateway if @gateway.nil?
 
     raise BetterCap::Error, "Could not determine IPv4 address of '#{@options.core.iface}', make sure this interface "\
                             'is active and connected.' if @ifconfig[:ip4_obj].nil?
 
-    raise BetterCap::Error, "Could not detect the gateway address for interface #{@options.core.iface}, "\
-                            'make sure you\'ve specified the correct network interface to use and to have the '\
-                            'correct network configuration, this could also happen if bettercap '\
-                            'is launched from a virtual environment.' unless Network::Validator.is_ip?(@gateway)
-
     Logger.debug '----- NETWORK INFORMATIONS -----'
     Logger.debug "  network  = #{@ifconfig[:ip4_obj]}"
-    Logger.debug "  gateway  = #{@gateway}"
+    Logger.debug "  gateway  = #{@gateway.ip}"
     Logger.debug "  local_ip = #{@ifconfig[:ip_saddr]}\n"
     @ifconfig.each do |key,value|
       Logger.debug "  ifconfig[:#{key}] = #{value}"

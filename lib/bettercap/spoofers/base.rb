@@ -106,17 +106,13 @@ private
 
   # Get the MAC address of the gateway and update it.
   def update_gateway!
-    hw = Network.get_hw_address( @ctx, @ctx.gateway )
+    if @ctx.gateway.mac.nil?
+      hw = Network.get_hw_address( @ctx, @ctx.gateway.ip )
+      raise BetterCap::Error, "Couldn't determine router MAC" if ( @ctx.options.need_gateway? and hw.nil? )
+      @ctx.gateway.mac = hw
+    end
 
-    raise BetterCap::Error, "Couldn't determine router MAC" if ( @ctx.options.need_gateway? and hw.nil? )
-
-    @gateway = Network::Target.new( @ctx.gateway, hw )
-
-    # notify the system that the gateway mac is resolved, this will prevent
-    # the gateway ip to be unnecessarily probed from discovery agents.
-    @ctx.gateway_mac_resolved = !hw.nil?
-
-    Logger.info "[#{'GATEWAY'.green}] #{@gateway.to_s(false)}"
+    Logger.info "[#{'GATEWAY'.green}] #{@ctx.gateway.to_s(false)}"
   end
 
   # Update each target that needs to be updated.

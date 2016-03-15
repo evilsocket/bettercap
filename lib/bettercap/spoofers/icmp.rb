@@ -79,7 +79,6 @@ class Icmp < Base
   def initialize
     @ctx          = Context.get
     @forwarding   = @ctx.firewall.forwarding_enabled?
-    @gateway      = nil
     @local        = @ctx.ifconfig[:ip_saddr]
     @spoof_thread = nil
     @watch_thread = nil
@@ -93,12 +92,12 @@ class Icmp < Base
   # Send ICMP redirect to the +target+, redirecting the gateway ip and
   # everything in the @entries list of addresses to us.
   def send_spoofed_packet( target )
-    ( [@gateway.ip] + @entries ).each do |address|
+    ( [@ctx.gateway.ip] + @entries ).each do |address|
       begin
         Logger.debug "Sending ICMP Redirect to #{target.to_s_compact} redirecting #{address} to us ..."
 
         pkt = ICMPRedirectPacket.new
-        pkt.update!( @gateway, target, @local, address )
+        pkt.update!( @ctx.gateway, target, @local, address )
         @ctx.packets.push(pkt)
       rescue Exception => e
         Logger.debug "#{self.class.name} : #{e.message}"

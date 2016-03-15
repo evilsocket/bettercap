@@ -20,7 +20,6 @@ class None < Base
     Logger.debug 'Spoofing disabled.'
 
     @ctx     = Context.get
-    @gateway = nil
     @thread  = nil
     @running = false
 

@@ -18,7 +18,6 @@ class Arp < Base
   # Initialize the BetterCap::Spoofers::Arp object.
   def initialize
     @ctx          = Context.get
-    @gateway      = nil
     @forwarding   = @ctx.firewall.forwarding_enabled?
     @spoof_thread = nil
     @sniff_thread = nil
@@ -96,21 +95,21 @@ class Arp < Base
   # restore its ARP cache instead.
   def spoof( target, restore = false )
     if restore
-      send_spoofed_packet( @gateway.ip, @gateway.mac, target.ip, 'ff:ff:ff:ff:ff:ff' )
-      send_spoofed_packet( target.ip, target.mac, @gateway.ip, 'ff:ff:ff:ff:ff:ff' ) unless @ctx.options.spoof.half_duplex
+      send_spoofed_packet( @ctx.gateway.ip, @ctx.gateway.mac, target.ip, 'ff:ff:ff:ff:ff:ff' )
+      send_spoofed_packet( target.ip, target.mac, @ctx.gateway.ip, 'ff:ff:ff:ff:ff:ff' ) unless @ctx.options.spoof.half_duplex
       @ctx.targets.each do |e|
-        unless e.ip.nil? or e.mac.nil? or e.ip == target.ip or e.ip == @gateway.ip
+        unless e.ip.nil? or e.mac.nil? or e.ip == target.ip or e.ip == @ctx.gateway.ip
           send_spoofed_packet( e.ip, e.mac, target.ip, 'ff:ff:ff:ff:ff:ff' )
         end
       end
     else
       # tell the target we're the gateway
-      send_spoofed_packet( @gateway.ip, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
+      send_spoofed_packet( @ctx.gateway.ip, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
       # tell the gateway we're the target
-      send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @gateway.ip, @gateway.mac ) unless @ctx.options.spoof.half_duplex
+      send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @ctx.gateway.ip, @ctx.gateway.mac ) unless @ctx.options.spoof.half_duplex
       # tell the target we're everybody else in the network :D
       @ctx.targets.each do |e|
-        unless e.ip.nil? or e.mac.nil? or e.ip == target.ip or e.ip == @gateway.ip
+        unless e.ip.nil? or e.mac.nil? or e.ip == target.ip or e.ip == @ctx.gateway.ip
           send_spoofed_packet( e.ip, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
         end
       end

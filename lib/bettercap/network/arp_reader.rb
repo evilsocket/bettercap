@@ -21,7 +21,7 @@ class ArpReader
   def self.parse( ctx )
     targets = []
     self.parse_cache do |ip,mac|
-      if ip != ctx.gateway and ip != ctx.ifconfig[:ip_saddr]
+      if ip != ctx.gateway.ip and ip != ctx.ifconfig[:ip_saddr]
         if ctx.options.core.ignore_ip?(ip)
           Logger.debug "Ignoring #{ip} ..."
         else
