@@ -22,12 +22,10 @@ class Base
     def get
       return @@instance unless @@instance.nil?
 
-      if RUBY_PLATFORM =~ /darwin/
-        @@instance = Firewalls::OSX.new
+      if RUBY_PLATFORM =~ /openbsd/ or RUBY_PLATFORM =~ /darwin/
+        @@instance = Firewalls::BSD.new
       elsif RUBY_PLATFORM =~ /linux/
         @@instance = Firewalls::Linux.new
-      elsif RUBY_PLATFORM =~ /openbsd/
-        @@instance = Firewalls::OpenBSD.new
       else
         raise BetterCap::Error, 'Unsupported operating system'
       end
