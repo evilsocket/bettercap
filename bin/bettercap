@@ -32,7 +32,7 @@ begin
     sleep 10
   end
 
-rescue SystemExit, Interrupt
+rescue SystemExit, Interrupt, SignalException
   BetterCap::Logger.raw "\n"
 
 rescue OptionParser::InvalidOption,
