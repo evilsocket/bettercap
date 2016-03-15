@@ -31,7 +31,7 @@ class Sniffer
 
       setup( ctx )
 
-      start     = Time.now.to_i
+      start     = Time.now
       skipped   = 0
       processed = 0
 
@@ -52,11 +52,11 @@ class Sniffer
         end
       end
 
-      stop = Time.now.to_i
-      delta = stop - start
+      stop = Time.now
+      delta = ( stop - start ) * 1000.0
       total = skipped + processed
 
-      Logger.info "[#{'SNIFFER'.green}] #{total} packets processed in #{delta} s ( #{skipped} skipped packets, #{processed} processed packets )"
+      Logger.info "[#{'SNIFFER'.green}] #{total} packets processed in #{delta} ms ( #{skipped} skipped packets, #{processed} processed packets )"
     }
   end
 
