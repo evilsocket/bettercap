@@ -50,6 +50,11 @@ class ServerOptions
       @httpd_port = v.to_i
     end
 
+    opts.on( '--httpd-path PATH', "Set HTTP server path, default to #{@httpd_path.yellow} ." ) do |v|
+      @httpd = true
+      @httpd_path = v
+    end
+
     opts.on( '--dns FILE', 'Enable DNS server and use this file as a hosts resolution table.' ) do |v|
       @dnsd      = true
       @dnsd_file = File.expand_path v
@@ -57,11 +62,6 @@ class ServerOptions
 
     opts.on( '--dns-port PORT', "Set DNS server port, default to #{@dnsd_port.to_s.yellow}." ) do |v|
       @dnsd_port = v.to_i
-    end
-
-    opts.on( '--httpd-path PATH', "Set HTTP server path, default to #{@httpd_path.yellow} ." ) do |v|
-      @httpd = true
-      @httpd_path = v
     end
 
   end
