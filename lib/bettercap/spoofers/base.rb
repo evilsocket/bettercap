@@ -109,7 +109,7 @@ private
     unless @ctx.gateway.spoofable?
       hw = Network.get_hw_address( @ctx, @ctx.gateway.ip )
       raise BetterCap::Error, "Couldn't determine router MAC" if ( @ctx.options.need_gateway? and hw.nil? )
-      @ctx.gateway.mac = hw
+      @ctx.gateway.mac = hw unless hw.nil?
     end
 
     Logger.info "[#{'GATEWAY'.green}] #{@ctx.gateway.to_s(false)}"
