@@ -98,11 +98,6 @@ class Base
           offset = offset( info, pkt, offset  )
 
           value = data[offset..offset + size - 1].bytes.pack('c*')
-          if info[:opts].has_key?(:check)
-            if value != info[:opts][:check].force_encoding('ASCII-8BIT')
-              raise "Unexpected value '#{value}', expected '#{info[:opts][:check]}' ."
-            end
-          end
           offset += size
 
         when :stringz
@@ -114,6 +109,14 @@ class Base
           end
           offset += 1
 
+        end
+
+        if info[:opts].has_key?(:check)
+          check = info[:opts][:check]
+          check = check.force_encoding('ASCII-8BIT') if check.respond_to? :force_encoding
+          if value != check
+            raise "Unexpected value '#{value}', expected '#{check}' ."
+          end
         end
 
         pkt.send("#{name}=", value)
