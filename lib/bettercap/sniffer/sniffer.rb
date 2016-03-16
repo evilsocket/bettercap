@@ -109,7 +109,7 @@ class Sniffer
   def self.append_packet( p )
     begin
       @@pcap.array_to_file(
-          filename: @@ctx.options.sniff.pcap,
+          filename: @@ctx.options.sniff.output,
           array: [p],
           append: true ) unless @@pcap.nil?
     rescue Exception => e
@@ -121,9 +121,9 @@ class Sniffer
   def self.setup( ctx )
     @@ctx = ctx
 
-    unless @@ctx.options.sniff.pcap.nil?
+    unless @@ctx.options.sniff.output.nil?
       @@pcap = PacketFu::PcapFile.new
-      Logger.info "[#{'SNIFFER'.green}] Saving packets to #{@@ctx.options.sniff.pcap} ."
+      Logger.info "[#{'SNIFFER'.green}] Saving packets to #{@@ctx.options.sniff.output} ."
     end
 
     if @@ctx.options.sniff.custom_parser.nil?

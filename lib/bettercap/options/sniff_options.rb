@@ -17,7 +17,7 @@ class SniffOptions
   # If true the BetterCap::Sniffer will be enabled.
   attr_accessor :enabled
   # PCAP file name to save captured packets to.
-  attr_accessor :pcap
+  attr_accessor :output
   # BPF filter to apply to sniffed packets.
   attr_accessor :filter
   # Input PCAP file, if specified the BetterCap::Sniffer will read packets
@@ -32,7 +32,7 @@ class SniffOptions
 
   def initialize
     @enabled = false
-    @pcap = nil
+    @output = nil
     @filter = nil
     @src = nil
     @parsers = ['*']
@@ -59,9 +59,9 @@ class SniffOptions
       @src = File.expand_path v
     end
 
-    opts.on( '--sniffer-pcap FILE', 'Save all packets to the specified PCAP file ( will enable sniffer ).' ) do |v|
+    opts.on( '--sniffer-output FILE', 'Save all packets to the specified PCAP file ( will enable sniffer ).' ) do |v|
       @enabled = true
-      @pcap = File.expand_path v
+      @output = File.expand_path v
     end
 
     opts.on( '--sniffer-filter EXPRESSION', 'Configure the sniffer to use this BPF filter ( will enable sniffer ).' ) do |v|
