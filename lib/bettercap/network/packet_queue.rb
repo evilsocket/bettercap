@@ -100,7 +100,9 @@ class PacketQueue
         sleep(@throttle) if @throttle != 0.0
 
       rescue Exception => e
-        Logger.debug "#{self.class.name} ( #{packet.class.name} ) : #{e.message}"
+        if !e.message.include?('Host is down') and !e.message.include?('Permission denied') and !e.message.include?('No route to host')
+          Logger.debug "#{self.class.name} ( #{packet.class.name} ) : #{e.message}"
+        end
 
         # If we've got an error message such as:
         #   (cannot open BPF device) /dev/bpf0: Too many open files

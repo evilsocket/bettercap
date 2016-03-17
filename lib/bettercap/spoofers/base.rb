@@ -92,7 +92,7 @@ private
           break
       end
 
-      Logger.debug "Spoofing #{@ctx.targets.size} targets ..."
+      Logger.debug "Spoofing #{@ctx.targets.size} targets ..." unless @ctx.targets.empty?
 
       update_targets!
 

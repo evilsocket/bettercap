@@ -46,7 +46,7 @@ class Memory
         freed_d = new_freed
       end
 
-      Logger.debug "GC: allocd objects: #{allocs_d} freed objects: #{freed_d}"
+      # Logger.debug "GC: allocd objects: #{allocs_d} freed objects: #{freed_d}"
 
       @total_allocs = new_allocs
       @total_freed  = new_freed
