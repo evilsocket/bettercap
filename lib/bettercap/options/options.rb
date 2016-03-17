@@ -78,7 +78,7 @@ class Options
   end
 
   def need_gateway?
-    ( @core.should_discover_hosts? or @spoof.enabled? )
+    ( @core.discovery? or @spoof.enabled? )
   end
 
   # Helper method to create a Firewalls::Redirection object.

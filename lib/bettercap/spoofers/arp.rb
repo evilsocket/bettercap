@@ -94,6 +94,8 @@ class Arp < Base
   # Send an ARP spoofing packet to +target+, if +restore+ is true it will
   # restore its ARP cache instead.
   def spoof( target, restore = false )
+    Logger.debug "Spoofing #{target.to_s} ..."
+
     if restore
       send_spoofed_packet( @ctx.gateway.ip, @ctx.gateway.mac, target.ip, 'ff:ff:ff:ff:ff:ff' )
       send_spoofed_packet( target.ip, target.mac, @ctx.gateway.ip, 'ff:ff:ff:ff:ff:ff' ) unless @ctx.options.spoof.half_duplex

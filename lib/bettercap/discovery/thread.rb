@@ -23,6 +23,10 @@ class Thread
 
   # Start the active network discovery thread.
   def start
+    if @ctx.options.core.discovery?
+      Logger.info "[#{'DISCOVERY'.green}] Targeting the whole subnet #{@ctx.ifconfig[:ip4_obj].to_range} ..."
+    end
+
     @running = true
     @thread  = ::Thread.new { worker }
   end
@@ -31,7 +35,6 @@ class Thread
   def stop
     @running = false
     if @thread != nil
-      Logger.info( 'Stopping network discovery thread ...' ) unless @ctx.options.core.arpcache
       begin
         @thread.exit
       rescue
@@ -97,18 +100,23 @@ class Thread
   # This method implements the main discovery logic, it will be executed within
   # the spawned thread.
   def worker
-    Logger.debug( 'Network discovery thread started.' ) unless @ctx.options.core.arpcache
+    Logger.debug( 'Network discovery thread started.' ) if @ctx.options.core.discovery?
 
     prev = []
     while @running
-      @ctx.targets = Network.get_alive_targets(@ctx).sort_by { |t| t.sortable_ip }
+      # No targets specified.
+      if @ctx.options.core.targets.nil?
+        @ctx.targets = Network.get_alive_targets(@ctx).sort_by {
+          |t| t.sortable_ip
+        }
+      end
 
-      print_differences( prev ) unless @ctx.options.core.arpcache
+      print_differences( prev ) if @ctx.options.core.discovery?
 
       prev = @ctx.targets
 
       @ctx.memory.optimize!
-      sleep(1) if @ctx.options.core.arpcache
+      sleep(1) if @ctx.options.core.discovery?
     end
   end
 end

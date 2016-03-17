@@ -127,6 +127,7 @@ class CoreOptions
     raise BetterCap::Error, 'No default interface found, please specify one with the -I argument.' if @iface.nil?
   end
 
+  # Return true if active host discovery is enabled, otherwise false.
   def discovery?
     ( @targets.nil? and !@arpcache )
   end
@@ -178,11 +179,6 @@ class CoreOptions
   # Return true if the +ip+ address needs to be ignored, otherwise false.
   def ignore_ip?(ip)
     !@ignore.nil? and @ignore.include?(ip)
-  end
-
-  # Return true if active host discovery is enabled, otherwise false.
-  def should_discover_hosts?
-    !@arpcache
   end
 end
 

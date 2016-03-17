@@ -54,7 +54,7 @@ class << self
   # Return a list of BetterCap::Target objects found on the network, given a
   # BetterCap::Context ( +ctx+ ) and a +timeout+ in seconds for the operation.
   def get_alive_targets( ctx )
-    if ctx.options.core.should_discover_hosts?
+    if ctx.options.core.discovery?
       start_agents( ctx )
     else
       Logger.debug 'Using current ARP cache.'
