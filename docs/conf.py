@@ -40,9 +40,9 @@ source_parsers = {
     '.md': CommonMarkParser,
 }
 
-source_suffix = ['.rst', '.md']
+source_suffix = [ '.md', '.rst' ]
 
-# The encoding of source files.
+# The encoding of source files. nj
 #source_encoding = 'utf-8-sig'
 
 # The master toctree document.
