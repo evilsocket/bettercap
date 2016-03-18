@@ -14,7 +14,16 @@ HTTP/HTTPS proxy modules might want additional command line arguments, it's alwa
 
 `bettercap --proxy-module NAME -h`
 
-## SSL Stripping
+
+## Sample Module
+
+You can easily implement a module to inject data into pages or just inspect the requests/responses creating a ruby file and passing it to bettercap with the `--proxy-module` argument, the following is a sample module that injects some contents into the title tag of each html page, you can find other examples modules in the [proxy modules dedicated repository](https://github.com/evilsocket/bettercap-proxy-modules).
+
+<script src="https://gist.github.com/evilsocket/bfdb1af7e6bf9d9d0bfe.js"></script>
+
+## HTTP
+
+### SSL Stripping
 
 SSL stripping is a technique introduced by [Moxie Marlinspike](http://www.thoughtcrime.org/software/sslstrip/) during BlackHat DC 2009, the website description of this technique goes like:
 
@@ -30,7 +39,7 @@ During a SSL stripping attack its HTML code will be modified as:
 
 Being the **man in the middle**, this allow us to sniff and modify pages that normally we wouldn't be able to even see.
 
-## HSTS Bypass
+### HSTS Bypass
 
 SSL stripping worked quite well until 2010, when the **HSTS** specification was introduced, Wikipedia says:
 
@@ -64,15 +73,45 @@ When the "victim" will click on that link, no HSTS rule will be applied ( since 
   ![network mitm](/_static/img/sslstrip2.png)
 </center>
 
-## HTTPS Certification Authority
+## HTTPS
 
-If you're using the HTTPS proxy ( `--proxy-https` option ) you'll need to install BetterCap's CA on the target computer, an exhaustive explaination was given in [this blog post](https://www.bettercap.org/blog/server-name-indication/).
+### Server Name Indication
 
-## Sample Module
+> Server Name Indication (SNI) is an extension to the TLS computer networking protocol by which a client indicates which hostname it is attempting to connect to at the start of the handshaking process. This allows a server to present multiple certificates on the same IP address and TCP port number and hence allows multiple secure (HTTPS) websites (or any other Service over TLS) to be served off the same IP address without requiring all those sites to use the same certificate.
 
-You can easily implement a module to inject data into pages or just inspect the requests/responses creating a ruby file and passing it to bettercap with the `--proxy-module` argument, the following is a sample module that injects some contents into the title tag of each html page, you can find other examples modules in the [proxy modules dedicated repository](https://github.com/evilsocket/bettercap-proxy-modules).
+Using the **SNI** callback, BetterCAP's HTTPS proxy is able to detect the upstream server host using the following logic:
 
-<script src="https://gist.github.com/evilsocket/bfdb1af7e6bf9d9d0bfe.js"></script>
+1. Client connects to a HTTPS server while being transparently proxied by us.
+2. We catch the upstream server hostname in the **SNI** callback.
+3. We pause the callback, connect to the upstream server and fetch its certificate.
+4. We resign that certificate with our own CA and use it to serve the client.
+
+This way, as long as you have BetterCap's certification authority PEM file installed on the target device, you won't see any warnings or errors since correct certificate will be spoofed in realtime.
+
+There're a couple of caveats of course:
+
+1. If you don't install either bettercap's CA or your custom CA on the target device, you'll see warnings and errors anyway (duh!).
+2. Every application using [certificate/public Key pinning](https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning) will detect the attack even with the CA installed.
+
+### Installing Certification Authority
+
+Since version 1.4.4 BetterCAP comes with a pre made certification authority file which is extracted in your home directory the first time you'll launch the HTTPS proxy, you'll find the file as:
+
+    ~/.bettercap/bettercap-ca.pem
+
+You'll need to install this file on the device you want to transparently proxy HTTPS connection for, the procedure is OS specific as mentioned in a previous blog post:
+
+* **iOS** - http://kb.mit.edu/confluence/pages/viewpage.action?pageId=152600377
+* **iOS Simulator** - https://github.com/ADVTOOLS/ADVTrustStore#how-to-use-advtruststore
+* **Java** - http://docs.oracle.com/cd/E19906-01/820-4916/geygn/index.html
+* **Android/Android Simulator** - http://wiki.cacert.org/FAQ/ImportRootCert#Android_Phones_.26_Tablets
+* **Windows** - http://windows.microsoft.com/en-ca/windows/import-export-certificates-private-keys#1TC=windows-7
+* **Mac OS X** - https://support.apple.com/kb/PH7297?locale=en_US
+* **Ubuntu/Debian** - http://askubuntu.com/questions/73287/how-do-i-install-a-root-certificate/94861#94861
+* **Mozilla Firefox** - https://wiki.mozilla.org/MozillaRootCertificate#Mozilla_Firefox
+* **Chrome on Linux** - https://code.google.com/p/chromium/wiki/LinuxCertManagement
+
+Once you've done, just use the `--proxy-https` bettercap command line argument to enable the HTTPS proxy and you're ready to go.
 
 <hr/>
 

@@ -3,7 +3,7 @@ Contributing
 
 As any other open source projects, there're many ways you can contribute to bettercap depending on your skills as a developer or will to help as a user.
 
-### Submitting Issues
+## Submitting Issues
 
 If you find bugs or inconsistencies while using bettercap, you can create an **Issue** using the [GitHub Issue tracker](https://github.com/evilsocket/bettercap/issues), but before doing that please make sure that:
 
@@ -25,7 +25,11 @@ Also, you should attach to the issue a debug log that you can generate with:
 
 Wait for the error to happen then close bettercap and paste the **debug.log** file inside the issue.
 
-### Pull Requests
+## Improving the Documentation
+
+If you want to help, you can improve this documentation cloning [our code repository](https://github.com/evilsocket/bettercap) and updating the contents of the `docs` folder.
+
+## Pull Requests
 
 If you know how to code in Ruby and have ideas to improve bettercap, you're very welcome to send us pull requests, we'll be happy to merge them whenever they comply to the following rules:
 

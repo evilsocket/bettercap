@@ -21,10 +21,14 @@ To update to a newer release:
 
 If you have trouble installing bettercap read the following sections about dependencies.
 
-> If you installed bettercap using a RVM installation, you will need to execute it using **rvmsudo**:
-> `rvmsudo bettercap ...`
-> Otherwise, if you installed it globally ( `sudo gem install bettercap` ) you can use **sudo**:
-> `sudo bettercap ...`  
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you installed bettercap using a RVM installation, you will need to execute it using <strong>rvmsudo</strong>:<br/>
+  <code>rvmsudo bettercap ...</code><br/>
+Otherwise, if you installed it globally ( <code>sudo gem install bettercap</code> ) you can use <strong>sudo</strong>:<br/>
+  <code>sudo bettercap ...</code>
+</p>
+</div>
 
 ### Development Release
 

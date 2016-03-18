@@ -3,21 +3,7 @@ General Options
 
 The following are the main options that determine the general behaviour of BetterCap, **these options are not mandatory**, in fact bettercap will automatically detect everything it needs in order to work, you just might need to use one or more of the following options to specify some custom behaviour in specific cases.
 
-<hr/>
-
-#### `-I, --interface IFACE`
-
-BetterCAP will automatically detect your default network interface and use it, if you want to make it use another interface ( when you have more than one, let's say `eth0` and `wlan0` ) you can use this option.
-
-#### `-G, --gateway ADDRESS`
-
-The same goes for the gateway, either let bettercap automatically detect it or manually specify its address.
-
-#### `-T, --target ADDRESS1,ADDRESS2`
-
-If no specific target is given on the command line, bettercap will spoof every single address on the network. There are cases when you already know the IP or MAC address of your target(s), in such cases you can use this option.
-
-##### Examples
+## Examples
 
 Attack specific targets:
 
@@ -35,26 +21,40 @@ Attack a specific subnet:
 
 `sudo bettercap -T 192.168.1.1/24`
 
-#### `--ignore ADDRESS1,ADDRESS2`
+## Options
+
+### `-I, --interface IFACE`
+
+BetterCAP will automatically detect your default network interface and use it, if you want to make it use another interface ( when you have more than one, let's say `eth0` and `wlan0` ) you can use this option.
+
+### `-G, --gateway ADDRESS`
+
+The same goes for the gateway, either let bettercap automatically detect it or manually specify its address.
+
+### `-T, --target ADDRESS1,ADDRESS2`
+
+If no specific target is given on the command line, bettercap will spoof every single address on the network. There are cases when you already know the IP or MAC address of your target(s), in such cases you can use this option.
+
+### `--ignore ADDRESS1,ADDRESS2`
 
 Ignore these IP addresses if found while searching for targets.
 
-#### `--no-discovery`
+### `--no-discovery`
 
 Do not actively search for hosts, just use the current ARP cache, default to `false`.
 
-#### `--no-target-nbns`
+### `--no-target-nbns`
 
 Disable target NBNS hostname resolution.
 
-#### `--packet-throttle NUMBER`
+### `--packet-throttle NUMBER`
 
 Number of seconds ( can be a decimal number ) to wait between each packet to be sent.
 
-#### `--check-updates`
+### `--check-updates`
 
 Will check if any update is available and then exit.
 
-#### `-h, --help`
+### `-h, --help`
 
 Display the available options.
