@@ -51,8 +51,8 @@ class Module
     def load( file )
       begin
         require file
-      rescue LoadError
-        raise BetterCap::Error, "Invalid TCP proxy module specified."
+      rescue LoadError => e
+        raise BetterCap::Error, "Invalid TCP proxy module specified: #{e.message}"
       end
 
       @@loaded.each do |name,mod|

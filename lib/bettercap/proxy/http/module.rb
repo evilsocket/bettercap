@@ -51,8 +51,8 @@ class Module
       require ctx.options.proxies.proxy_module
 
       self.register_options(opts)
-    rescue LoadError
-      raise BetterCap::Error, "Invalid proxy module name '#{name}' ."
+    rescue LoadError => e
+      raise BetterCap::Error, "Invalid proxy module name '#{name}': #{e.message}"
     end
   end
 
