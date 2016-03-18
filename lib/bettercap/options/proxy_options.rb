@@ -103,7 +103,13 @@ class ProxyOptions
     end
 
     opts.on( '--tcp-proxy-upstream-address ADDRESS', 'Set TCP proxy upstream server address.' ) do |v|
-      raise BetterCap::Error, 'Invalid TCP proxy upstream server address specified.' unless Network::Validator.is_ip?(v)
+      unless Network::Validator.is_ip?(v)
+        begin
+          v = IPSocket.getaddress v
+        rescue SocketError
+          raise BetterCap::Error, 'Invalid TCP proxy upstream server address/hostname specified.'
+        end
+      end
       @tcp_proxy                  = true
       @tcp_proxy_upstream_address = v
     end
