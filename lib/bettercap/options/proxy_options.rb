@@ -145,6 +145,7 @@ class ProxyOptions
     end
 
     opts.on( '--no-sslstrip', 'Disable SSLStrip.' ) do
+      @proxy    = true
       @sslstrip = false
     end
 
@@ -154,6 +155,7 @@ class ProxyOptions
 
     opts.on( '--http-ports PORT1,PORT2', "Comma separated list of HTTP ports to redirect to the proxy, default to #{@http_ports.map{|x| x.to_s.yellow }.join(', ')}." ) do |v|
       @http_ports = self.parse_ports( v )
+      @proxy      = true
     end
 
     opts.separator ""
@@ -177,6 +179,7 @@ class ProxyOptions
 
     opts.on( '--https-ports PORT1,PORT2', "Comma separated list of HTTPS ports to redirect to the proxy, default to #{@https_ports.map{|x| x.to_s.yellow }.join(', ')}." ) do |v|
       @https_ports = self.parse_ports( v )
+      @proxy_https = true
     end
 
     opts.separator ""
