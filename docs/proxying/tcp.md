@@ -11,7 +11,7 @@ The following example module won't do anything but dumping the data being transm
 
 If you want to load such module and dump all the ( let's say ) MySQL traffic from/to the `mysql.example.com` host you would do:
 
-    sudo bettercap --tcp-proxy --tcp-proxy-module example.rb --tcp-proxy-upstream-address mysql.example.com --tcp-proxy-upstream-port 3306
+    sudo bettercap --tcp-proxy-module example.rb --tcp-proxy-upstream mysql.example.com:3306
 
 And you would be ready to go.
 
@@ -38,3 +38,7 @@ Set TCP proxy upstream server address.
 ### `--tcp-proxy-upstream-port PORT`
 
 Set TCP proxy upstream server port.
+
+### `--tcp-proxy-upstream ADDRESS:PORT`
+
+Set TCP proxy upstream server address and port ( shortcut for `--tcp-proxy-upstream-address ADDRESS` and `--tcp-proxy-upstream-port PORT` ).
