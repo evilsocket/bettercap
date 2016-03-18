@@ -103,14 +103,24 @@ class ProxyOptions
       @tcp_proxy_port = v.to_i
     end
 
-    opts.on( '--tcp-proxy-upstream-address ADDRESS', 'Set TCP proxy upstream server address.' ) do |v|
-      unless Network::Validator.is_ip?(v)
-        begin
-          v = IPSocket.getaddress v
-        rescue SocketError
-          raise BetterCap::Error, 'Invalid TCP proxy upstream server address/hostname specified.'
-        end
+    opts.on( '--tcp-proxy-upstream ADDRESS:PORT', 'Set TCP proxy upstream server address and port.' ) do |v|
+      if v =~ /^(.+):(\d+)$/
+        address = $1
+        port    = $2
+      else
+        raise BetterCap::Error, "Invalid address and port specified, the correct syntax is ADDRESS:PORT ( i.e. 192.168.1.2:22 )."
       end
+
+      address, port = validate_address address, port
+
+      @tcp_proxy                  = true
+      @tcp_proxy_upstream_address = address
+      @tcp_proxy_upstream_port    = port.to_i
+    end
+
+    opts.on( '--tcp-proxy-upstream-address ADDRESS', 'Set TCP proxy upstream server address.' ) do |v|
+      v, _ = validate_address v
+
       @tcp_proxy                  = true
       @tcp_proxy_upstream_address = v
     end
@@ -264,6 +274,20 @@ class ProxyOptions
 
   def any?
     @proxy or @proxy_https or @tcp_proxy or @custom_proxy
+  end
+
+  def validate_address( address, port = nil )
+    unless Network::Validator.is_ip?(address)
+      begin
+        address = IPSocket.getaddress address
+      rescue SocketError
+        raise BetterCap::Error, "Could not resolve '#{address}' to a valid ip address."
+      end
+    end
+
+    raise BetterCap::Error, "Invalid port '#{port}' specified." unless port.nil? or Network::Validator.is_valid_port?(port)
+
+    [ address, port ]
   end
 end
 
