@@ -23,9 +23,9 @@ class SpoofOptions
   attr_accessor :kill
 
   def initialize
-    @spoofer = 'ARP'
+    @spoofer     = 'ARP'
     @half_duplex = false
-    @kill = false
+    @kill        = false
   end
 
   def parse!( ctx, opts )

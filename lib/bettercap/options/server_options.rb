@@ -28,12 +28,12 @@ class ServerOptions
   attr_accessor :dnsd_file
 
   def initialize
-    @httpd = false
+    @httpd      = false
     @httpd_port = 8081
     @httpd_path = './'
-    @dnsd = false
-    @dnsd_port = 5300
-    @dnsd_file = nil
+    @dnsd       = false
+    @dnsd_port  = 5300
+    @dnsd_file  = nil
   end
 
   def parse!( ctx, opts )
@@ -46,6 +46,7 @@ class ServerOptions
     end
 
     opts.on( '--httpd-port PORT', "Set HTTP server port, default to #{@httpd_port.to_s.yellow}." ) do |v|
+      raise BetterCap::Error, "Invalid port '#{v}' specified." unless Network::Validator.is_valid_port?(v)
       @httpd = true
       @httpd_port = v.to_i
     end
@@ -61,6 +62,7 @@ class ServerOptions
     end
 
     opts.on( '--dns-port PORT', "Set DNS server port, default to #{@dnsd_port.to_s.yellow}." ) do |v|
+      raise BetterCap::Error, "Invalid port '#{v}' specified." unless Network::Validator.is_valid_port?(v)
       @dnsd_port = v.to_i
     end
 

@@ -41,18 +41,18 @@ class CoreOptions
   attr_accessor :check_updates
 
   def initialize( iface )
-    @iface = iface
-    @gateway = nil
-    @targets = nil
-    @logfile = nil
-    @log_timestamp = false
-    @silent = false
-    @debug = false
-    @ignore = nil
-    @arpcache = false
-    @no_target_nbns = false
+    @iface           = iface
+    @gateway         = nil
+    @targets         = nil
+    @logfile         = nil
+    @log_timestamp   = false
+    @silent          = false
+    @debug           = false
+    @ignore          = nil
+    @arpcache        = false
+    @no_target_nbns  = false
     @packet_throttle = 0.0
-    @check_updates = false
+    @check_updates   = false
   end
 
   def parse!( ctx, opts )

@@ -98,6 +98,7 @@ class ProxyOptions
     end
 
     opts.on( '--tcp-proxy-port PORT', "Set local TCP proxy port, default to #{@tcp_proxy_port.to_s.yellow} ." ) do |v|
+      raise BetterCap::Error, "Invalid port '#{v}' specified." unless Network::Validator.is_valid_port?(v)
       @tcp_proxy      = true
       @tcp_proxy_port = v.to_i
     end
@@ -115,6 +116,7 @@ class ProxyOptions
     end
 
     opts.on( '--tcp-proxy-upstream-port PORT', 'Set TCP proxy upstream server port.' ) do |v|
+      raise BetterCap::Error, "Invalid port '#{v}' specified." unless Network::Validator.is_valid_port?(v)
       @tcp_proxy               = true
       @tcp_proxy_upstream_port = v.to_i
     end
@@ -127,6 +129,7 @@ class ProxyOptions
     end
 
     opts.on( '--proxy-port PORT', "Set HTTP proxy port, default to #{@proxy_port.to_s.yellow}." ) do |v|
+      raise BetterCap::Error, "Invalid port '#{v}' specified." unless Network::Validator.is_valid_port?(v)
       @proxy = true
       @proxy_port = v.to_i
     end
@@ -152,6 +155,7 @@ class ProxyOptions
     end
 
     opts.on( '--proxy-https-port PORT', "Set HTTPS proxy port, default to #{@proxy_https_port.to_s.yellow}." ) do |v|
+      raise BetterCap::Error, "Invalid port '#{v}' specified." unless Network::Validator.is_valid_port?(v)
       @proxy_https = true
       @proxy_https_port = v.to_i
     end
@@ -174,6 +178,7 @@ class ProxyOptions
     end
 
     opts.on( '--custom-proxy-port PORT', "Specify a port for the custom HTTP upstream proxy, default to #{@custom_proxy_port.to_s.yellow}." ) do |v|
+      raise BetterCap::Error, "Invalid port '#{v}' specified." unless Network::Validator.is_valid_port?(v)
       @custom_proxy_port = v.to_i
     end
 
@@ -182,6 +187,7 @@ class ProxyOptions
     end
 
     opts.on( '--custom-https-proxy-port PORT', "Specify a port for the custom HTTPS upstream proxy, default to #{@custom_https_proxy_port.to_s.yellow}." ) do |v|
+      raise BetterCap::Error, "Invalid port '#{v}' specified." unless Network::Validator.is_valid_port?(v)
       @custom_https_proxy_port = v.to_i
     end
 

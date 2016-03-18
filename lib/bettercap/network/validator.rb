@@ -27,6 +27,15 @@ class Validator
     false
   end
 
+  # Return true if +port+ is a valid port, otherwise false.
+  def self.is_valid_port?(port)
+    port ||= ""
+    return false if port.strip.empty?
+    return false unless port =~ /^[0-9]+$/
+    port = port.to_i
+    return ( port > 0 and port <= 65535 )
+  end
+
   # Extract valid IP addresses from +data+ and yields each one of them.
   def self.each_ip(data)
     data.scan(/(#{IP_ADDRESS_REGEX})/).each do |m|

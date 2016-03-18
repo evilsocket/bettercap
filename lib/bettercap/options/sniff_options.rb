@@ -31,13 +31,13 @@ class SniffOptions
   attr_accessor :local
 
   def initialize
-    @enabled = false
-    @output = nil
-    @filter = nil
-    @src = nil
-    @parsers = ['*']
+    @enabled       = false
+    @output        = nil
+    @filter        = nil
+    @src           = nil
+    @parsers       = ['*']
     @custom_parser = nil
-    @local = false
+    @local         = false
   end
 
   def parse!( ctx, opts )
