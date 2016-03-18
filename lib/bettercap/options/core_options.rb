@@ -22,9 +22,9 @@ class CoreOptions
   attr_accessor :targets
   # Comma separated list of ip addresses to ignore.
   attr_accessor :ignore
-  # If true will disable active network discovery, the program will just use
+  # If false will disable active network discovery, the program will just use
   # the current ARP cache.
-  attr_accessor :arpcache
+  attr_accessor :discovery
   # If true, targets NBNS hostname resolution won't be performed.
   attr_accessor :no_target_nbns
   # Log file name.
@@ -49,7 +49,7 @@ class CoreOptions
     @silent          = false
     @debug           = false
     @ignore          = nil
-    @arpcache        = false
+    @discovery       = true
     @no_target_nbns  = false
     @packet_throttle = 0.0
     @check_updates   = false
@@ -78,7 +78,7 @@ class CoreOptions
     end
 
     opts.on( '--no-discovery', "Do not actively search for hosts, just use the current ARP cache, default to #{'false'.yellow}." ) do
-      @arpcache = true
+      @discovery = false
     end
 
     opts.on( '--no-target-nbns', 'Disable target NBNS hostname resolution.' ) do
@@ -129,7 +129,7 @@ class CoreOptions
 
   # Return true if active host discovery is enabled, otherwise false.
   def discovery?
-    ( @targets.nil? and !@arpcache )
+    ( @discovery and @targets.nil? )
   end
 
   # Split specified targets and parse them ( either as IP or MAC ), will raise a
