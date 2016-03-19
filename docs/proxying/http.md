@@ -73,6 +73,12 @@ When the "victim" will click on that link, no HSTS rule will be applied ( since 
   ![network mitm](/_static/img/sslstrip2.png)
 </center>
 
+### Demonstration
+
+The following video demonstrates how to perform SSL Stripping and HSTS Bypass attacks in order to capture the Facebook login credentials of a specific target.
+
+<iframe width="100%" height="400" src="https://www.youtube.com/embed/BfvoONHXuQA" frameborder="0" allowfullscreen></iframe>
+
 ## HTTPS
 
 ### Server Name Indication
