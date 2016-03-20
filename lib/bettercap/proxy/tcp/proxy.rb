@@ -52,7 +52,7 @@ class Proxy
     # address is discovered and put in the ARP cache before we even start the proxy,
     # otherwise internal connections won't be spoofed and the proxy will be useless
     # until some random event will fill the ARP cache for the server.
-    if @ctx.ifconfig[:ip4_obj].include?( @upstream_address )
+    if @ctx.iface.network.include?( @upstream_address )
       Logger.debug "[#{'TCP PROXY'.green}] Sending probe to upstream server address ..."
       BetterCap::Network.get_hw_address( @ctx, @upstream_address )
       # wait for the system to acknowledge the ARP cache changes.

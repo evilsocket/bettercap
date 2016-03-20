@@ -20,13 +20,11 @@ class Base
   # Initialize the agent using the +ctx+ BetterCap::Context instance.
   # If +address+ is not nil only that ip will be probed.
   def initialize( ctx, address = nil )
-    @ctx       = ctx
-    @ifconfig  = ctx.ifconfig
-    @local_ip  = @ifconfig[:ip_saddr]
-    @address   = address
+    @ctx     = ctx
+    @address = address
 
     if @address.nil?
-      net = ip = @ifconfig[:ip4_obj]
+      net = ip = @ctx.iface.network
       # loop each ip in our subnet and push it to the queue
       while net.include?ip
         unless skip_address?(ip)
@@ -52,7 +50,7 @@ class Base
     if ip == @ctx.gateway.ip
       return !@ctx.gateway.mac.nil?
     # don't send probes to our device
-    elsif ip == @local_ip
+    elsif ip == @ctx.iface.ip
       return true
     # don't stress endpoints we already discovered
     else

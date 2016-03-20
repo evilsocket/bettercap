@@ -20,10 +20,13 @@ class Target
   attr_accessor :ip
   # The MAC address of the device network interface.
   attr_accessor :mac
+  # Network object.
+  attr_accessor :network
   # Vendor of the device network interface if available.
   attr_accessor :vendor
-  # NetBIOS hostname of the device if available.
-  attr_accessor :hostname
+  # NetBIOS hostname of the device if available OR interface name in case of
+  # local address.
+  attr_accessor :name
   # True if the IP attribute of this target needs to be updated.
   attr_accessor :ip_refresh
 
@@ -43,7 +46,7 @@ class Target
   # The +ip+ argument could also be a MAC address itself, in this case the
   # ip address will be parsed from the computer ARP cache and updated
   # accordingly.
-  def initialize( ip, mac=nil )
+  def initialize( ip, mac=nil, network=nil )
     if Network::Validator.is_ip?(ip)
       @ip         = ip
       @ip_refresh = false
@@ -57,8 +60,9 @@ class Target
 
     @mac      = Target.normalized_mac(mac) unless mac.nil?
     @vendor   = Target.lookup_vendor(@mac) unless mac.nil?
-    @hostname = nil
-    @resolver = Thread.new { resolve! } unless Context.get.options.core.no_target_nbns or @ip.nil?
+    @name     = nil
+    @network  = network
+    @resolver = Thread.new { resolve! } unless Context.get.options.core.no_target_nbns or @ip.nil? or !@network.nil?
   end
 
   # Return the integer representation of the +ip+ attribute which can be
@@ -86,15 +90,15 @@ class Target
     vendor  = @vendor.nil?? " ( ??? )" : " ( #{@vendor} )"
 
     s = sprintf( fmt, address, @mac )
-    s += " / #{@hostname}" unless @hostname.nil?
+    s += " / #{@name}" unless @name.nil?
     s += vendor
     s
   end
 
   # Return a compact string representation of this object.
   def to_s_compact
-    if @hostname
-      "#{@hostname}/#{@ip}"
+    if @name
+      "#{@name}/#{@ip}"
     else
       @ip
     end
@@ -131,8 +135,8 @@ private
         sock.recvfrom(NBNS_BUFSIZE)
       end
       if resp
-        @hostname = parse_nbns_response resp
-        Logger.info "Found NetBIOS name '#{@hostname}' for address #{@ip}"
+        @name = parse_nbns_response resp
+        Logger.info "Found NetBIOS name '#{@name}' for address #{@ip}"
       end
     rescue Exception => e
       Logger.debug e

@@ -120,7 +120,7 @@ class DNSD
         expression = $2
 
         if address == 'local'
-          address = Context.get.ifconfig[:ip_saddr].to_s
+          address = Context.get.iface.ip.to_s
         end
 
         raise BetterCap::Error, "Invalid IPv4 address '#{address}' on line #{lineno + 1} of '#{filename}'." \

@@ -31,7 +31,7 @@ class StreamLogger
   def self.addr2s( addr, alt = nil )
     ctx = Context.get
     # check for the local address
-    return 'local' if addr == ctx.ifconfig[:ip_saddr]
+    return 'local' if addr == ctx.iface.ip
     # is it a known target?
     target = ctx.find_target addr, nil
     return target.to_s_compact unless target.nil?

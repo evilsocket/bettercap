@@ -106,7 +106,7 @@ class Strip
     @stripped = []
     @cookies  = CookieMonitor.new
     @favicon  = Response.from_file( File.dirname(__FILE__) + '/lock.ico', 'image/x-icon' )
-    @resolver = BetterCap::Network::Servers::DNSD.new( nil, ctx.ifconfig[:ip_saddr], ctx.options.servers.dnsd_port )
+    @resolver = BetterCap::Network::Servers::DNSD.new( nil, ctx.iface.ip, ctx.options.servers.dnsd_port )
 
     @resolver.start
   end

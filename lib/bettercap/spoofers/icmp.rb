@@ -79,7 +79,6 @@ class Icmp < Base
   def initialize
     @ctx          = Context.get
     @forwarding   = @ctx.firewall.forwarding_enabled?
-    @local        = @ctx.ifconfig[:ip_saddr]
     @spoof_thread = nil
     @watch_thread = nil
     @running      = false
@@ -97,7 +96,7 @@ class Icmp < Base
         Logger.debug "Sending ICMP Redirect to #{target.to_s_compact} redirecting #{address} to us ..."
 
         pkt = ICMPRedirectPacket.new
-        pkt.update!( @ctx.gateway, target, @local, address )
+        pkt.update!( @ctx.gateway, target, @ctx.iface.ip, address )
         @ctx.packets.push(pkt)
       rescue Exception => e
         Logger.debug "#{self.class.name} : #{e.message}"
@@ -147,7 +146,7 @@ class Icmp < Base
 
   # Return true if the +pkt+ packet comes from one of our targets.
   def is_interesting_packet?(pkt)
-    return false if pkt.ip_saddr == @local
+    return false if pkt.ip_saddr == @ctx.iface.ip
     @ctx.targets.each do |target|
       if target.ip and ( target.ip == pkt.ip_saddr or target.ip == pkt.ip_daddr )
         return true

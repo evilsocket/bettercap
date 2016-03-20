@@ -88,7 +88,7 @@ class Sniffer
       return true unless pkt.is_ip?
       # skip if local packet and --local|-L was not specified.
       unless @@ctx.options.sniff.local
-        return ( pkt.ip_saddr == @@ctx.ifconfig[:ip_saddr] or pkt.ip_daddr == @@ctx.ifconfig[:ip_saddr] )
+        return ( pkt.ip_saddr == @@ctx.iface.ip or pkt.ip_daddr == @@ctx.iface.ip )
       end
     rescue; end
     false

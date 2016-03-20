@@ -93,28 +93,28 @@ class Options
 
   # Create a list of BetterCap::Firewalls::Redirection objects which are needed
   # given the specified command line arguments.
-  def get_redirections ifconfig
+  def get_redirections iface
     redirections = []
 
     if @servers.dnsd or @proxies.sslstrip?
-      redirections << redir( ifconfig[:ip_saddr], 53, @servers.dnsd_port )
-      redirections << redir( ifconfig[:ip_saddr], 53, @servers.dnsd_port, 'UDP' )
+      redirections << redir( iface.ip, 53, @servers.dnsd_port )
+      redirections << redir( iface.ip, 53, @servers.dnsd_port, 'UDP' )
     end
 
     if @proxies.proxy
       @proxies.http_ports.each do |port|
-        redirections << redir( ifconfig[:ip_saddr], port, @proxies.proxy_port )
+        redirections << redir( iface.ip, port, @proxies.proxy_port )
       end
     end
 
     if @proxies.proxy_https
       @proxies.https_ports.each do |port|
-        redirections << redir( ifconfig[:ip_saddr], port, @proxies.proxy_https_port )
+        redirections << redir( iface.ip, port, @proxies.proxy_https_port )
       end
     end
 
     if @proxies.tcp_proxy
-      redirections << redir_single( @proxies.tcp_proxy_upstream_address, ifconfig[:ip_saddr], @proxies.tcp_proxy_upstream_port, @proxies.tcp_proxy_port )
+      redirections << redir_single( @proxies.tcp_proxy_upstream_address, iface.ip, @proxies.tcp_proxy_upstream_port, @proxies.tcp_proxy_port )
     end
 
     if @proxies.custom_proxy
@@ -130,7 +130,7 @@ class Options
     end
 
     @proxies.custom_redirections.each do |r|
-      redirections << redir( ifconfig[:ip_saddr], r[:from], r[:to], r[:proto] )
+      redirections << redir( iface.ip, r[:from], r[:to], r[:proto] )
     end
 
     redirections

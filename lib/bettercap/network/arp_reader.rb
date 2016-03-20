@@ -21,7 +21,7 @@ class ArpReader
   def self.parse( ctx )
     targets = []
     self.parse_cache do |ip,mac|
-      if ip != ctx.gateway.ip and ip != ctx.ifconfig[:ip_saddr]
+      if ip != ctx.gateway.ip and ip != ctx.iface.ip
         if ctx.options.core.ignore_ip?(ip)
           Logger.debug "Ignoring #{ip} ..."
         else
@@ -65,7 +65,7 @@ class ArpReader
   # Read the computer ARP cache and parse each line, it will yield each
   # ip and mac address it will be able to extract.
   def self.parse_cache
-    iface = Context.get.ifconfig[:iface]
+    iface = Context.get.iface.name
     Shell.arp.split("\n").each do |line|
       m = self.parse_cache_line(iface,line)
       unless m.nil?

@@ -27,7 +27,7 @@ class Thread
     @thread  = ::Thread.new { worker }
 
     if @ctx.options.core.discovery?
-      Logger.info "[#{'DISCOVERY'.green}] Targeting the whole subnet #{@ctx.ifconfig[:ip4_obj].to_range} ..."
+      Logger.info "[#{'DISCOVERY'.green}] Targeting the whole subnet #{@ctx.iface.network.to_range} ..."
       # give some time to the discovery thread to spawn its workers,
       # this will prevent 'Too many open files' errors to delay host
       # discovery.

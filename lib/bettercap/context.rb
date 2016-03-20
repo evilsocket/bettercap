@@ -17,10 +17,10 @@ module BetterCap
 class Context
   # Instance of BetterCap::Options class.
   attr_accessor :options
-  # A dictionary containing information about the selected network interface.
-  attr_accessor :ifconfig
   # Instance of the current BetterCap::Firewalls class.
   attr_accessor :firewall
+  # Local interface ( as an instance of BetterCap::Network::Target ).
+  attr_accessor :iface
   # Network gateway ( as an instance of BetterCap::Network::Target ).
   attr_accessor :gateway
   # A list of BetterCap::Target objects which is periodically updated.
@@ -63,7 +63,7 @@ class Context
     @running      = true
     @timeout      = 5
     @options      = Options.new iface
-    @ifconfig     = nil
+    @iface        = nil
     @firewall     = nil
     @gateway      = nil
     @targets      = []
@@ -86,23 +86,28 @@ class Context
                             'correct network configuration, this could also happen if bettercap '\
                             'is launched from a virtual environment.' unless Network::Validator.is_ip?(gw)
 
-    @gateway  = Network::Target.new gw
-    @targets  = @options.core.targets unless @options.core.targets.nil?
-    @ifconfig = PacketFu::Utils.ifconfig @options.core.iface
 
+    ifconfig = PacketFu::Utils.ifconfig @options.core.iface
     raise BetterCap::Error, "Could not determine IPv4 address of '#{@options.core.iface}', make sure this interface "\
-                            'is active and connected.' if @ifconfig[:ip4_obj].nil?
+                            'is active and connected.' if ifconfig[:ip4_obj].nil?
+
+    @gateway    = Network::Target.new gw
+    @targets    = @options.core.targets unless @options.core.targets.nil?
+    @iface      = Network::Target.new( ifconfig[:ip_saddr], ifconfig[:eth_saddr], ifconfig[:ip4_obj] )
+    @iface.name = ifconfig[:iface]
+
+    Logger.info "[#{@iface.name.green}] #{@iface.to_s(false)}"
 
     Logger.debug '----- NETWORK INFORMATIONS -----'
-    Logger.debug "  network  = #{@ifconfig[:ip4_obj]}"
+    Logger.debug "  network  = #{@iface.network}"
     Logger.debug "  gateway  = #{@gateway.ip}"
-    Logger.debug "  local_ip = #{@ifconfig[:ip_saddr]}\n"
-    @ifconfig.each do |key,value|
+    Logger.debug "  local_ip = #{@iface.ip}\n"
+    ifconfig.each do |key,value|
       Logger.debug "  ifconfig[:#{key}] = #{value}"
     end
     Logger.debug "--------------------------------\n"
 
-    @packets = Network::PacketQueue.new( @ifconfig[:iface], @options.core.packet_throttle, 4 )
+    @packets = Network::PacketQueue.new( @iface.name, @options.core.packet_throttle, 4 )
     # Spoofers need the context network data to be initialized.
     @spoofer = @options.spoof.parse_spoofers
   end
@@ -189,7 +194,7 @@ class Context
 
   # Apply needed BetterCap::Firewalls::Redirection objects.
   def enable_port_redirection!
-    @redirections = @options.get_redirections(@ifconfig)
+    @redirections = @options.get_redirections(@iface)
     @redirections.each do |r|
       Logger.debug "Redirecting #{r.protocol} traffic from #{r.src_address.nil? ? '*' : r.src_address}:#{r.src_port} to #{r.dst_address}:#{r.dst_port}"
       @firewall.add_port_redirection( r )
@@ -206,17 +211,17 @@ class Context
 
     # create HTTP proxy
     if @options.proxies.proxy
-      @proxies << Proxy::HTTP::Proxy.new( @ifconfig[:ip_saddr], @options.proxies.proxy_port, false )
+      @proxies << Proxy::HTTP::Proxy.new( @iface.ip, @options.proxies.proxy_port, false )
     end
 
     # create HTTPS proxy
     if @options.proxies.proxy_https
-      @proxies << Proxy::HTTP::Proxy.new( @ifconfig[:ip_saddr], @options.proxies.proxy_https_port, true )
+      @proxies << Proxy::HTTP::Proxy.new( @iface.ip, @options.proxies.proxy_https_port, true )
     end
 
     # create TCP proxy
     if @options.proxies.tcp_proxy
-      @proxies << Proxy::TCP::Proxy.new( @ifconfig[:ip_saddr], @options.proxies.tcp_proxy_port, @options.proxies.tcp_proxy_upstream_address, @options.proxies.tcp_proxy_upstream_port )
+      @proxies << Proxy::TCP::Proxy.new( @iface.ip, @options.proxies.tcp_proxy_port, @options.proxies.tcp_proxy_upstream_address, @options.proxies.tcp_proxy_upstream_port )
     end
 
     @proxies.each do |proxy|
@@ -230,7 +235,7 @@ class Context
     if @options.servers.dnsd
       Logger.warn "Starting DNS server with spoofing disabled, bettercap will only reply to local DNS queries." unless @options.spoof.enabled?
 
-      @dnsd = Network::Servers::DNSD.new( @options.servers.dnsd_file, @ifconfig[:ip_saddr], @options.servers.dnsd_port )
+      @dnsd = Network::Servers::DNSD.new( @options.servers.dnsd_file, @iface.ip, @options.servers.dnsd_port )
       @dnsd.start
     end
 

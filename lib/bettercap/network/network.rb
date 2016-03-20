@@ -56,8 +56,6 @@ class << self
   def get_alive_targets( ctx )
     if ctx.options.core.discovery?
       start_agents( ctx )
-    else
-      Logger.debug 'Using current ARP cache.'
     end
 
     ArpReader.parse ctx

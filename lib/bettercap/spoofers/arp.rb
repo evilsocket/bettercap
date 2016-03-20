@@ -104,13 +104,13 @@ class Arp < Base
       end
     else
       # tell the target we're the gateway
-      send_spoofed_packet( @ctx.gateway.ip, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
+      send_spoofed_packet( @ctx.gateway.ip, @ctx.iface.mac, target.ip, target.mac )
       # tell the gateway we're the target
-      send_spoofed_packet( target.ip, @ctx.ifconfig[:eth_saddr], @ctx.gateway.ip, @ctx.gateway.mac ) unless @ctx.options.spoof.half_duplex
+      send_spoofed_packet( target.ip, @ctx.iface.mac, @ctx.gateway.ip, @ctx.gateway.mac ) unless @ctx.options.spoof.half_duplex
       # tell the target we're everybody else in the network :D
       @ctx.targets.each do |e|
         if e.spoofable? and e.ip != target.ip and e.ip != @ctx.gateway.ip
-          send_spoofed_packet( e.ip, @ctx.ifconfig[:eth_saddr], target.ip, target.mac )
+          send_spoofed_packet( e.ip, @ctx.iface.mac, target.ip, target.mac )
         end
       end
     end
@@ -131,7 +131,7 @@ class Arp < Base
     # we're only interested in 'who-has' packets
     pkt.arp_opcode == 1 and \
     pkt.arp_dst_mac.to_s == '00:00:00:00:00:00' and \
-    pkt.arp_src_ip.to_s != @ctx.ifconfig[:ip_saddr]
+    pkt.arp_src_ip.to_s != @ctx.iface.ip
   end
 
   # Will watch for incoming ARP requests and spoof the source address.
@@ -141,7 +141,7 @@ class Arp < Base
     sniff_packets('arp') { |pkt|
       if is_arp_query?(pkt)
         Logger.info "[#{'ARP'.green}] #{pkt.arp_src_ip.to_s} is asking who #{pkt.arp_dst_ip.to_s} is."
-        send_spoofed_packet pkt.arp_dst_ip.to_s, @ctx.ifconfig[:eth_saddr], pkt.arp_src_ip.to_s, pkt.arp_src_mac.to_s
+        send_spoofed_packet pkt.arp_dst_ip.to_s, @ctx.iface.mac, pkt.arp_src_ip.to_s, pkt.arp_src_mac.to_s
       end
     }
   end

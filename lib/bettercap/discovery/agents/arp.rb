@@ -23,10 +23,10 @@ class Arp < Discovery::Agents::Base
   def get_probe( ip )
     pkt = PacketFu::ARPPacket.new
 
-    pkt.eth_saddr     = pkt.arp_saddr_mac = @ifconfig[:eth_saddr]
+    pkt.eth_saddr     = pkt.arp_saddr_mac = @ctx.iface.mac
     pkt.eth_daddr     = 'ff:ff:ff:ff:ff:ff'
     pkt.arp_daddr_mac = '00:00:00:00:00:00'
-    pkt.arp_saddr_ip  = @ifconfig[:ip_saddr]
+    pkt.arp_saddr_ip  = @ctx.iface.ip
     pkt.arp_daddr_ip  = ip.to_s
 
     pkt

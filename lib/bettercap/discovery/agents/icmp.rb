@@ -26,9 +26,9 @@ class Icmp
     3.times do
       pkt = PacketFu::ICMPPacket.new
 
-      pkt.eth_saddr = ctx.ifconfig[:eth_saddr]
+      pkt.eth_saddr = ctx.iface.mac
       pkt.eth_daddr = 'ff:ff:ff:ff:ff:ff'
-      pkt.ip_saddr  = ctx.ifconfig[:ip_saddr]
+      pkt.ip_saddr  = ctx.iface.ip
       pkt.ip_daddr  = '255.255.255.255'
       pkt.icmp_type = 8
       pkt.icmp_code = 0
