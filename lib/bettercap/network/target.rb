@@ -46,7 +46,7 @@ class Target
   # The +ip+ argument could also be a MAC address itself, in this case the
   # ip address will be parsed from the computer ARP cache and updated
   # accordingly.
-  def initialize( ip, mac=nil, network=nil )
+  def initialize( ip, mac=nil, network=nil, name=nil )
     if Network::Validator.is_ip?(ip)
       @ip         = ip
       @ip_refresh = false
@@ -60,7 +60,7 @@ class Target
 
     @mac      = Target.normalized_mac(mac) unless mac.nil?
     @vendor   = Target.lookup_vendor(@mac) unless mac.nil?
-    @name     = nil
+    @name     = name
     @network  = network
     @resolver = Thread.new { resolve! } unless Context.get.options.core.no_target_nbns or @ip.nil? or !@network.nil?
   end

@@ -87,14 +87,13 @@ class Context
                             'is launched from a virtual environment.' unless Network::Validator.is_ip?(gw)
 
 
-    ifconfig = PacketFu::Utils.ifconfig @options.core.iface
+    cfg = PacketFu::Utils.ifconfig @options.core.iface
     raise BetterCap::Error, "Could not determine IPv4 address of '#{@options.core.iface}', make sure this interface "\
-                            'is active and connected.' if ifconfig[:ip4_obj].nil?
+                            'is active and connected.' if cfg[:ip4_obj].nil?
 
-    @gateway    = Network::Target.new gw
-    @targets    = @options.core.targets unless @options.core.targets.nil?
-    @iface      = Network::Target.new( ifconfig[:ip_saddr], ifconfig[:eth_saddr], ifconfig[:ip4_obj] )
-    @iface.name = ifconfig[:iface]
+    @gateway = Network::Target.new gw
+    @targets = @options.core.targets unless @options.core.targets.nil?
+    @iface   = Network::Target.new( cfg[:ip_saddr], cfg[:eth_saddr], cfg[:ip4_obj], cfg[:iface] )
 
     Logger.info "[#{@iface.name.green}] #{@iface.to_s(false)}"
 
@@ -102,7 +101,7 @@ class Context
     Logger.debug "  network  = #{@iface.network}"
     Logger.debug "  gateway  = #{@gateway.ip}"
     Logger.debug "  local_ip = #{@iface.ip}\n"
-    ifconfig.each do |key,value|
+    cfg.each do |key,value|
       Logger.debug "  ifconfig[:#{key}] = #{value}"
     end
     Logger.debug "--------------------------------\n"
