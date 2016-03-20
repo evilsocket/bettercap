@@ -122,10 +122,6 @@ class Context
   def start!
     # Start targets auto discovery.
     @discovery.start
-    # give some time to the discovery thread to spawn its workers,
-    # this will prevent 'Too many open files' errors to delay host
-    # discovery.
-    sleep(1.5) if @options.core.discovery?
 
     # Start network spoofers if any.
     @spoofer.each do |spoofer|

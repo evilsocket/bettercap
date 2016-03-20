@@ -23,12 +23,16 @@ class Thread
 
   # Start the active network discovery thread.
   def start
-    if @ctx.options.core.discovery?
-      Logger.info "[#{'DISCOVERY'.green}] Targeting the whole subnet #{@ctx.ifconfig[:ip4_obj].to_range} ..."
-    end
-
     @running = true
     @thread  = ::Thread.new { worker }
+
+    if @ctx.options.core.discovery?
+      Logger.info "[#{'DISCOVERY'.green}] Targeting the whole subnet #{@ctx.ifconfig[:ip4_obj].to_range} ..."
+      # give some time to the discovery thread to spawn its workers,
+      # this will prevent 'Too many open files' errors to delay host
+      # discovery.
+      sleep(1.5)
+    end
   end
 
   # Stop the active network discovery thread.
