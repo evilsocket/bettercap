@@ -63,8 +63,10 @@ class Context
     @running      = true
     @timeout      = 5
     @options      = Options.new iface
+    @discovery    = Discovery::Thread.new self
+    @firewall     = Firewalls::Base.get
+    @memory       = Memory.new
     @iface        = nil
-    @firewall     = nil
     @gateway      = nil
     @targets      = []
     @spoofer      = nil
@@ -72,10 +74,7 @@ class Context
     @dnsd         = nil
     @proxies      = []
     @redirections = []
-    @discovery    = Discovery::Thread.new self
-    @firewall     = Firewalls::Base.get
     @packets      = nil
-    @memory       = Memory.new
   end
 
   # Update the Context state parsing network related informations.
