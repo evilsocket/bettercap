@@ -216,7 +216,7 @@ class ProxyOptions
       raise BetterCap::Error, "No TCP proxy upstream server port specified ( --tcp-proxy-upstream-port PORT )." if @tcp_proxy_upstream_port.nil?
     end
 
-    if @sslstrip and ctx.options.servers.dnsd
+    if @proxy and @sslstrip and ctx.options.servers.dnsd
       raise BetterCap::Error, "SSL Stripping and builtin DNS server are mutually exclusive features, " \
                               "either use the --no-sslstrip option or remove the --dns option."
     end
