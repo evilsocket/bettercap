@@ -100,9 +100,6 @@ class Context
     Logger.debug "  network  = #{@iface.network}"
     Logger.debug "  gateway  = #{@gateway.ip}"
     Logger.debug "  local_ip = #{@iface.ip}\n"
-    cfg.each do |key,value|
-      Logger.debug "  ifconfig[:#{key}] = #{value}"
-    end
     Logger.debug "--------------------------------\n"
 
     @packets = Network::PacketQueue.new( @iface.name, @options.core.packet_throttle, 4 )
