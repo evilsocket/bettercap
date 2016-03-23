@@ -97,9 +97,9 @@ class Context
     Logger.info "[#{@iface.name.green}] #{@iface.to_s(false)}"
 
     Logger.debug '----- NETWORK INFORMATIONS -----'
-    Logger.debug "  network  = #{@iface.network}"
+    Logger.debug "  network  = #{@iface.network} ( #{@iface.network.to_range.to_s.split('..').join( ' -> ')} )"
     Logger.debug "  gateway  = #{@gateway.ip}"
-    Logger.debug "  local_ip = #{@iface.ip}\n"
+    Logger.debug "  local_ip = #{@iface.ip}"
     Logger.debug "--------------------------------\n"
 
     @packets = Network::PacketQueue.new( @iface.name, @options.core.packet_throttle, 4 )
