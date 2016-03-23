@@ -78,22 +78,26 @@ class DNSD
       :server_class => DnsWrapper
     }
 
-    RubyDNS::run_server( options ) do
-      # Suppress RubyDNS logging.
-      @logger.level = ::Logger::ERROR
-      @upstream ||= RubyDNS::Resolver.new([[:udp, "8.8.8.8", 53], [:tcp, "8.8.8.8", 53]])
+    begin
+      RubyDNS::run_server( options ) do
+        # Suppress RubyDNS logging.
+        @logger.level = ::Logger::ERROR
+        @upstream ||= RubyDNS::Resolver.new([[:udp, "8.8.8.8", 53], [:tcp, "8.8.8.8", 53]])
 
-      # Default DNS handler
-      otherwise do |transaction|
-        Logger.debug "[#{transaction.options[:peer]} > #{'DNS'.green}] Received request for '#{transaction.question.to_s.yellow}' -> upstream DNS"
-        transaction.passthrough!(@upstream)
+        # Default DNS handler
+        otherwise do |transaction|
+          Logger.debug "[#{transaction.options[:peer]} > #{'DNS'.green}] Received request for '#{transaction.question.to_s.yellow}' -> upstream DNS"
+          transaction.passthrough!(@upstream)
+        end
       end
-    end
 
-    unless @hosts.nil?
-      DNSD.parse_hosts( @hosts ).each do |exp,addr|
-        add_rule!( exp, addr )
+      unless @hosts.nil?
+        DNSD.parse_hosts( @hosts ).each do |exp,addr|
+          add_rule!( exp, addr )
+        end
       end
+    rescue Errno::EADDRINUSE
+      raise BetterCap::Error, "[DNS] It looks like there's another process listening on #{@address}:#{@port}, please chose a different port."
     end
   end
 

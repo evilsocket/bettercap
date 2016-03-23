@@ -69,9 +69,10 @@ class Proxy
       end
 
       @main_thread = Thread.new &method(:server_thread)
+    rescue Errno::EADDRINUSE
+      raise BetterCap::Error, "[#{@type} PROXY] It looks like there's another process listening on #{@address}:#{@port}, please chose a different port."
     rescue Exception => e
       Logger.error "Error starting #{@type} proxy: #{e.inspect}"
-      @socket.close unless @socket.nil?
     end
   end
 
