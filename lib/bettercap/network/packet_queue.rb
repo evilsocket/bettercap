@@ -26,10 +26,19 @@ class PacketQueue
     @running  = true
     @stream   = PCAPRUB::Pcap.open_live( iface, 0xffff, false , 1 )
     @mutex    = Mutex.new
-    @udp      = UDPSocket.new
     @queue    = Queue.new
     @workers  = (0...nworkers).map { ::Thread.new { worker } }
     @ctx      = Context.get
+
+    begin
+      @udp = UDPSocket.new
+    rescue Errno::EMFILE
+      Logger.warn "It looks like another process is using a lot of UDP file descriptors" \
+                  "and the operating system is denying resources to me, I'll try again in one second."
+
+      sleep 1.0
+      retry
+    end
   end
 
   # Push a packet to the queue.
