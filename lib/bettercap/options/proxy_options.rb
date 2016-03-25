@@ -151,6 +151,7 @@ class ProxyOptions
 
     opts.on( '--proxy-module MODULE', "Ruby proxy module to load, either a custom file or one of the following: #{Proxy::HTTP::Module.available.map{|x| x.yellow}.join(', ')}." ) do |v|
       Proxy::HTTP::Module.load(ctx, opts, v)
+      @proxy = true
     end
 
     opts.on( '--http-ports PORT1,PORT2', "Comma separated list of HTTP ports to redirect to the proxy, default to #{@http_ports.map{|x| x.to_s.yellow }.join(', ')}." ) do |v|
