@@ -13,6 +13,14 @@ This project is released under the GPL 3 license.
 
 # This proxy module will take care of HTML code injection.
 class InjectHTML < BetterCap::Proxy::HTTP::Module
+  meta(
+    'Name'        => 'InjectHTML',
+    'Description' => 'This proxy module will take care of HTML code injection.',
+    'Version'     => '1.0.0',
+    'Author'      => "Simone 'evilsocket' Margaritelli",
+    'License'     => 'GPL3'
+  )
+
   # URL of the iframe if --html-iframe-url was specified.
   @@iframe = nil
   # HTML data to be injected.

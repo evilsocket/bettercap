@@ -16,7 +16,7 @@ module Proxy
 module HTTP
 
 # Base class for transparent proxy modules.
-class Module
+class Module < BetterCap::Pluggable
   @@path    = File.dirname(__FILE__) + '/modules/'
   @@modules = []
 

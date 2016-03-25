@@ -26,7 +26,7 @@ module TCP
 #      event.data = 'bbb'
 #    end
 #  end
-class Module
+class Module < BetterCap::Pluggable
   # This callback is called when the target is sending data to the upstream server.
   # +event+ is an instance of the BetterCap::Proxy::TCP::Event class.
   def on_data( event ); end

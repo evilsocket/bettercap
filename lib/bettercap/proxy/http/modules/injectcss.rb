@@ -13,6 +13,14 @@ This project is released under the GPL 3 license.
 
 # This proxy module will take care of CSS code injection.
 class InjectCSS < BetterCap::Proxy::HTTP::Module
+  meta(
+    'Name'        => 'InjectCSS',
+    'Description' => 'This proxy module will take care of CSS code injection.',
+    'Version'     => '1.0.0',
+    'Author'      => "Simone 'evilsocket' Margaritelli",
+    'License'     => 'GPL3'
+  )
+
   # CSS data to be injected.
   @@cssdata = nil
   # CSS file URL to be injected.

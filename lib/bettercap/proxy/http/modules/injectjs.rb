@@ -13,6 +13,14 @@ This project is released under the GPL 3 license.
 
 # This proxy module will take care of Javascript code injection.
 class InjectJS < BetterCap::Proxy::HTTP::Module
+  meta(
+    'Name'        => 'InjectJS',
+    'Description' => 'This proxy module will take care of Javascript code injection.',
+    'Version'     => '1.0.0',
+    'Author'      => "Simone 'evilsocket' Margaritelli",
+    'License'     => 'GPL3'
+  )
+
   # JS data to be injected.
   @@jsdata = nil
   # JS file URL to be injected.
