@@ -203,6 +203,13 @@ class Streamer
     end
   end
 
+  # Handle a PUT request, +req+ is the request object and +res+ the response.
+  def do_PUT(req, res)
+    perform_proxy_request(req, res) do |http, path, header|
+      http.put(path, req.body || "", header)
+    end
+  end
+
 end
 end
 end
