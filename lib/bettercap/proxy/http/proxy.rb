@@ -26,6 +26,7 @@ class Proxy
     @is_https      = is_https
     @type          = is_https ? 'HTTPS' : 'HTTP'
     @upstream_port = is_https ? 443 : 80
+    @allow_local   = Context.get.options.proxies.allow_local_connections
     @server        = nil
     @sslserver     = nil
     @main_thread   = nil
@@ -148,7 +149,7 @@ class Proxy
       if @streamer.was_stripped?( request, client )
         @streamer.handle( request, client )
       # someone is having fun with us =)
-      elsif is_self_request? request
+      elsif !@allow_local and is_self_request? request
         @streamer.rickroll( client )
       # handle request
       else

@@ -32,6 +32,8 @@ class ProxyOptions
   attr_accessor :proxy_module
   # If true, sslstrip is enabled.
   attr_accessor :sslstrip
+  # If true, direct connections to the IP of this machine will be allowed.
+  attr_accessor :allow_local_connections
   # If true, TCP proxy will be enabled.
   attr_accessor :tcp_proxy
   # TCP proxy local port.
@@ -63,6 +65,7 @@ class ProxyOptions
     @proxy_pem_file = nil
     @proxy_module = nil
     @sslstrip = true
+    @allow_local_connections = false
 
     @tcp_proxy = false
     @tcp_proxy_port = 2222
@@ -142,6 +145,11 @@ class ProxyOptions
       raise BetterCap::Error, "Invalid port '#{v}' specified." unless Network::Validator.is_valid_port?(v)
       @proxy = true
       @proxy_port = v.to_i
+    end
+
+    opts.on( '--allow-local-connections', "Allow direct connections to the proxy instance, default to #{@allow_local_connections.to_s.yellow}." ) do |v|
+      @proxy = true
+      @allow_local_connections = true
     end
 
     opts.on( '--no-sslstrip', 'Disable SSLStrip.' ) do
