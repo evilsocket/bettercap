@@ -31,7 +31,6 @@ module PacketFu
   class Utils
     def self.ifconfig(iface='eth0')
       ret = {}
-      iface = iface.to_s.scan(/[0-9A-Za-z]/).join
 
       BetterCap::Logger.debug "ifconfig #{iface}"
 
