@@ -3,9 +3,9 @@
 
 BETTERCAP
 
-Author : Simone 'evilsocket' Margaritelli
-Email  : evilsocket@gmail.com
-Blog   : http://www.evilsocket.net/
+Some code copyright (c) 2005, Zed Shaw
+Copyright (c) 2011, Evan Phoenix
+Copyright (c) 2015, Simone Margaritelli
 
 This project is released under the GPL 3 license.
 
@@ -14,7 +14,6 @@ This project is released under the GPL 3 license.
 module BetterCap
 module Proxy
 # Thread pool class used by the BetterCap::Proxy::*.
-# Tnx to Puma ThreadPool!
 class ThreadPool
 
   # Maintain a minimum of +min+ and maximum of +max+ threads
