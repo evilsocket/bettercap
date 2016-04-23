@@ -103,13 +103,21 @@ class Options
 
     if @proxies.proxy
       @proxies.http_ports.each do |port|
-        redirections << redir( iface.ip, port, @proxies.proxy_port )
+        if @proxies.proxy_upstream_address.nil?
+          redirections << redir( iface.ip, port, @proxies.proxy_port )
+        else
+          redirections << redir_single( @proxies.proxy_upstream_address, iface.ip, port, @proxies.proxy_port )
+        end
       end
     end
 
     if @proxies.proxy_https
       @proxies.https_ports.each do |port|
-        redirections << redir( iface.ip, port, @proxies.proxy_https_port )
+        if @proxies.proxy_upstream_address.nil?
+          redirections << redir( iface.ip, port, @proxies.proxy_https_port )
+        else
+          redirections << redir_single( @proxies.proxy_upstream_address, iface.ip, port, @proxies.proxy_port )
+        end
       end
     end
 

@@ -18,6 +18,8 @@ class ProxyOptions
   attr_accessor :proxy
   # If true, HTTPS transparent proxy will be enabled.
   attr_accessor :proxy_https
+  # If set, only this address will be redirected to the HTTP(S) proxiy.
+  attr_accessor :proxy_upstream_address
   # HTTP proxy port.
   attr_accessor :proxy_port
   # List of HTTP ports, [ 80 ] by default.
@@ -60,6 +62,7 @@ class ProxyOptions
     @https_ports = [ 443 ]
     @proxy = false
     @proxy_https = false
+    @proxy_upstream_address = nil
     @proxy_port = 8080
     @proxy_https_port = 8083
     @proxy_pem_file = nil
@@ -165,6 +168,11 @@ class ProxyOptions
     opts.on( '--http-ports PORT1,PORT2', "Comma separated list of HTTP ports to redirect to the proxy, default to #{@http_ports.map{|x| x.to_s.yellow }.join(', ')}." ) do |v|
       @http_ports = ProxyOptions.parse_ports( v )
       @proxy      = true
+    end
+
+    opts.on( '--proxy-upstream-address ADDRESS', 'If set, only requests coming from this server address will be redirected to the HTTP/HTTPS proxies.' ) do |v|
+      v, _ = validate_address v
+      @proxy_upstream_address = v
     end
 
     opts.separator ""
