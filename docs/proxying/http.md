@@ -123,6 +123,14 @@ Once you've done, just use the `--proxy-https` bettercap command line argument t
 
 ## Options
 
+### `--proxy-upstream-address ADDRESS`
+
+If set, only requests coming from this server address will be redirected to the HTTP/HTTPS proxies.
+
+### `--allow-local-connections`
+
+Allow direct connections to the proxy instance, default to `false`.
+
 ### `--proxy`
 
 Enable HTTP proxy and redirects all HTTP requests to it, default to `false`.
