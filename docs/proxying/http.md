@@ -127,7 +127,7 @@ Once you've done, just use the `--proxy-https` bettercap command line argument t
 
 If set, only requests coming from this server address will be redirected to the HTTP/HTTPS proxies.
 
-### `--allow-local-connections`
+### `--allow-local-connections`
 
 Allow direct connections to the proxy instance, default to `false`.
 
