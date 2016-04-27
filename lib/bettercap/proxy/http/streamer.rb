@@ -56,9 +56,13 @@ class Streamer
 
       if r.nil?
         # call modules on_pre_request
-        process( request )
-
-        self.send( "do_#{request.method}", request, response )
+        r = process( request )
+        if r.nil?
+          self.send( "do_#{request.method}", request, response )
+        else
+          Logger.info "[#{'PROXY'.green}] Module returned crafted response."
+          response = r
+        end
       else
         response = r
       end
@@ -107,7 +111,10 @@ class Streamer
 
         begin
           if response.nil?
-            mod.on_pre_request request
+            r = mod.on_pre_request request
+            # the handler returned a response, do not execute
+            # the request
+            response = r unless r.nil?
           else
             mod.on_request request, response
           end
@@ -119,6 +126,7 @@ class Streamer
         end
       end
     end
+    return response
   end
 
   # List of security headers to remove/patch from any response.
