@@ -56,6 +56,8 @@ class << self
   def get_alive_targets( ctx )
     if ctx.options.core.discovery?
       start_agents( ctx )
+    else
+      sleep(0.3)
     end
 
     ArpReader.parse ctx
