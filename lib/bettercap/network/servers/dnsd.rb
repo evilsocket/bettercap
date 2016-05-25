@@ -62,7 +62,12 @@ class DNSD
 
     block = Proc.new do |transaction|
       Logger.info "[#{transaction.options[:peer]} > #{'DNS'.green}] Received request for '#{transaction.question.to_s.yellow}', sending spoofed reply #{addr.yellow} ..."
-      transaction.respond!(addr)
+      begin
+        transaction.respond!(addr)
+      rescue Exception => e
+        Logger.warn "[#{'DNS'.green}] #{e.message}"
+        Logger.exception e
+      end
     end
 
     DnsWrapper.get.rules << RubyDNS::RuleBasedServer::Rule.new( [ Regexp.new(exp), Resolv::DNS::Resource::IN::A ], block )
