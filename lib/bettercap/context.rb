@@ -67,6 +67,7 @@ class Context
     @firewall     = Firewalls::Base.get
     @memory       = Memory.new
     @iface        = nil
+    @original_mac = nil
     @gateway      = nil
     @targets      = []
     @spoofer      = nil
@@ -85,6 +86,17 @@ class Context
                             'correct network configuration, this could also happen if bettercap '\
                             'is launched from a virtual environment.' unless Network::Validator.is_ip?(gw)
 
+    unless @options.core.use_mac.nil?
+      cfg = PacketFu::Utils.ifconfig @options.core.iface
+      raise BetterCap::Error, "Could not determine IPv4 address of '#{@options.core.iface}', make sure this interface "\
+                              'is active and connected.' if cfg[:ip4_obj].nil?
+
+      @original_mac = Network::Target.normalized_mac(cfg[:eth_saddr])
+
+      Logger.info "Changing interface MAC address to #{@options.core.use_mac}"
+
+      Shell.ifconfig( "#{@options.core.iface} ether #{@options.core.use_mac}")
+    end
 
     cfg = PacketFu::Utils.ifconfig @options.core.iface
     raise BetterCap::Error, "Could not determine IPv4 address of '#{@options.core.iface}', make sure this interface "\
@@ -183,6 +195,8 @@ class Context
 
     @dnsd.stop unless @dnsd.nil?
     @httpd.stop unless @httpd.nil?
+
+    Shell.ifconfig( "#{@options.core.iface} ether #{@original_mac}") unless @original_mac.nil?
   end
 
   private

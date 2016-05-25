@@ -39,6 +39,8 @@ class CoreOptions
   attr_accessor :packet_throttle
   # If true, bettercap will check for updates then exit.
   attr_accessor :check_updates
+  # If not nil, the interface MAC address will be changed to this value.
+  attr_accessor :use_mac
 
   def initialize( iface )
     @iface           = iface
@@ -53,6 +55,7 @@ class CoreOptions
     @no_target_nbns  = false
     @packet_throttle = 0.0
     @check_updates   = false
+    @use_mac         = nil
   end
 
   def parse!( ctx, opts )
@@ -62,6 +65,15 @@ class CoreOptions
 
     opts.on( '-I', '--interface IFACE', 'Network interface name - default: ' + @iface.to_s.yellow ) do |v|
       @iface = v
+    end
+
+    opts.on( '--use-mac ADDRESS', 'Change the interface MAC address to this value before performing the attack.' ) do |v|
+      @use_mac = v
+      raise BetterCap::Error, "Invalid MAC address specified." unless Network::Validator.is_mac?(@use_mac)
+    end
+
+    opts.on( '--random-mac', 'Change the interface MAC address to a random one before performing the attack.' ) do |v|
+      @use_mac = [format('%0.2x', rand(256) & ~1), (1..5).map { format('%0.2x', rand(256)) }].join(':')
     end
 
     opts.on( '-G', '--gateway ADDRESS', 'Manually specify the gateway address, if not specified the current gateway will be retrieved and used. ' ) do |v|
