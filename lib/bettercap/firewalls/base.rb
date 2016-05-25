@@ -22,7 +22,7 @@ class Base
     def get
       return @@instance unless @@instance.nil?
 
-      if RUBY_PLATFORM =~ /openbsd/ or RUBY_PLATFORM =~ /darwin/
+      if RUBY_PLATFORM =~ /.+bsd/ or RUBY_PLATFORM =~ /darwin/
         @@instance = Firewalls::BSD.new
       elsif RUBY_PLATFORM =~ /linux/
         @@instance = Firewalls::Linux.new

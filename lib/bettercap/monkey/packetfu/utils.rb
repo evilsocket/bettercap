@@ -49,7 +49,7 @@ module PacketFu
           ret = linux_ifconfig iface, data
         when /darwin/i
           ret = darwin_ifconfig iface, data
-	      when /openbsd/i
+	      when /.+bsd/i
 	        ret = openbsd_ifconfig iface, data
         end
       elsif BetterCap::Shell.available?('ip')
