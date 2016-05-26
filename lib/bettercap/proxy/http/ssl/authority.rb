@@ -29,6 +29,10 @@ class Fetcher < Net::HTTP
   def self.fetch( hostname, port )
     http             = self.new( hostname, port )
     http.use_ssl     = true
+    http.ssl_timeout =
+    http.open_timeout =
+    http.read_timeout = 10
+
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
     http.head("/")
