@@ -166,10 +166,11 @@ class Streamer
   # Use a Net::HTTP object in order to perform the +req+ BetterCap::Proxy::HTTP::Request
   # object, will return a BetterCap::Proxy::HTTP::Response object instance.
   def perform_proxy_request(req, res)
-    path         = req.path
-    response     = nil
-    http         = Net::HTTP.new( req.host, req.port )
-    http.use_ssl = ( req.port == 443 )
+    path             = req.path
+    response         = nil
+    http             = Net::HTTP.new( req.host, req.port )
+    http.use_ssl     = ( req.port == 443 )
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
     http.start do
       response = yield( http, path, req.headers )
