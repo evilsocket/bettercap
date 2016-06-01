@@ -21,11 +21,23 @@ Attack a specific subnet:
 
 `sudo bettercap -T 192.168.1.1/24`
 
+Randomize the interface MAC address during the attack:
+
+`sudo bettercap --random-mac`
+
 ## Options
 
 ### `-I, --interface IFACE`
 
 BetterCAP will automatically detect your default network interface and use it, if you want to make it use another interface ( when you have more than one, let's say `eth0` and `wlan0` ) you can use this option.
+
+### `--use-mac ADDRESS`
+
+Change the interface MAC address to this value before performing the attack.
+
+### `--random-mac`
+
+Change the interface MAC address to a random one before performing the attack.
 
 ### `-G, --gateway ADDRESS`
 

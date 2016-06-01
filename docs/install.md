@@ -9,6 +9,13 @@ All Ruby dependencies will be automatically installed through the GEM system, ho
 
     sudo apt-get install build-essential ruby-dev libpcap-dev
 
+### Installing on Kali Linux
+
+Kali Linux has bettercap packaged and added to the **kali-rolling** repositories. To install bettercap and all dependencies in one fell swoop on the latest version of Kali Linux:
+
+    apt-get update
+    apt-get install bettercap    
+
 ### Stable Release ( GEM )
 
 You can easily install bettercap using the `gem install GEMNAME` command:
