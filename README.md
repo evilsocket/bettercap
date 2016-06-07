@@ -91,6 +91,7 @@ This should solve issues such as [this one](https://github.com/evilsocket/better
 Kali Linux has bettercap packaged and added to the **kali-rolling** repositories. To install bettercap and all dependencies in one fell swoop on the latest version of Kali Linux:
     
     apt-get update
+    apt-get dist-upgrade
     apt-get install bettercap
 
 Documentation and Examples
