@@ -67,10 +67,12 @@ class InjectJS < BetterCap::Proxy::HTTP::Module
       BetterCap::Logger.info "[#{'INJECTJS'.green}] Injecting javascript #{@@jsdata.nil?? "URL" : "file"} into #{request.to_url}"
       # inject URL
       if @@jsdata.nil?
-        response.body.sub!( '</head>', "<script src=\"#{@@jsurl}\" type=\"text/javascript\"></script></head>" )
+	 replacement = "<script src=\"#{@@jsurl}\" type=\"text/javascript\"></script></head>"
+        response.body.sub!( '</head>' ) {replacement} 
       # inject data
       else
-        response.body.sub!( '</head>', "#{@@jsdata}</head>" )
+	 replacement = "#{@@jsdata}<p></p></head>" 
+        response.body.sub!( '</head>') {replacement} 
       end
     end
   end

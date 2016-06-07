@@ -67,10 +67,12 @@ class InjectCSS < BetterCap::Proxy::HTTP::Module
       BetterCap::Logger.info "[#{'INJECTCSS'.green}] Injecting CSS #{@@cssdata.nil?? "URL" : "file"} into #{request.to_url}"
       # inject URL
       if @@cssdata.nil?
-        response.body.sub!( '</head>', "  <link rel=\"stylesheet\" href=\"#{@cssurl}\"></script></head>" )
+	 replacement = " <link rel=\"stylesheet\" href=\"#{@cssurl}\"></script></head> "
+        response.body.sub!( '</head>' ) {replacement} 
       # inject data
       else
-        response.body.sub!( '</head>', "#{@@cssdata}</head>" )
+	 replacement = "#{@@cssdata}</head> "
+        response.body.sub!( '</head>' ) {replacement} 
       end
     end
   end
