@@ -91,7 +91,12 @@ module Logger
       loop do
         message = @@queue.pop
         if @@ctx.nil? or @@ctx.running
-          emit message
+          begin
+            emit message
+          rescue Exception => e
+            Logger.warn "Logger error: #{e.message}"
+            Logger.exception e
+          end
         end
       end
     end
