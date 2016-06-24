@@ -19,6 +19,7 @@ class Base
   TYPES = [
       :uint8,
       :uint16,
+      :uint16rev,
       :uint24,
       :uint32,
       :uint32rev,
@@ -62,6 +63,10 @@ class Base
 
         when :uint16
           value = data[offset..offset + 1].unpack('S')[0]
+          offset += 2
+
+        when :uint16rev
+          value = data[offset..offset + 1].reverse.unpack('S')[0]
           offset += 2
 
         when :uint24
