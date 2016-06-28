@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    bettercap (1.4.7b)
-      colorize (~> 0.7, >= 0.7.5)
+    bettercap (1.5.6b)
+      colorize (~> 0.8.0)
       em-proxy (~> 0.1, >= 0.1.8)
       net-dns (~> 0.8, >= 0.8.0)
       network_interface (~> 0.0, >= 0.0.1)
@@ -18,10 +18,10 @@ GEM
     celluloid-io (0.16.2)
       celluloid (>= 0.16.0)
       nio4r (>= 1.1.0)
-    colorize (0.7.7)
+    colorize (0.8.0)
     em-proxy (0.1.8)
       eventmachine
-    eventmachine (1.0.8)
+    eventmachine (1.2.0.1)
     hitimes (1.2.3)
     net-dns (0.8.0)
     network_interface (0.0.1)
