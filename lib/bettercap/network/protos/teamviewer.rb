@@ -97,7 +97,7 @@ module TeamViewer
     111 => "CMD_UDP_ACKPACKETS",
     112 => "CMD_UDP_PROTECTEDCOMMAND",
     113 => "CMD_FLUSHSENDBUFFER"
-  }
+}
 
 class Packet < Network::Protos::Base
   uint16rev  :magic
