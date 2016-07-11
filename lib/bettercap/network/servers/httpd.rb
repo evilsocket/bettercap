@@ -22,16 +22,15 @@ class HTTPD
   def initialize( port = 8081, path = './' )
     @port = port
     @path = path
-    begin
-      @server = WEBrick::HTTPServer.new(
-        Port: @port,
-        DocumentRoot: @path,
-        Logger: WEBrick::Log.new("/dev/null"),
-        AccessLog: []
-      )
-    rescue Errno::EADDRINUSE
-      raise BetterCap::Error, "[HTTPD] It looks like there's another process listening on port #{@port}, please chose a different port."
-    end
+    @server = WEBrick::HTTPServer.new(
+      Port: @port,
+      DocumentRoot: @path,
+      Logger: WEBrick::Log.new("/dev/null"),
+      AccessLog: []
+    )
+  rescue Errno::EADDRINUSE
+    raise BetterCap::Error, "[HTTPD] It looks like there's another process listening on port #{@port}, "\
+                            "please chose a different port."
   end
 
   # Start the server.
