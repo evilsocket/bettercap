@@ -38,9 +38,8 @@ class BSD < Base
   # If +enabled+ is true, the PF firewall will be enabled, otherwise it will
   # be disabled.
   def enable(enabled)
-    begin
-      Shell.execute("pfctl -#{enabled ? 'e' : 'd'} >/dev/null 2>&1")
-    rescue; end
+    Shell.execute("pfctl -#{enabled ? 'e' : 'd'} >/dev/null 2>&1")
+  rescue
   end
 
   # Apply the +r+ BetterCap::Firewalls::Redirection port redirection object.
@@ -66,12 +65,9 @@ class BSD < Base
     # disable pf
     enable false
 
-    begin
-      # remove the pf config file
-      File.delete( "/tmp/bettercap_pf_#{Process.pid}.conf" )
-    rescue
-    end
-
+    # remove the pf config file
+    File.delete( "/tmp/bettercap_pf_#{Process.pid}.conf" )
+  rescue
   end
 end
 end
