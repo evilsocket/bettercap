@@ -147,7 +147,6 @@ class Base
     return info[:opts][:offset] if info[:opts][:offset].is_a?(Integer)
     return default + pkt.send( info[:opts][:offset] )
   end
-
 end
 
 end

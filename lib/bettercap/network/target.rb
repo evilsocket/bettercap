@@ -97,26 +97,21 @@ class Target
 
   # Return a compact string representation of this object.
   def to_s_compact
-    if @name
-      "#{@name}/#{@ip}"
-    else
-      @ip
-    end
+    return "#{@name}/#{@ip}" if @name
+    @ip
   end
 
   # Return true if this +Target+ is equal to the specified +ip+ and +mac+,
   # otherwise return false.
-  def equals?(ip, mac)
-    # compare by ip
-    if mac.nil?
-      return ( @ip == ip )
-    # compare by mac
-    elsif !@mac.nil? and ( @mac == mac )
-      Logger.info "Found IP #{ip} for target #{@mac}!" if @ip.nil?
-      @ip = ip
-      return true
-    end
-    false
+  def equals?(ip, mac = nil)
+    # compare by ip if no mac
+    return ( @ip == ip ) if mac.nil?
+    # false if no mac or if it's different
+    return false if @mac.nil? || ( @mac != mac )
+
+    Logger.info "Found IP #{ip} for target #{@mac}!" if @ip.nil?
+    @ip = ip
+    return true
   end
 
   def self.normalized_mac(v)
