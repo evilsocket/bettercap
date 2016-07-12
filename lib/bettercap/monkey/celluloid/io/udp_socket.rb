@@ -16,12 +16,10 @@ module Celluloid
   module IO
     class UDPSocket
       def initialize(address_family = ::Socket::AF_INET)
-        begin
-          @socket = ::UDPSocket.new(address_family)
-        rescue Errno::EMFILE
-          sleep 0.5
-          retry
-        end
+        @socket = ::UDPSocket.new(address_family)
+      rescue Errno::EMFILE
+        sleep 0.5
+        retry
       end
     end
   end
