@@ -49,13 +49,12 @@ class PacketQueue
 
   # Wait for the packet queue to be empty.
   def wait_empty( timeout )
-    begin
-      Timeout::timeout(timeout) {
-        while !@queue.empty?
-          sleep 0.5
-        end
-      }
-    rescue; end
+    Timeout::timeout(timeout) {
+      while !@queue.empty?
+        sleep 0.5
+      end
+    }
+  rescue
   end
 
   # Notify the queue to stop and wait for every worker to finish.

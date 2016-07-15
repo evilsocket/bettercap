@@ -137,28 +137,15 @@ class Base
   end
 
   def self.size( info, pkt, default )
-    if info[:opts].has_key?(:size)
-      if info[:opts][:size].is_a?(Integer)
-        return info[:opts][:size]
-      else
-        n = pkt.send( info[:opts][:size] )
-        return n
-      end
-    else
-      return default
-    end
+    return default unless info[:opts].has_key?(:size)
+    return info[:opts][:size] if info[:opts][:size].is_a?(Integer)
+    return pkt.send( info[:opts][:size] )
   end
 
   def self.offset( info, pkt, default )
-    if info[:opts].has_key?(:offset)
-      if info[:opts][:offset].is_a?(Integer)
-        return info[:opts][:offset]
-      else
-        return default + pkt.send( info[:opts][:offset] )
-      end
-    else
-      return default
-    end
+    return default unless info[:opts].has_key?(:offset)
+    return info[:opts][:offset] if info[:opts][:offset].is_a?(Integer)
+    return default + pkt.send( info[:opts][:offset] )
   end
 end
 

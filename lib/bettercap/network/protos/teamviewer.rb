@@ -104,11 +104,8 @@ class Packet < Network::Protos::Base
   uint8      :command_code
 
   def version
-    if self.magic == 0x1130
-      return '1'
-    else
-      return '2'
-    end
+    return '1' if self.magic == 0x1130
+    return '2'
   end
 
   def command

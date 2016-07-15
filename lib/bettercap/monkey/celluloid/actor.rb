@@ -16,8 +16,8 @@ module Celluloid
 class Actor
   # Handle any exceptions that occur within a running actor
   def handle_crash(exception)
-      shutdown ExitEvent.new(behavior_proxy, exception)
-    rescue => ex
+    shutdown ExitEvent.new(behavior_proxy, exception)
+  rescue
   end
 end
 end
