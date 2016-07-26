@@ -287,7 +287,8 @@ class Strip
           if link[0].end_with?('\\')
             link[0][-1] = '/'
           end
-          links << StrippedObject.process( link[0] )
+          normalized, stripped = StrippedObject.process( link[0] )
+          links << [ link[0], stripped ]
         end
       end
     # handle errors due to binary content
