@@ -58,6 +58,9 @@ class Store
 
   # Find the +hostname+:+port+ certificate and return it.
   def find( hostname, port )
+    # make sure *.domain.tld hostnames are correctly sanitized
+    hostname.gsub!( "*", "www" )
+
     key = Digest::SHA256.hexdigest( "#{hostname}_#{port}" )
 
     @lock.synchronize {
