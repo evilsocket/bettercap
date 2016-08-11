@@ -122,7 +122,7 @@ private
       if target.mac.nil?
         hw = Network.get_hw_address( @ctx, target.ip )
         if hw.nil?
-          Logger.warn "Couldn't determine target #{target.ip} MAC address!"
+          Logger.debug "Couldn't determine target #{target.ip} MAC address!"
           next
         else
           target.mac = hw
@@ -132,7 +132,7 @@ private
       elsif target.ip_refresh
         ip = Network.get_ip_address( @ctx, target.mac )
         if ip.nil?
-          Logger.warn "Couldn't determine target #{target.mac} IP address!"
+          Logger.debug "Couldn't determine target #{target.mac} IP address!"
           next
         else
           doprint = ( target.ip.nil? or target.ip != ip )
