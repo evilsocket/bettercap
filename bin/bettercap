@@ -57,8 +57,15 @@ rescue Exception => e
   BetterCap::Logger.error "Backtrace         :\n\n    #{e.backtrace.join("\n    ")}\n"
 
 ensure
-  # Make sure all the messages on the logger queue are printed.
-  BetterCap::Logger.wait!
+  # handle double ctrl+c nicely
+  trap("INT") { }
 
-  ctx.finalize unless ctx.nil?
+  # Make sure all the messages on the logger queue are printed.
+  begin
+    BetterCap::Logger.wait!
+  rescue; end
+
+  begin
+    ctx.finalize unless ctx.nil?
+  rescue; end
 end
