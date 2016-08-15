@@ -56,6 +56,17 @@ module Shell
       self.execute( "LANG=en && ifconfig #{iface}" )
     end
 
+    # Change the +iface+ mac address to +mac+ using ifconfig.
+    def change_mac(iface, mac)
+      if RUBY_PLATFORM =~ /.+bsd/ or RUBY_PLATFORM =~ /darwin/
+        self.ifconfig( "#{iface} ether #{mac}")
+      elsif RUBY_PLATFORM =~ /linux/
+        self.ifconfig( "#{iface} hw ether #{mac}")
+      else
+       raise BetterCap::Error, 'Unsupported operating system'
+      end
+    end
+
     # Get the +iface+ network interface configuration ( using iproute2 ).
     def ip(iface = '')
       self.execute( "LANG=en && ip addr show #{iface}" )

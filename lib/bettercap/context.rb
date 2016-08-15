@@ -95,7 +95,7 @@ class Context
 
       Logger.info "Changing interface MAC address to #{@options.core.use_mac}"
 
-      Shell.ifconfig( "#{@options.core.iface} ether #{@options.core.use_mac}")
+      Shell.change_mac( @options.core.iface, @options.core.use_mac )
     end
 
     cfg = PacketFu::Utils.ifconfig @options.core.iface
