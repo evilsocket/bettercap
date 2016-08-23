@@ -70,7 +70,7 @@ class InjectJS < BetterCap::Proxy::HTTP::Module
 	      replacement = "<script src=\"#{@@jsurl}\" type=\"text/javascript\"></script></head>"
       # inject data
       else
-	      replacement = "#{@@jsdata}<p></p></head>"
+	      replacement = "#{@@jsdata}</head>"
       end
 
       response.body.sub!( /<\/head>/i ) { replacement }
