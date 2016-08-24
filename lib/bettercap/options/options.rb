@@ -157,7 +157,7 @@ class Options
       'https-proxy' => ( @proxies.proxy_https ? on : off ),
       'sslstrip'    => ( @proxies.sslstrip? ? on : off ),
       'http-server' => ( @servers.httpd ? on : off ),
-      'dns-server'  => ( @proxies.sslstrip? or @servers.dnsd ? on : off )
+      'dns-server'  => ( (@proxies.sslstrip? or @servers.dnsd) ? on : off )
     }
 
     msg = "Starting [ "
