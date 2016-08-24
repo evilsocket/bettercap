@@ -36,6 +36,12 @@ class InjectHTML < BetterCap::Proxy::HTTP::Module
       @@data = v
     end
 
+    opts.on( '--html-file PATH', 'Path of the html file to be injected.' ) do |v|
+      filename = File.expand_path v
+      raise BetterCap::Error, "#{filename} invalid file." unless File.exists?(filename)
+      @@data = File.read( filename )
+    end
+
     opts.on( '--html-iframe-url URL', 'URL of the iframe that will be injected, if this option is specified an "iframe" tag will be injected.' ) do |v|
       @@iframe = v
     end
@@ -44,7 +50,7 @@ class InjectHTML < BetterCap::Proxy::HTTP::Module
   # Create an instance of this module and raise a BetterCap::Error if command
   # line arguments weren't correctly specified.
   def initialize
-    raise BetterCap::Error, "No --html-data or --html-iframe-url options specified for the proxy module." if @@data.nil? and @@iframe.nil?
+    raise BetterCap::Error, "No --html-file, --html-data or --html-iframe-url options specified for the proxy module." if @@data.nil? and @@iframe.nil?
   end
 
   # Called by the BetterCap::Proxy::HTTP::Proxy processor on each HTTP +request+ and
