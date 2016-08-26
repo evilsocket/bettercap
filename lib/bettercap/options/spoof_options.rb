@@ -24,7 +24,7 @@ class SpoofOptions
 
   def initialize
     @spoofer     = 'ARP'
-    @half_duplex = false
+    @half_duplex = true
     @kill        = false
   end
 
@@ -41,8 +41,8 @@ class SpoofOptions
       @spoofer = 'NONE'
     end
 
-    opts.on( '--half-duplex', 'Enable half-duplex MITM, this will make bettercap work in those cases when the router is not vulnerable.' ) do
-      @half_duplex = true
+    opts.on( '--full-duplex', 'Enable full-duplex MITM, this will make bettercap attack both the target(s) and the router.' ) do
+      @half_duplex = false
     end
 
     opts.on( '--kill', 'Instead of forwarding packets, this switch will make targets connections to be killed.' ) do
