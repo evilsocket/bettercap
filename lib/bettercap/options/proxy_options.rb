@@ -36,6 +36,8 @@ class ProxyOptions
   attr_accessor :sslstrip
   # If true, direct connections to the IP of this machine will be allowed.
   attr_accessor :allow_local_connections
+  # If true, log HTTP responses too.
+  attr_accessor :log_response
   # If true, TCP proxy will be enabled.
   attr_accessor :tcp_proxy
   # TCP proxy local port.
@@ -69,6 +71,7 @@ class ProxyOptions
     @proxy_module = nil
     @sslstrip = true
     @allow_local_connections = false
+    @log_response = false
 
     @tcp_proxy = false
     @tcp_proxy_port = 2222
@@ -158,6 +161,10 @@ class ProxyOptions
     opts.on( '--no-sslstrip', 'Disable SSLStrip.' ) do
       @proxy    = true
       @sslstrip = false
+    end
+
+    opts.on( '--log-http-response', 'Log HTTP responses.' ) do
+      @log_response = true
     end
 
     opts.on( '--proxy-module MODULE', "Ruby proxy module to load, either a custom file or one of the following: #{Proxy::HTTP::Module.available.map{|x| x.yellow}.join(', ')}." ) do |v|

@@ -130,11 +130,11 @@ class StreamLogger
   def self.log_post( request )
     # the packet could be incomplete
     if request.post? and !request.body.nil? and !request.body.empty?
-      msg = "\n[#{'HEADERS'.green}]\n\n"
+      msg = "\n[#{'REQUEST HEADERS'.green}]\n\n"
       request.headers.each do |name,value|
         msg << "  #{name.blue} : #{value.yellow}\n"
       end
-      msg << "\n[#{'BODY'.green}]\n\n"
+      msg << "\n[#{'REQUEST BODY'.green}]\n\n"
 
       case request['Content-Type']
       when /application\/x-www-form-urlencoded.*/i
@@ -157,6 +157,34 @@ class StreamLogger
     end
   end
 
+  # This method will log every header and the body of +response+.
+  def self.log_response( response )
+    msg = "\n[#{'RESPONSE HEADERS'.light_red}]\n\n"
+    response.headers.each do |name,value|
+      msg << "  #{name.blue} : #{value.to_s.yellow}\n"
+    end
+    msg << "\n[#{'RESPONSE BODY'.light_red}]\n\n"
+
+    case response['Content-Type']
+    when /application\/x-www-form-urlencoded.*/i
+      msg << self.dump_form( response )
+
+    when /text\/plain.*/i
+      msg << response.body + "\n"
+
+    when /gzip.*/i
+      msg << self.dump_gzip( response )
+
+    when /application\/json.*/i
+      msg << self.dump_json( response )
+
+    else
+      msg << self.hexdump( response.body )
+    end
+
+    Logger.raw "#{msg}\n"
+  end
+
   # Log a HTTP ( HTTPS if +is_https+ is true ) stream performed by the +client+
   # with the +request+ and +response+ most important informations.
   def self.log_http( request, response )
@@ -172,9 +200,14 @@ class StreamLogger
     end
 
     Logger.raw "[#{self.addr2s(request.client)}] #{request.method.light_blue} #{request_s}#{response_s}"
+
     # Log post body if the POST sniffer is enabled.
     if Context.get.options.sniff.enabled?('POST')
       self.log_post( request )
+    end
+
+    if Context.get.options.proxies.log_response
+      self.log_response( response )
     end
   end
 end
