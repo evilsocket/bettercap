@@ -162,7 +162,7 @@ class StreamLogger
   def self.log_http( request, response )
     response_s = ""
     response_s += " ( #{response.content_type} )" unless response.content_type.nil?
-    request_s  = request.to_url( request.post?? nil : @@MAX_REQ_SIZE )
+    request_s  = request.to_url( nil )
     code       = response.code.to_s[0]
 
     if @@CODE_COLORS.has_key? code
