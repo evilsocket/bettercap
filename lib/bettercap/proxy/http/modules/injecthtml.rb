@@ -25,6 +25,8 @@ class InjectHTML < BetterCap::Proxy::HTTP::Module
   @@iframe = nil
   # HTML data to be injected.
   @@data = nil
+  # Position of the injection, 0 = just after <body>, 1 = before </body>
+  @@position = 0
 
   # Add custom command line arguments to the +opts+ OptionParser instance.
   def self.on_options(opts)
@@ -45,6 +47,16 @@ class InjectHTML < BetterCap::Proxy::HTTP::Module
     opts.on( '--html-iframe-url URL', 'URL of the iframe that will be injected, if this option is specified an "iframe" tag will be injected.' ) do |v|
       @@iframe = v
     end
+
+    opts.on( '--html-position POSITION', 'Position of the injection, valid values are START for injecting after the <body> tag and END to inject just before </body>.' ) do |v|
+      if v == 'START'
+        @@position = 0
+      elsif v == 'END'
+        @@position = 1
+      else
+        raise BetterCap::Error, "#{v} invalid position, only START or END values are accepted."
+      end
+    end
   end
 
   # Create an instance of this module and raise a BetterCap::Error if command
@@ -61,12 +73,16 @@ class InjectHTML < BetterCap::Proxy::HTTP::Module
       BetterCap::Logger.info "[#{'INJECTHTML'.green}] Injecting HTML code into #{request.to_url}"
 
       if @@data.nil?
-	      replacement = "<iframe src=\"#{@@iframe}\" frameborder=\"0\" height=\"0\" width=\"0\"></iframe></body>"
+        replacement = "<iframe src=\"#{@@iframe}\" frameborder=\"0\" height=\"0\" width=\"0\"></iframe>"
       else
-	      replacement = "#{@@data}</body>"
+        replacement = "#{@@data}"
       end
 
-      response.body.sub!( /<\/body>/i ) { replacement }
+      if @@position == 0
+        response.body.sub!( /<body([^>]*)>/i ) { "<body#{$1}>#{replacement}" }
+      else
+        response.body.sub!( /<\/body>/i ) { "#{replacement}</body>" }
+      end
     end
   end
 end
