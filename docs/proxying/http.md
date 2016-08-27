@@ -143,6 +143,10 @@ Set HTTP proxy port, default to `8080`.
 
 Disable SSL stripping and HSTS bypass.
 
+### `--log-http-response`
+
+Log HTTP responses.
+
 ### `--proxy-module MODULE`
 
 Ruby proxy module to load, either a custom file or one of the following: `injectcss`, `injecthtml`, `injectjs`.
