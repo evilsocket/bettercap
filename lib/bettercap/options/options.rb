@@ -167,9 +167,6 @@ class Options
     msg += "] ...\n\n"
 
     Logger.info msg
-
-    Logger.warn "You are running an unstable/beta version of this software, please" \
-                " update to a stable one if available." if BetterCap::VERSION =~ /[\d\.+]b/
   end
 end
 end
