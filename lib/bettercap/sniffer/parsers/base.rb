@@ -44,6 +44,21 @@ class Base
       list
     end
 
+    # Parse the +v+ command line argument and return a list of parser names
+    # disabling the ones specified.
+    # Will raise BetterCap::Error if one or more parser names are not valid.
+    def from_exclusion_list(v)
+      raise BetterCap::Error, "No parser names provided" if v.nil?
+
+      avail = available
+      list = v.split(',').collect(&:strip).collect(&:upcase).reject{ |c| c.empty? }
+      list.each do |parser|
+        raise BetterCap::Error, "Invalid parser name '#{parser}'." unless avail.include?(parser)
+      end
+
+      avail - list
+    end
+
     # Return a list of BetterCap::Parsers instances by their +parsers+ names.
     def load_by_names(parsers)
       loaded = []

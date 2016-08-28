@@ -74,6 +74,11 @@ class SniffOptions
       @parsers = Parsers::Base.from_cmdline(v)
     end
 
+    opts.on( '--disable-parsers PARSERS', "Comma separated list of packet parsers to disable ( NOTE: Will set -X to true )" ) do |v|
+      @enabled = true
+      @parsers = Parsers::Base.from_exclusion_list(v)
+    end
+
     opts.on( '--custom-parser EXPRESSION', 'Use a custom regular expression in order to capture and show sniffed data ( NOTE: Will set -X to true ).' ) do |v|
       @enabled       = true
       @parsers       = ['CUSTOM']
