@@ -102,6 +102,15 @@ class Response
     @body = response.body || ''
   end
 
+  # Convert this response object to a 302 redirect to +url+.
+  def redirect!(url)
+    @code   = '302'
+    @status = 'Moved'
+    @body   = nil
+    @headers['Location']   = url
+    @headers['Connection'] = 'close'
+  end
+
   # Parse a single response +line+.
   def <<(line)
     # we already parsed the heders, collect response body

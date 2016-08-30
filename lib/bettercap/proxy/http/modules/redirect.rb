@@ -52,12 +52,7 @@ class Redirect < BetterCap::Proxy::HTTP::Module
     if response.content_type =~ /^text\/html.*/ and !@@url.include?(request.host)
       if @@filter.nil? or @@filter.match(request.to_url)
         BetterCap::Logger.info "[#{'REDIRECT'.green}] Redirecting #{request.to_url} to #{@@url} ..."
-
-        response.code = '302'
-        response.status = 'Moved'
-        response.headers['Location'] = @@url
-        response.headers['Connection'] = 'close'
-        response.body = nil
+        response.redirect!(@@url)
       end
     end
   end
