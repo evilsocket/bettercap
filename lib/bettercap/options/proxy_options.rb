@@ -38,6 +38,8 @@ class ProxyOptions
   attr_accessor :allow_local_connections
   # If true, log HTTP responses too.
   attr_accessor :log_response
+  # If true, suppress HTTP requests logs.
+  attr_accessor :no_http_logs
   # If true, TCP proxy will be enabled.
   attr_accessor :tcp_proxy
   # TCP proxy local port.
@@ -72,6 +74,7 @@ class ProxyOptions
     @sslstrip = true
     @allow_local_connections = false
     @log_response = false
+    @no_http_logs = false
 
     @tcp_proxy = false
     @tcp_proxy_port = 2222
@@ -165,6 +168,10 @@ class ProxyOptions
 
     opts.on( '--log-http-response', 'Log HTTP responses.' ) do
       @log_response = true
+    end
+
+    opts.on( '--no-http-logs', 'Suppress HTTP requests and responses logs.' ) do
+      @no_http_logs = true
     end
 
     opts.on( '--proxy-module MODULE', "Ruby proxy module to load, either a custom file or one of the following: #{Proxy::HTTP::Module.available.map{|x| x.yellow}.join(', ')}." ) do |v|

@@ -67,7 +67,7 @@ class Streamer
         response = r
       end
 
-      if response.textual? or request.method == 'DELETE'
+      if @ctx.options.proxies.no_http_logs == false and ( response.textual? or request.method == 'DELETE' )
         StreamLogger.log_http( request, response )
       else
         Logger.debug "[#{request.client}] -> #{request.to_url} [#{response.code}]"
