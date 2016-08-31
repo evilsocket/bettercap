@@ -40,8 +40,6 @@ class Context
   attr_reader   :timeout
   # Instance of BetterCap::PacketQueue.
   attr_reader   :packets
-  # Instance of BetterCap::Memory.
-  attr_reader   :memory
 
   @@instance = nil
 
@@ -65,7 +63,6 @@ class Context
     @options      = Options.new iface
     @discovery    = Discovery::Thread.new self
     @firewall     = Firewalls::Base.get
-    @memory       = Memory.new
     @iface        = nil
     @original_mac = nil
     @gateway      = nil

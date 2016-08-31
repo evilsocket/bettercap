@@ -44,7 +44,6 @@ class PacketQueue
   # Push a packet to the queue.
   def push(packet)
     @queue.push(packet)
-    @ctx.memory.optimize! if ( @queue.size == 1 )
   end
 
   # Wait for the packet queue to be empty.

@@ -119,7 +119,6 @@ class Thread
 
       prev = @ctx.targets
 
-      @ctx.memory.optimize!
       sleep(1) if @ctx.options.core.discovery?
     end
   end
