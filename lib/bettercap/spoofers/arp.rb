@@ -128,10 +128,13 @@ class Arp < Base
   # Return true if the +pkt+ packet is an ARP 'who-has' query coming
   # from some network endpoint.
   def is_arp_query?(pkt)
-    # we're only interested in 'who-has' packets
-    pkt.arp_opcode == 1 and \
-    pkt.arp_dst_mac.to_s == '00:00:00:00:00:00' and \
-    pkt.arp_src_ip.to_s != @ctx.iface.ip
+    begin
+      # we're only interested in 'who-has' packets
+      return ( pkt.arp_opcode == 1 and \
+               pkt.arp_dst_mac.to_s == '00:00:00:00:00:00' and \
+               pkt.arp_src_ip.to_s != @ctx.iface.ip )
+    rescue; end
+    false
   end
 
   # Will watch for incoming ARP requests and spoof the source address.
