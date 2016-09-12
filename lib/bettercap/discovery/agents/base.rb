@@ -24,13 +24,8 @@ class Base
     @address = address
 
     if @address.nil?
-      net = ip = @ctx.iface.network
-      # loop each ip in our subnet and push it to the queue
-      while net.include?ip
-        unless skip_address?(ip)
-          @ctx.packets.push( get_probe(ip) )
-        end
-        ip = ip.succ
+      @ctx.endpoints.each do |ip|
+        @ctx.packets.push( get_probe(ip) )
       end
     else
       if skip_address?(@address)
@@ -46,21 +41,11 @@ class Base
 
   # Return true if +ip+ must be skipped during discovery, otherwise false.
   def skip_address?(ip)
-    # don't send probes to the gateway if we already have its MAC.
-    if ip == @ctx.gateway.ip
-      return !@ctx.gateway.mac.nil?
-    # don't send probes to our device
-    elsif ip == @ctx.iface.ip
-      return true
-    # don't stress endpoints we already discovered
-    else
-      target = @ctx.find_target( ip.to_s, nil )
-      # known target?
-      return false if target.nil?
-      # do we still need to get the mac for this target?
-      return ( target.mac.nil?? false : true )
-    end
-
+    target = @ctx.find_target( ip.to_s, nil )
+    # known target?
+    return false if target.nil?
+    # do we still need to get the mac for this target?
+    return ( target.mac.nil?? false : true )
   end
 
   # Each Discovery::Agent::Base derived class should implement this method.

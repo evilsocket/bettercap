@@ -40,6 +40,8 @@ class Context
   attr_reader   :timeout
   # Instance of BetterCap::PacketQueue.
   attr_reader   :packets
+  # Precomputed list of possible addresses on the current network.
+  attr_reader   :endpoints
 
   @@instance = nil
 
@@ -73,6 +75,7 @@ class Context
     @proxies      = []
     @redirections = []
     @packets      = nil
+    @endpoints    = []
   end
 
   # Update the Context state parsing network related informations.
@@ -114,6 +117,21 @@ class Context
     @packets = Network::PacketQueue.new( @iface.name, @options.core.packet_throttle, 4 )
     # Spoofers need the context network data to be initialized.
     @spoofer = @options.spoof.parse_spoofers
+
+    if @options.core.discovery?
+      tstart = Time.now
+      Logger.info "[#{'DISCOVERY'.green}] Precomputing list of possible endpoints, this could take a while depending on your subnet ..."
+      net = ip = @iface.network
+      # loop each ip in our subnet and push it to the queue
+      while net.include?ip
+        if ip != @gateway.ip and ip != @iface.ip
+          @endpoints << ip
+        end
+        ip = ip.succ
+      end
+      tend = Time.now
+      Logger.info "[#{'DISCOVERY'.green}] Done in #{(tend - tstart) * 1000.0} ms"
+    end
   end
 
   # Find a target given its +ip+ and +mac+ addresses inside the #targets
