@@ -18,6 +18,7 @@ class Ftp < Base
   def initialize
     @filters = [ /(USER|PASS)\s+.+/ ]
     @name = 'FTP'
+    @port = 21
   end
 end
 end

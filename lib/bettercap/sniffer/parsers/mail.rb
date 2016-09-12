@@ -16,8 +16,9 @@ module Parsers
 # POP/IMAP authentication parser.
 class Mail < Base
   def initialize
-    @filters = [ /(\d+ )?(auth|authenticate) ([a-z\-_0-9]+)/i ]
+    @filters = [ /(USER|PASS)\s+.+/ ]
     @name = 'MAIL'
+    @port = 110
   end
 end
 end

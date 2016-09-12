@@ -85,15 +85,30 @@ class Base
   def initialize
     @filters = []
     @name = 'BASE'
+    @port = nil
+  end
+
+  def match_port?( pkt )
+    return true unless !@port.nil?
+    begin
+      if pkt.respond_to?(:tcp_dst) and pkt.tcp_dst == @port
+        return true
+      elsif pkt.respond_to?(:udp_dst) and pkt.udp_dst == @port
+        return true
+      end
+    rescue; end
+    false
   end
 
   # This method will be called from the BetterCap::Sniffer for each
   # incoming packet ( +pkt ) and will apply the parser filter to it.
   def on_packet( pkt )
     s = pkt.to_s
-    @filters.each do |filter|
-      if s =~ filter
-        StreamLogger.log_raw( pkt, @name, pkt.payload )
+    if match_port?(pkt)
+      @filters.each do |filter|
+        if s =~ filter
+          StreamLogger.log_raw( pkt, @name, pkt.payload )
+        end
       end
     end
   end
