@@ -50,8 +50,9 @@ def bettercap_autoload( path = '' )
   Dir[dir+"**/*.rb"].each do |filename|
     filename = filename.gsub( dir, '' ).gsub('.rb', '')
     filename = "bettercap/#{path}#{filename}"
+
     # Proxy modules must be loaded at runtime.
-    unless filename =~ /.+\/inject[a-z]+$/i
+    unless filename.include?('proxy/http/modules')
       if filename.end_with?('/base') or filename.include?('pluggable')
         deps << filename
       elsif filename.include?('monkey')
