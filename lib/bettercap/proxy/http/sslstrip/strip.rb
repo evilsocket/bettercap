@@ -52,12 +52,16 @@ class StrippedObject
 
   # Return a normalized version of +url+.
   def self.normalize( url, schema = 'https' )
+    has_schema = url.include?('://')
     # add schema if needed
-    unless url.include?('://')
+    if has_schema
+      has_slash = ( url =~ /^.+:\/\/.+\/.*$/ )
+    else
+      has_slash = ( url =~ /^.+\/.*$/ )
       url = "#{schema}://#{url}"
     end
-    # add path if needed
-    unless url.end_with?('/')
+    # add slash if needed
+    unless has_slash
       url = "#{url}/"
     end
     url
