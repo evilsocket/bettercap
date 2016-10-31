@@ -110,22 +110,22 @@ class Request
       name = $1
       value = $2
 
-      case name
-      when 'Host'
+      case name.downcase
+      when 'host'
         @host = value
         if @host =~ /([^:]*):([0-9]*)$/
           @host = $1
           @port = $2.to_i
         end
-      when 'Content-Length'
+      when 'content-length'
         @content_length = value.to_i
-      # we don't want to have hundreds of threads running
-      when 'Connection'
+        # we don't want to have hundreds of threads running
+      when 'connection'
         value = 'close'
-      when 'Proxy-Connection'
+      when 'proxy-connection'
         name = 'Connection'
-      # disable gzip, chunked, etc encodings
-      when 'Accept-Encoding'
+        # disable gzip, chunked, etc encodings
+      when 'accept-encoding'
         value = 'identity'
       end
 
