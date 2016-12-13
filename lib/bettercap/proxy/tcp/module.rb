@@ -27,6 +27,8 @@ module TCP
 #    end
 #  end
 class Module < BetterCap::Pluggable
+  def on_options( opts ); end
+  def check_opts; end
   # This callback is called when the target is sending data to the upstream server.
   # +event+ is an instance of the BetterCap::Proxy::TCP::Event class.
   def on_data( event ); end
@@ -41,6 +43,15 @@ class Module < BetterCap::Pluggable
   @@loaded = {}
 
   class << self
+    # Register custom options for each available module.
+    def register_options(opts)
+      @@loaded.each do |name,mod|
+        if mod.respond_to?(:on_options)
+          mod.on_options(opts)
+        end
+      end
+    end
+
     # Called when a class inherits this base class.
     def inherited(subclass)
       name = subclass.name.upcase
@@ -48,7 +59,7 @@ class Module < BetterCap::Pluggable
     end
 
     # Load +file+ as a proxy module.
-    def load( file )
+    def load( file, opts )
       begin
         require file
       rescue LoadError => e
@@ -58,6 +69,8 @@ class Module < BetterCap::Pluggable
       @@loaded.each do |name,mod|
         @@loaded[name] = mod.new
       end
+
+      self.register_options(opts)
     end
 
     # Execute method +even_name+ for each loaded module instance using +event+

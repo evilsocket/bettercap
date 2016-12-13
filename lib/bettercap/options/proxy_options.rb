@@ -106,7 +106,7 @@ class ProxyOptions
 
     opts.on( '--tcp-proxy-module MODULE', "Ruby TCP proxy module to load." ) do |v|
       @tcp_proxy_module = File.expand_path(v)
-      Proxy::TCP::Module.load( @tcp_proxy_module )
+      Proxy::TCP::Module.load( @tcp_proxy_module, opts )
     end
 
     opts.on( '--tcp-proxy-port PORT', "Set local TCP proxy port, default to #{@tcp_proxy_port.to_s.yellow} ." ) do |v|
