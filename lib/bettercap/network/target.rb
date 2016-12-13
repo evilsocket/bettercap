@@ -47,7 +47,7 @@ class Target
   # ip address will be parsed from the computer ARP cache and updated
   # accordingly.
   def initialize( ip, mac=nil, network=nil, name=nil )
-    if Network::Validator.is_ip?(ip)
+    if Network::Validator.is_ip?(ip) or Network::Validator.is_ipv6?(ip)
       @ip         = ip
       @ip_refresh = false
     elsif Network::Validator.is_mac?(ip)
