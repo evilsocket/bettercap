@@ -13,6 +13,9 @@
 
 =end
 
+# Ensure bettercap is running with root privileges.
+abort 'This software must run as root.' unless Process.uid.zero?
+
 require 'bettercap'
 
 begin
