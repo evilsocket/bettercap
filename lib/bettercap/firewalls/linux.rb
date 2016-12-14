@@ -20,10 +20,18 @@ class Linux < Base
   IP_FORWARD_PATH = IPV4_PATH + "/ip_forward"
   ICMP_BCAST_PATH = IPV4_PATH + "/icmp_echo_ignore_broadcasts"
   SEND_REDIRECTS_PATH = IPV4_PATH + "/conf/all/send_redirects"
+  IPV6_PATH = "/proc/sys/net/ipv6"
+  IPV6_FORWARD_PATH = IPV6_PATH + "/conf/all/forwarding"
 
   def supported?
     # Avoids stuff like this https://github.com/evilsocket/bettercap/issues/341
     File.file?(IP_FORWARD_PATH)
+  end
+
+  # If +enabled+ is true will enable packet forwarding, otherwise it will
+  # disable it.
+  def enable_ipv6_forwarding(enabled)
+    File.open(IPV6_FORWARD_PATH,'w') { |f| f.puts "#{enabled ? 1 : 0}"}
   end
 
   # If +enabled+ is true will enable packet forwarding, otherwise it will
@@ -36,6 +44,12 @@ class Linux < Base
   def forwarding_enabled?
     File.open(IP_FORWARD_PATH) { |f| f.read.strip == '1' }
   end
+
+  # Return true if packet forwarding for IPv6 is currently enabled, otherwise false.
+  def ipv6_forwarding_enabled?
+    File.open(IPV6_FORWARD_PATH) { |f| f.read.strip == '1' }
+  end
+
 
   # If +enabled+ is true will enable packet icmp_echo_ignore_broadcasts, otherwise it will
   # disable it.
