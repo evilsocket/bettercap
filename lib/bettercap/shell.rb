@@ -18,6 +18,7 @@ module Shell
     # Execute +command+ and return its output.
     # Raise +BetterCap::Error+ if the return code is not 0.
     def execute(command)
+      Logger.debug command
       r = ''
       10.times do
         begin
