@@ -36,6 +36,8 @@ class Validator
     (%.+)?\s*$/x
   # Quite self explainatory :)
   IP_OCTECT_MAX    = 255
+  # Basic expression for default IPv6 gateway.
+  IPV6_GATEWAY_REGEX = /fe80[^\s]*/
 
   # Return true if +ip+ is a valid IP address, otherwise false.
   def self.is_ip?(ip)
@@ -64,6 +66,13 @@ class Validator
   def self.each_ip(data)
     data.scan(/(#{IP_ADDRESS_REGEX})/).each do |m|
       yield( m[0] ) if m[0] != '0.0.0.0'
+    end
+  end
+
+  # Extract default IPv6 gateway address from +data+.
+  def self.each_ipv6_gateway(data)
+    data.scan(/(#{IPV6_GATEWAY_REGEX})/).each do |m|
+      yield ( m[0] )
     end
   end
 

@@ -30,6 +30,21 @@ class << self
     nil
   end
 
+  # Return the current network's IPv6 gateway or nil.
+  def get_ipv6_gateway
+    route6 = Shell.execute('route -A inet6')
+    iface = Context.get.options.core.iface
+
+    Logger.debug "ROUTE6:\n#{route6}"
+
+    route6.split(/\n/).select {|n| n =~ /UG/ }.each do |line|
+      Network::Validator.each_ipv6_gateway(line) do |address|
+        return address
+      end
+    end
+    nil
+  end
+
   # Return a list of IP addresses associated to this device network interfaces.
   def get_local_ips
     ips = []
