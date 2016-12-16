@@ -84,6 +84,11 @@ class CoreOptions
       raise BetterCap::Error, "The specified gateway '#{v}' is not a valid IPv4 address." unless Network::Validator.is_ip?(v)
     end
 
+    opts.on( '--gateway6 ADDRESS', 'Manually specify the IPv6 gateway address, if not specified the current gateway will be retrieved and used. ' ) do |v|
+      @gateway = v
+      raise BetterCap::Error, "The specified gateway '#{v}' is not a valid IPv6 address." unless Network::Validator.is_ipv6?(v)
+    end
+
     opts.on( '-T', '--target ADDRESS1,ADDRESS2', 'Target IP addresses, if not specified the whole subnet will be targeted.' ) do |v|
       self.targets = v
     end

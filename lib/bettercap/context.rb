@@ -80,11 +80,20 @@ class Context
 
   # Update the Context state parsing network related informations.
   def update!
-    gw = @options.core.gateway || Network.get_gateway
-    raise BetterCap::Error, "Could not detect the gateway address for interface #{@options.core.iface}, "\
-                            'make sure you\'ve specified the correct network interface to use and to have the '\
-                            'correct network configuration, this could also happen if bettercap '\
-                            'is launched from a virtual environment.' unless Network::Validator.is_ip?(gw)
+    if @options.core.use_ipv6
+      gw = @options.core.gateway || Network.get_ipv6_gateway
+      raise BetterCap::Error, "Could not detect the gateway address for interface #{@options.core.iface}, "\
+                              'make sure you\'ve specified the correct network interface to use and to have the '\
+                              'correct network configuration, this could also happen if bettercap '\
+                              'is launched from a virtual environment.' unless Network::Validator.is_ipv6?(gw)
+
+    else
+      gw = @options.core.gateway || Network.get_gateway
+      raise BetterCap::Error, "Could not detect the gateway address for interface #{@options.core.iface}, "\
+                              'make sure you\'ve specified the correct network interface to use and to have the '\
+                              'correct network configuration, this could also happen if bettercap '\
+                              'is launched from a virtual environment.' unless Network::Validator.is_ip?(gw)
+    end
 
     unless @options.core.use_mac.nil?
       cfg = PacketFu::Utils.ifconfig @options.core.iface
