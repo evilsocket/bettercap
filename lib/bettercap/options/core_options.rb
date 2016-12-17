@@ -105,6 +105,10 @@ class CoreOptions
     opts.on( '--check-updates', 'Will check if any update is available and then exit.' ) do
       @check_updates = true
     end
+    
+    opts.on( '-R', '--rainbows', 'Rainbows output, because that\'s a really helpful thing to have' ) do
+      require 'lolize/auto'
+    end
 
     opts.on( '-h', '--help', 'Display the available options.') do
       puts opts
@@ -132,9 +136,6 @@ class CoreOptions
       @silent = true
     end
 
-    opts.on( '-R', '--rainbows', 'Rainbows output, because that\'s a really helpful thing to have' ) do
-      require 'lolize/auto'
-    end
   end
 
   def validate!
