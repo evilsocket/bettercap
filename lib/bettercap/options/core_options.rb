@@ -106,8 +106,12 @@ class CoreOptions
       @check_updates = true
     end
     
-    opts.on( '-R', '--rainbows', 'Rainbow output, because that\'s a really helpful thing to have.' ) do
-      require 'lolize/auto'
+    opts.on( '-R', '--rainbows', 'Rainbow output, because that\'s a really helpful thing to have (requires the "lolize" gem to be installed).' ) do
+      begin
+        require 'lolize/auto'
+      rescue LoadError
+        raise BetterCap::Error, "GEM lolize not found, please install it in order to use this option"  
+      end
     end
 
     opts.on( '-h', '--help', 'Display the available options.') do
