@@ -20,13 +20,15 @@ class Proxy
   # Initialize the transparent proxy, making it listen on +address+:+port+.
   # If +is_https+ is true a HTTPS proxy will be created, otherwise a HTTP one.
   def initialize( address, port, is_https )
+    opts = Context.get.options.proxies
+
     @socket        = nil
     @address       = address
     @port          = port
     @is_https      = is_https
     @type          = is_https ? 'HTTPS' : 'HTTP'
-    @upstream_port = is_https ? 443 : 80
-    @allow_local   = Context.get.options.proxies.allow_local_connections
+    @upstream_port = is_https ? opts.https_ports[0] : opts.http_ports[0]
+    @allow_local   = opts.allow_local_connections
     @server        = nil
     @sslserver     = nil
     @main_thread   = nil
@@ -63,7 +65,7 @@ class Proxy
       @socket = TCPServer.new( @address, @port )
 
       if @is_https
-        @sslserver = SSL::Server.new( @socket )
+        @sslserver = SSL::Server.new( @socket, @upstream_port )
         @server    = @sslserver.io
       else
         @server    = @socket
