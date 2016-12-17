@@ -5,7 +5,7 @@ BETTERCAP
 
 Author : Simone 'evilsocket' Margaritelli
 Email  : evilsocket@gmail.com
-Blog   : http://www.evilsocket.net/
+Blog   : https://www.evilsocket.net/
 
 This project is released under the GPL 3 license.
 
@@ -16,7 +16,7 @@ module Proxy
 module TCP
 
 # Class used to encapsulate ( and keep references ) of a single TCP event-.
-# http://stackoverflow.com/questions/161510/pass-parameter-by-reference-in-ruby
+# https://stackoverflow.com/questions/161510/pass-parameter-by-reference-in-ruby
 class Event
   # The source IP address of this event.
   attr_accessor :ip
