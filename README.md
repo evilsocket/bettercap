@@ -25,7 +25,7 @@ Before submitting issues, please read the relevant [section](https://www.betterc
      <tr/>
     <tr>
         <th>Documentation</th>
-        <td><a href="https://www.bettercap.org/docs/">http://www.bettercap.org/docs/</a></td>
+        <td><a href="https://www.bettercap.org/docs/">https://www.bettercap.org/docs/</a></td>
     </tr>
     <tr>
         <th>Code Documentation</th>
