@@ -26,11 +26,12 @@ class Server
   attr_reader :io
 
   # Create an instance from the TCPSocket +socket+.
-  def initialize( socket )
-    @authority    = Authority.new( Context.get.options.proxies.proxy_pem_file )
-    @context      = OpenSSL::SSL::SSLContext.new
-    @context.cert = @authority.certificate
-    @context.key  = @authority.key
+  def initialize( socket, port )
+    @upstream_port = port
+    @authority     = Authority.new( Context.get.options.proxies.proxy_pem_file )
+    @context       = OpenSSL::SSL::SSLContext.new
+    @context.cert  = @authority.certificate
+    @context.key   = @authority.key
 
     # If the client supports SNI ( https://en.wikipedia.org/wiki/Server_Name_Indication )
     # we'll receive the hostname it wants to connect to in this callback.
@@ -47,7 +48,7 @@ class Server
       Logger.debug "[#{'SSL'.green}] Server-Name-Indication for '#{hostname}'"
 
       ctx      = OpenSSL::SSL::SSLContext.new
-      ctx.cert = @authority.spoof( hostname )
+      ctx.cert = @authority.spoof( hostname, @upstream_port )
       ctx.key  = @authority.key
 
       ctx
