@@ -1,10 +1,11 @@
+# encoding: UTF-8
 =begin
 
 BETTERCAP
 
 Author : Simone 'evilsocket' Margaritelli
 Email  : evilsocket@gmail.com
-Blog   : http://www.evilsocket.net/
+Blog   : https://www.evilsocket.net/
 
 SNMP community string parser:
   Author : Matteo Cantoni
