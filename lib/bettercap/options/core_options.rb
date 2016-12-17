@@ -106,7 +106,7 @@ class CoreOptions
       @check_updates = true
     end
     
-    opts.on( '-R', '--rainbows', 'Rainbows output, because that\'s a really helpful thing to have' ) do
+    opts.on( '-R', '--rainbows', 'Rainbow output, because that\'s a really helpful thing to have.' ) do
       require 'lolize/auto'
     end
 
