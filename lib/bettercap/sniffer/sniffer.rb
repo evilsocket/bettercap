@@ -31,12 +31,13 @@ class Sniffer
 
       setup( ctx )
 
+      tmin = System.cpu_count
+      tmax = tmin * 4
+
       start     = Time.now
       skipped   = 0
       processed = 0
-
-      self.stream.each do |raw_packet|
-        break unless @@ctx.running
+      pool      = BetterCap::Proxy::ThreadPool.new( tmin, tmax ) do |raw_packet|
         begin
           parsed = PacketFu::Packet.parse(raw_packet)
         rescue Exception => e
@@ -50,6 +51,15 @@ class Sniffer
           append_packet raw_packet
           parse_packet parsed
         end
+      end
+
+      self.stream.each do |raw_packet|
+        break unless @@ctx.running
+        pool << raw_packet
+      end
+
+      while pool.backlog != 0
+        sleep(0.1)
       end
 
       stop = Time.now
