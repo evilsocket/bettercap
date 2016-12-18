@@ -37,6 +37,7 @@ class Sniffer
       start     = Time.now
       skipped   = 0
       processed = 0
+      lock      = Mutex.new
       pool      = BetterCap::Proxy::ThreadPool.new( tmin, tmax ) do |raw_packet|
         begin
           parsed = PacketFu::Packet.parse(raw_packet)
@@ -48,8 +49,12 @@ class Sniffer
           skipped += 1
         else
           processed += 1
-          append_packet raw_packet
           parse_packet parsed
+          unless @@pcap.nil?
+            lock.synchronize {
+              append_packet raw_packet
+            }
+          end
         end
       end
 
@@ -121,7 +126,7 @@ class Sniffer
       @@pcap.array_to_file(
           filename: @@ctx.options.sniff.output,
           array: [p],
-          append: true ) unless @@pcap.nil?
+          append: true )
     rescue Exception => e
       Logger.exception e
     end
