@@ -1,31 +1,31 @@
 **bettercap** is a complete, modular, portable and easily extensible **MITM** tool and framework with every kind of diagnostic
 and offensive feature you could need in order to perform a man in the middle attack.
 
-Before submitting issues, please read the relevant [section](http://www.bettercap.org/docs/contribute/) in the documentation.
+Before submitting issues, please read the relevant [section](https://www.bettercap.org/docs/contribute/) in the documentation.
 
 <table>
     <tr>
         <th>Version</th>
         <td>
-          <a href="http://badge.fury.io/rb/bettercap" target="_blank">
+          <a href="https://badge.fury.io/rb/bettercap" target="_blank">
             <img src="https://badge.fury.io/rb/bettercap.svg"/>
           </a>
         </td>
     </tr>
     <tr>
         <th>Homepage</th>
-        <td><a href="http://www.bettercap.org/">http://www.bettercap.org/</a></td>
+        <td><a href="https://www.bettercap.org/">https://www.bettercap.org/</a></td>
     </tr>
     <tr>
         <th>Blog</th>
-        <td><a href="http://www.bettercap.org/blog/">http://www.bettercap.org/blog/</a></td>
+        <td><a href="https://www.bettercap.org/blog/">https://www.bettercap.org/blog/</a></td>
     <tr>
         <th>Github</th>
-        <td><a href="https://github.com/evilsocket/bettercap">http://github.com/evilsocket/bettercap</a></td>
+        <td><a href="https://github.com/evilsocket/bettercap">https://github.com/evilsocket/bettercap</a></td>
      <tr/>
     <tr>
         <th>Documentation</th>
-        <td><a href="http://www.bettercap.org/docs/">http://www.bettercap.org/docs/</a></td>
+        <td><a href="https://www.bettercap.org/docs/">https://www.bettercap.org/docs/</a></td>
     </tr>
     <tr>
         <th>Code Documentation</th>
@@ -39,11 +39,11 @@ Before submitting issues, please read the relevant [section](http://www.betterca
     </tr>
     <tr>
        <th>Author</th>
-       <td><a href="http://www.evilsocket.net/">Simone Margaritelli</a> (<a href="http://twitter.com/evilsocket">@evilsocket</a>)</td>
+       <td><a href="https://www.evilsocket.net/">Simone Margaritelli</a> (<a href="https://twitter.com/evilsocket">@evilsocket</a>)</td>
     </tr>
     <tr>
         <th>Twitter</th>
-        <td><a href="http://twitter.com/bettercap">@bettercap</a></td>
+        <td><a href="https://twitter.com/bettercap">@bettercap</a></td>
     </tr>
     <tr>
         <th>Chat</th>
@@ -97,4 +97,4 @@ Kali Linux has bettercap packaged and added to the **kali-rolling** repositories
 Documentation and Examples
 ============
 
-Please refer to the [official website](http://www.bettercap.org/docs/).
+Please refer to the [official website](https://www.bettercap.org/docs/).

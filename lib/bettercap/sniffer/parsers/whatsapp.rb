@@ -5,7 +5,7 @@ BETTERCAP
 
 Author : Simone 'evilsocket' Margaritelli
 Email  : evilsocket@gmail.com
-Blog   : http://www.evilsocket.net/
+Blog   : https://www.evilsocket.net/
 
 WhatsApp OS Parser:
   Author : Gianluca Costa
