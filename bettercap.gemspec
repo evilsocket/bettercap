@@ -11,7 +11,7 @@ Gem::Specification.new do |gem|
 
   gem.authors = ['Simone Margaritelli']
   gem.email = %q{evilsocket@gmail.com}
-  gem.homepage = %q{http://github.com/evilsocket/bettercap}
+  gem.homepage = %q{https://github.com/evilsocket/bettercap}
 
   gem.add_dependency( 'colorize', '~> 0.8.0' )
   gem.add_dependency( 'packetfu', '~> 1.1', '>= 1.1.10' )
