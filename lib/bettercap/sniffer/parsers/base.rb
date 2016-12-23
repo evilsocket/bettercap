@@ -100,6 +100,30 @@ class Base
     false
   end
 
+  def ip2name( address )
+    begin
+      names = Resolv.getnames(address)
+      hostname = names[0]
+      names.each do |name|
+        unless name.nil? or name.end_with?('.') or name.strip.empty?
+          hostname = name
+        end
+      end
+      unless hostname.empty?
+        return hostname
+      end
+    rescue; end
+
+    begin
+      hostname = Resolv.getname(address)
+      unless hostname.empty?
+        return hostname
+      end
+    rescue; end
+    
+    address.to_s
+  end
+
   # This method will be called from the BetterCap::Sniffer for each
   # incoming packet ( +pkt ) and will apply the parser filter to it.
   def on_packet( pkt )
