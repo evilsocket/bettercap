@@ -94,7 +94,8 @@ class StreamLogger
   def self.hexdump( data, opts = {} )
     bytes     = data
     msg       = ''
-    line_size = opts[:line_size] || 16
+    width     = IO.console.winsize[1]
+    line_size = opts[:line_size] || ( width / 4 ).round
     padding   = opts[:padding] || ''
 
     while bytes

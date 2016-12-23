@@ -26,6 +26,7 @@ require 'json'
 require 'net/dns'
 require 'net/http'
 require 'optparse'
+require 'io/console'
 
 Object.send :remove_const, :Config rescue nil
 Config = RbConfig
