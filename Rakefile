@@ -2,21 +2,6 @@ require 'rake'
 
 VERSION_FILENAME = 'lib/bettercap/version.rb'
 
-def proxy!( enabled = true )
-  service = "Wi-Fi"
-
-  if enabled
-    address = `ifconfig en0 | grep netmask | cut -d ' ' -f 2`.strip
-    port = 8080
-
-    `sudo networksetup -setwebproxy '#{service}' #{address} #{port} off`
-    `sudo networksetup -setwebproxystate '#{service}' off`
-    `sudo networksetup -setwebproxystate '#{service}' on`
-  else
-    `sudo networksetup -setwebproxystate '#{service}' off`
-  end
-end
-
 def get_current_version
   current_version = nil
   data = File.read( VERSION_FILENAME )
@@ -116,39 +101,6 @@ namespace :util do
       puts "* #{m}"
     end
     puts "\n"
-  end
-end
-
-namespace :test do
-  desc "Test discovery."
-  task :discovery do
-    `sudo arp -ad`
-    system("clear && sudo bettercap --no-spoofing")
-  end
-
-  desc "Test proxy and injectjs module."
-  task :proxy do
-    proxy!
-
-    begin
-      system( "clear && sudo bettercap --no-discovery --no-spoofing --proxy -P POST" )
-    rescue
-    ensure
-      proxy! false
-    end
-  end
-
-  task :ssh_proxy do
-    puts "Please enter SSH server address:"
-    addr = STDIN.gets.chomp
-
-    system( "clear && sudo bettercap -T 192.168.1.2 --no-discovery --tcp-proxy-upstream-address #{addr} --tcp-proxy-upstream-port 22 --tcp-proxy-module test_tcp_module.rb" )
-  end
-
-  desc "Test DNS spoofing."
-  task :dns do
-    File.open('/tmp/hosts','w'){ |f| f.write("local .*google\\.com\n") }
-    system("clear && sudo bettercap --no-spoofing --no-discovery --dns /tmp/hosts")
   end
 end
 
