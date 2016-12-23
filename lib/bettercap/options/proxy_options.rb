@@ -181,7 +181,6 @@ class ProxyOptions
 
     opts.on( '--http-ports PORT1,PORT2', "Comma separated list of HTTP ports to redirect to the proxy, default to #{@http_ports.map{|x| x.to_s.yellow }.join(', ')}." ) do |v|
       @http_ports = ProxyOptions.parse_ports( v )
-      @proxy      = true
     end
 
     opts.on( '--proxy-upstream-address ADDRESS', 'If set, only requests coming from this server address will be redirected to the HTTP/HTTPS proxies.' ) do |v|
@@ -210,7 +209,6 @@ class ProxyOptions
 
     opts.on( '--https-ports PORT1,PORT2', "Comma separated list of HTTPS ports to redirect to the proxy, default to #{@https_ports.map{|x| x.to_s.yellow }.join(', ')}." ) do |v|
       @https_ports = ProxyOptions.parse_ports( v )
-      @proxy_https = true
     end
 
     opts.separator ""
