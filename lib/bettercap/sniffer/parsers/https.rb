@@ -21,7 +21,7 @@ class Https < Base
     begin
       if pkt.respond_to?(:tcp_dst) and pkt.tcp_dst == 443
         Thread.new do
-          hostname = self.ip2name( pkt.ip_daddr )
+          hostname = BetterCap::Network.ip2name( pkt.ip_daddr )
           if @@prev.nil? or @@prev != hostname
             StreamLogger.log_raw( pkt, 'HTTPS', "https://#{hostname}/" )
             @@prev = hostname
