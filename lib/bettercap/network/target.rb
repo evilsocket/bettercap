@@ -141,7 +141,7 @@ private
         sock.close if sock
       end
     else
-      if hostname.include?('.')
+      if not Network::Validator.is_ip?(hostname) and hostname.include?('.')
         @name = hostname.split('.')[0]
       else
         @name = hostname
