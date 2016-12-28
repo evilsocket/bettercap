@@ -13,10 +13,42 @@ This project is released under the GPL 3 license.
 
 module BetterCap
 module Parsers
+class CookieJar
+  def initialize
+    @store = {}
+  end
+
+  def known_cookie?( from, to, kvals )
+    root_key = "#{from}->#{to}"
+    # do we know this session?
+    if @store.key?(root_key)
+      @store[root_key].each do |kv|
+        if kv == kvals
+          return true
+        end
+      end
+    end
+    false
+  end
+
+  def store( from, to, kvals )
+    root_key = "#{from}->#{to}"
+    # do we know this session?
+    unless @store.key?(root_key)
+      @store[root_key] = []
+    end
+    @store[root_key] << kvals
+  end
+end
+
 # HTTP cookies parser.
 class Cookie < Base
   # Cookies to ignore.
   FILTER = [ '__cfduid', '_ga', '_gat' ].freeze
+
+  def initialize
+    @jar = CookieJar.new
+  end
 
   def on_packet( pkt )
     hostname = nil
@@ -37,7 +69,10 @@ class Cookie < Base
     end
 
     unless hostname.nil? or cookies.empty?
-      StreamLogger.log_raw( pkt, "COOKIE", "[#{hostname.yellow}] #{cookies.map{|k,v| "#{k.green}=#{v.yellow}"}.join('; ')}" )
+      unless @jar.known_cookie?( pkt.ip_saddr, hostname, cookies )
+        StreamLogger.log_raw( pkt, "COOKIE", "[#{hostname.yellow}] #{cookies.map{|k,v| "#{k.green}=#{v.yellow}"}.join('; ')}" )
+        @jar.store( pkt.ip_saddr, hostname, cookies )
+      end
     end
   end
 end
