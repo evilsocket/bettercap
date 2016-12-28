@@ -139,8 +139,12 @@ class << self
   # complete their job.
   # If +address+ is not nil only that ip will be probed.
   def start_agents( ctx, address = nil )
-    [ 'Icmp', 'Udp', 'Arp' ].each do |name|
-      BetterCap::Loader.load("BetterCap::Discovery::Agents::#{name}").new(ctx, address)
+    if ctx.options.core.use_ipv6
+      BetterCap::Loader.load("BetterCap::Discovery::Agents::Ndp").new(ctx, address)
+    else
+      [ 'Icmp', 'Udp', 'Arp' ].each do |name|
+        BetterCap::Loader.load("BetterCap::Discovery::Agents::#{name}").new(ctx, address)
+      end
     end
     ctx.packets.wait_empty( ctx.timeout )
   end
