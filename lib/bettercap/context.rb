@@ -127,7 +127,7 @@ class Context
 
     @packets = Network::PacketQueue.new( @iface.name, @options.core.packet_throttle, 4 )
     # Spoofers need the context network data to be initialized.
-    @spoofer = @options.spoof.parse_spoofers
+    @spoofer = @options.spoof.parse_spoofers(self)
 
     if @options.core.discovery?
       tstart = Time.now

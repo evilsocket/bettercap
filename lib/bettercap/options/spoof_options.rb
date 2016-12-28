@@ -55,11 +55,19 @@ class SpoofOptions
     @spoofer.upcase != 'NONE'
   end
 
+  # Change default ARP with NDP spoofer in case the target endpoint uses IPv6.
+  def calibrate_default_spoofer(ctx)
+    if ctx.options.core.use_ipv6
+      @spoofer = 'NDP'
+    end
+  end
+
 
   # Parse spoofers and return a list of BetterCap::Spoofers objects. Raise a
   # BetterCap::Error if an invalid spoofer name was specified.
-  def parse_spoofers
+  def parse_spoofers(ctx)
     valid = []
+    calibrate_default_spoofer(ctx)
     @spoofer.split(",").each do |module_name|
       valid << Spoofers::Base.get_by_name( module_name )
     end
