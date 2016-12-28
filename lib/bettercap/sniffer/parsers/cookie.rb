@@ -19,10 +19,8 @@ class CookieJar
   end
 
   def known_cookie?( from, to, kvals )
-    root_key = "#{from}->#{to}"
-    # do we know this session?
-    if @store.key?(root_key)
-      @store[root_key].each do |kv|
+    with_session( from, to ) do |session|
+      session.each do |kv|
         if kv == kvals
           return true
         end
@@ -32,12 +30,20 @@ class CookieJar
   end
 
   def store( from, to, kvals )
+    with_session( from, to ) do |session|
+      session << kvals
+    end
+  end
+
+  private
+
+  def with_session( from, to )
     root_key = "#{from}->#{to}"
     # do we know this session?
     unless @store.key?(root_key)
       @store[root_key] = []
     end
-    @store[root_key] << kvals
+    yield @store[root_key]
   end
 end
 
