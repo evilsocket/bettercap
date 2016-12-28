@@ -92,10 +92,19 @@ class << self
   # Return the hardware address associated with the specified +ip_address+ using
   # the +iface+ network interface.
   def get_hw_address( ctx, ip )
-    hw = ArpReader.find_address( ip )
+    hw = nil
+    if ctx.options.core.use_ipv6
+      hw = NdpReader.find_address( ip )
+    else
+      hw = ArpReader.find_address( ip )
+    end
     if hw.nil?
       start_agents( ctx, ip )
-      hw = ArpReader.find_address( ip )
+      if ctx.options.core.use_ipv6
+        hw = NdpReader.find_address( ip )
+      else
+        hw = ArpReader.find_address( ip )
+      end
     end
     hw
   end
