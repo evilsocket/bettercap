@@ -113,7 +113,13 @@ class Context
 
     @gateway = Network::Target.new gw
     @targets = @options.core.targets unless @options.core.targets.nil?
-    @iface   = Network::Target.new( cfg[:ip_saddr], cfg[:eth_saddr], cfg[:ip4_obj], cfg[:iface] )
+
+    if @options.core.use_ipv6
+      @iface   = Network::Target.new( cfg[:ip6_saddr], cfg[:eth_saddr], cfg[:ip6_obj], cfg[:iface] )
+    else
+      @iface   = Network::Target.new( cfg[:ip_saddr], cfg[:eth_saddr], cfg[:ip4_obj], cfg[:iface] )
+    end
+
     raise BetterCap::Error, "Could not determine MAC address of '#{@options.core.iface}', make sure this interface "\
                             'is active and connected.' unless Network::Validator::is_mac?(@iface.mac)
 
