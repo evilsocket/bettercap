@@ -33,6 +33,7 @@ Check on the **Next** button below and start hacking!
     proxying
     proxying/http
     proxying/tcp
+    proxying/udp
     proxying/custom
 
 .. toctree::
