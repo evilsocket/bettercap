@@ -250,6 +250,11 @@ class Context
       @proxies << Proxy::TCP::Proxy.new( @iface.ip, @options.proxies.tcp_proxy_port, @options.proxies.tcp_proxy_upstream_address, @options.proxies.tcp_proxy_upstream_port )
     end
 
+    # create UP proxy
+    if @options.proxies.udp_proxy
+      @proxies << Proxy::UDP::Proxy.new( @iface.ip, @options.proxies.udp_proxy_port, @options.proxies.udp_proxy_upstream_address, @options.proxies.udp_proxy_upstream_port )
+    end
+
     @proxies.each do |proxy|
       proxy.start
     end

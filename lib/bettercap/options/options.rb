@@ -125,6 +125,10 @@ class Options
       redirections << redir_single( @proxies.tcp_proxy_upstream_address, iface.ip, @proxies.tcp_proxy_upstream_port, @proxies.tcp_proxy_port )
     end
 
+    if @proxies.udp_proxy
+      redirections << redir_single( @proxies.udp_proxy_upstream_address, iface.ip, @proxies.udp_proxy_upstream_port, @proxies.udp_proxy_port, 'UDP' )
+    end
+
     if @proxies.custom_proxy
       @proxies.http_ports.each do |port|
         redirections << redir( @proxies.custom_proxy, port, @proxies.custom_proxy_port )
@@ -153,6 +157,7 @@ class Options
       'discovery'   => ( @core.discovery? ? on : off ),
       'sniffer'     => ( @sniff.enabled?  ? on : off ),
       'tcp-proxy'   => ( @proxies.tcp_proxy ? on : off ),
+      'udp-proxy'   => ( @proxies.udp_proxy ? on : off ),
       'http-proxy'  => ( @proxies.proxy ? on : off ),
       'https-proxy' => ( @proxies.proxy_https ? on : off ),
       'sslstrip'    => ( @proxies.sslstrip? ? on : off ),

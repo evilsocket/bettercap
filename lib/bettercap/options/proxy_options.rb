@@ -40,6 +40,7 @@ class ProxyOptions
   attr_accessor :log_response
   # If true, suppress HTTP requests logs.
   attr_accessor :no_http_logs
+
   # If true, TCP proxy will be enabled.
   attr_accessor :tcp_proxy
   # TCP proxy local port.
@@ -50,6 +51,18 @@ class ProxyOptions
   attr_accessor :tcp_proxy_upstream_port
   # TCP proxy module to load.
   attr_accessor :tcp_proxy_module
+
+  # If true, UDP proxy will be enabled.
+  attr_accessor :udp_proxy
+  # UDP proxy local port.
+  attr_accessor :udp_proxy_port
+  # UDP proxy upstream server address.
+  attr_accessor :udp_proxy_upstream_address
+  # UDP proxy upstream server port.
+  attr_accessor :udp_proxy_upstream_port
+  # UDP proxy module to load.
+  attr_accessor :udp_proxy_module
+
   # Custom HTTP transparent proxy address.
   attr_accessor :custom_proxy
   # Custom HTTP transparent proxy port.
@@ -82,6 +95,12 @@ class ProxyOptions
     @tcp_proxy_upstream_port = nil
     @tcp_proxy_module = nil
 
+    @udp_proxy = false
+    @udp_proxy_port = 3333
+    @udp_proxy_upstream_address = nil
+    @udp_proxy_upstream_port = nil
+    @udp_proxy_module = nil
+    
     @custom_proxy = nil
     @custom_proxy_port = 8080
 
@@ -141,6 +160,53 @@ class ProxyOptions
       raise BetterCap::Error, "Invalid port '#{v}' specified." unless Network::Validator.is_valid_port?(v)
       @tcp_proxy               = true
       @tcp_proxy_upstream_port = v.to_i
+    end
+
+    opts.separator ""
+    opts.separator "  UDP:"
+    opts.separator ""
+
+    opts.on( '--udp-proxy', 'Enable UDP proxy ( requires other --udp-proxy-* options to be specified ).' ) do
+      @udp_proxy = true
+    end
+
+    opts.on( '--udp-proxy-module MODULE', "Ruby UDP proxy module to load." ) do |v|
+      @udp_proxy_module = File.expand_path(v)
+      Proxy::UDP::Module.load( @udp_proxy_module, opts )
+    end
+
+    opts.on( '--udp-proxy-port PORT', "Set local UDP proxy port, default to #{@udp_proxy_port.to_s.yellow} ." ) do |v|
+      raise BetterCap::Error, "Invalid port '#{v}' specified." unless Network::Validator.is_valid_port?(v)
+      @udp_proxy      = true
+      @udp_proxy_port = v.to_i
+    end
+
+    opts.on( '--udp-proxy-upstream ADDRESS:PORT', 'Set UDP proxy upstream server address and port.' ) do |v|
+      if v =~ /^(.+):(\d+)$/
+        address = $1
+        port    = $2
+      else
+        raise BetterCap::Error, "Invalid address and port specified, the correct syntax is ADDRESS:PORT ( i.e. 192.168.1.2:69 )."
+      end
+
+      address, port = validate_address address, port
+
+      @udp_proxy                  = true
+      @udp_proxy_upstream_address = address
+      @udp_proxy_upstream_port    = port.to_i
+    end
+
+    opts.on( '--udp-proxy-upstream-address ADDRESS', 'Set UDP proxy upstream server address.' ) do |v|
+      v, _ = validate_address v
+
+      @udp_proxy                  = true
+      @udp_proxy_upstream_address = v
+    end
+
+    opts.on( '--udp-proxy-upstream-port PORT', 'Set UDP proxy upstream server port.' ) do |v|
+      raise BetterCap::Error, "Invalid port '#{v}' specified." unless Network::Validator.is_valid_port?(v)
+      @udp_proxy               = true
+      @udp_proxy_upstream_port = v.to_i
     end
 
     opts.separator "  HTTP:"
@@ -245,6 +311,12 @@ class ProxyOptions
       raise BetterCap::Error, "No TCP proxy upstream server port specified ( --tcp-proxy-upstream-port PORT )." if @tcp_proxy_upstream_port.nil?
     end
 
+    if @udp_proxy
+      raise BetterCap::Error, "No UDP proxy port specified ( --udp-proxy-port PORT )." if @udp_proxy_port.nil?
+      raise BetterCap::Error, "No UDP proxy upstream server address specified ( --udp-proxy-upstream-address ADDRESS )." if @udp_proxy_upstream_address.nil?
+      raise BetterCap::Error, "No UDP proxy upstream server port specified ( --udp-proxy-upstream-port PORT )." if @udp_proxy_upstream_port.nil?
+    end
+
     if @proxy and @sslstrip and ctx.options.servers.dnsd
       raise BetterCap::Error, "SSL Stripping and builtin DNS server are mutually exclusive features, " \
                               "either use the --no-sslstrip option or remove the --dns option."
@@ -305,7 +377,7 @@ class ProxyOptions
   end
 
   def any?
-    @proxy or @proxy_https or @tcp_proxy or @custom_proxy
+    @proxy or @proxy_https or @tcp_proxy or @udp_proxy or @custom_proxy
   end
 
   def validate_address( address, port = nil )

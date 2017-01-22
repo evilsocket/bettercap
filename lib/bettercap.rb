@@ -19,6 +19,8 @@ Encoding.default_internal = Encoding::UTF_8
 
 require 'packetfu'
 require 'em-proxy'
+require 'eventmachine'
+require 'socket'
 require 'webrick'
 require 'rubydns'
 require 'colorize'
