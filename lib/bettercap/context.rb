@@ -219,7 +219,7 @@ class Context
 
     Logger.debug 'Disabling port redirections ...'
     @redirections.each do |r|
-      @firewall.del_port_redirection( r )
+      @firewall.del_port_redirection( r, @options.core.use_ipv6 )
     end
 
     Logger.debug 'Restoring firewall state ...'
@@ -238,7 +238,7 @@ class Context
     @redirections = @options.get_redirections(@iface)
     @redirections.each do |r|
       Logger.debug "Redirecting #{r.protocol} traffic from #{r.src_address.nil? ? '*' : r.src_address}:#{r.src_port} to #{r.dst_address}:#{r.dst_port}"
-      @firewall.add_port_redirection( r )
+      @firewall.add_port_redirection( r, @options.core.use_ipv6 )
     end
   end
 
