@@ -62,7 +62,12 @@ class Proxy
   # Start this proxy instance.
   def start
     begin
-      @socket = TCPServer.new( @address, @port )
+      # If IPv6 is enabled, we must specify iface for current link local address since it's not unique.
+      if Context.get.options.core.use_ipv6 
+        @socket = TCPServer.new( @address + "%" +  Context.get.options.core.iface , @port )
+      else 
+        @socket = TCPServer.new( @address, @port )
+      end
 
       if @is_https
         @sslserver = SSL::Server.new( @socket, @upstream_port )

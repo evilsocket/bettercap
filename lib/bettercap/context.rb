@@ -80,11 +80,20 @@ class Context
 
   # Update the Context state parsing network related informations.
   def update!
-    gw = @options.core.gateway || Network.get_gateway
-    raise BetterCap::Error, "Could not detect the gateway address for interface #{@options.core.iface}, "\
-                            'make sure you\'ve specified the correct network interface to use and to have the '\
-                            'correct network configuration, this could also happen if bettercap '\
-                            'is launched from a virtual environment.' unless Network::Validator.is_ip?(gw)
+    if @options.core.use_ipv6
+      gw = @options.core.gateway || Network.get_ipv6_gateway
+      raise BetterCap::Error, "Could not detect the gateway address for interface #{@options.core.iface}, "\
+                              'make sure you\'ve specified the correct network interface to use and to have the '\
+                              'correct network configuration, this could also happen if bettercap '\
+                              'is launched from a virtual environment.' unless Network::Validator.is_ipv6?(gw)
+
+    else
+      gw = @options.core.gateway || Network.get_gateway
+      raise BetterCap::Error, "Could not detect the gateway address for interface #{@options.core.iface}, "\
+                              'make sure you\'ve specified the correct network interface to use and to have the '\
+                              'correct network configuration, this could also happen if bettercap '\
+                              'is launched from a virtual environment.' unless Network::Validator.is_ip?(gw)
+    end
 
     unless @options.core.use_mac.nil?
       cfg = PacketFu::Utils.ifconfig @options.core.iface
@@ -104,7 +113,13 @@ class Context
 
     @gateway = Network::Target.new gw
     @targets = @options.core.targets unless @options.core.targets.nil?
-    @iface   = Network::Target.new( cfg[:ip_saddr], cfg[:eth_saddr], cfg[:ip4_obj], cfg[:iface] )
+
+    if @options.core.use_ipv6
+      @iface   = Network::Target.new( cfg[:ip6_saddr], cfg[:eth_saddr], cfg[:ip6_obj], cfg[:iface] )
+    else
+      @iface   = Network::Target.new( cfg[:ip_saddr], cfg[:eth_saddr], cfg[:ip4_obj], cfg[:iface] )
+    end
+
     raise BetterCap::Error, "Could not determine MAC address of '#{@options.core.iface}', make sure this interface "\
                             'is active and connected.' unless Network::Validator::is_mac?(@iface.mac)
 
@@ -118,7 +133,7 @@ class Context
 
     @packets = Network::PacketQueue.new( @iface.name, @options.core.packet_throttle, 4 )
     # Spoofers need the context network data to be initialized.
-    @spoofer = @options.spoof.parse_spoofers
+    @spoofer = @options.spoof.parse_spoofers(self)
 
     if @options.core.discovery?
       tstart = Time.now
@@ -204,7 +219,7 @@ class Context
 
     Logger.debug 'Disabling port redirections ...'
     @redirections.each do |r|
-      @firewall.del_port_redirection( r )
+      @firewall.del_port_redirection( r, @options.core.use_ipv6 )
     end
 
     Logger.debug 'Restoring firewall state ...'
@@ -223,7 +238,7 @@ class Context
     @redirections = @options.get_redirections(@iface)
     @redirections.each do |r|
       Logger.debug "Redirecting #{r.protocol} traffic from #{r.src_address.nil? ? '*' : r.src_address}:#{r.src_port} to #{r.dst_address}:#{r.dst_port}"
-      @firewall.add_port_redirection( r )
+      @firewall.add_port_redirection( r, @options.core.use_ipv6 )
     end
   end
 

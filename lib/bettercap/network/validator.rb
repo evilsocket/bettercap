@@ -16,8 +16,28 @@ module Network
 class Validator
   # Basic expression to validate an IP address.
   IP_ADDRESS_REGEX = '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})'
+  # Basic expression to validate an IPv6 address.
+  IPV6_REGEX = /^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|
+    (([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|
+    [1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]
+    {1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]
+    ?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:)
+    {4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]
+    \d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))
+    |(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]
+    {1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|
+    1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4})
+    {1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)
+    (\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:)
+    {1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|
+    2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))
+    |(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|
+    2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))
+    (%.+)?\s*$/x
   # Quite self explainatory :)
   IP_OCTECT_MAX    = 255
+  # Basic expression for default IPv6 gateway.
+  IPV6_GATEWAY_REGEX = /fe80[^\s]*/
 
   # Return true if +ip+ is a valid IP address, otherwise false.
   def self.is_ip?(ip)
@@ -25,6 +45,12 @@ class Validator
       return $~.captures.all? { |i| i.to_i <= IP_OCTECT_MAX }
     end
     false
+  end
+
+  # Return true if +ip+ is a valid IPv6 address, otherwise false.
+  def self.is_ipv6?(ip)
+    result = ip =~ IPV6_REGEX
+    return result ? true : false
   end
 
   # Return true if +port+ is a valid port, otherwise false.
@@ -40,6 +66,13 @@ class Validator
   def self.each_ip(data)
     data.scan(/(#{IP_ADDRESS_REGEX})/).each do |m|
       yield( m[0] ) if m[0] != '0.0.0.0'
+    end
+  end
+
+  # Extract default IPv6 gateway address from +data+.
+  def self.each_ipv6_gateway(data)
+    data.scan(/(#{IPV6_GATEWAY_REGEX})/).each do |m|
+      yield ( m[0] )
     end
   end
 

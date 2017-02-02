@@ -30,6 +30,21 @@ class << self
     nil
   end
 
+  # Return the current network's IPv6 gateway or nil.
+  def get_ipv6_gateway
+    route6 = Shell.execute('route -A inet6')
+    iface = Context.get.options.core.iface
+
+    Logger.debug "ROUTE6:\n#{route6}"
+
+    route6.split(/\n/).select {|n| n =~ /UG/ }.each do |line|
+      Network::Validator.each_ipv6_gateway(line) do |address|
+        return address
+      end
+    end
+    nil
+  end
+
   # Return a list of IP addresses associated to this device network interfaces.
   def get_local_ips
     ips = []
@@ -77,10 +92,19 @@ class << self
   # Return the hardware address associated with the specified +ip_address+ using
   # the +iface+ network interface.
   def get_hw_address( ctx, ip )
-    hw = ArpReader.find_address( ip )
+    hw = nil
+    if ctx.options.core.use_ipv6
+      hw = NdpReader.find_address( ip )
+    else
+      hw = ArpReader.find_address( ip )
+    end
     if hw.nil?
       start_agents( ctx, ip )
-      hw = ArpReader.find_address( ip )
+      if ctx.options.core.use_ipv6
+        hw = NdpReader.find_address( ip )
+      else
+        hw = ArpReader.find_address( ip )
+      end
     end
     hw
   end
@@ -115,8 +139,12 @@ class << self
   # complete their job.
   # If +address+ is not nil only that ip will be probed.
   def start_agents( ctx, address = nil )
-    [ 'Icmp', 'Udp', 'Arp' ].each do |name|
-      BetterCap::Loader.load("BetterCap::Discovery::Agents::#{name}").new(ctx, address)
+    if ctx.options.core.use_ipv6
+      BetterCap::Loader.load("BetterCap::Discovery::Agents::Ndp").new(ctx, address)
+    else
+      [ 'Icmp', 'Udp', 'Arp' ].each do |name|
+        BetterCap::Loader.load("BetterCap::Discovery::Agents::#{name}").new(ctx, address)
+      end
     end
     ctx.packets.wait_empty( ctx.timeout )
   end

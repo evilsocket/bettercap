@@ -41,6 +41,8 @@ class CoreOptions
   attr_accessor :check_updates
   # If not nil, the interface MAC address will be changed to this value.
   attr_accessor :use_mac
+  # If true, IPv6 target endpoints are enabled.
+  attr_accessor :use_ipv6
 
   def initialize( iface )
     @iface           = iface
@@ -56,6 +58,7 @@ class CoreOptions
     @packet_throttle = 0.0
     @check_updates   = false
     @use_mac         = nil
+    @use_ipv6        = false
   end
 
   def parse!( ctx, opts )
@@ -81,8 +84,18 @@ class CoreOptions
       raise BetterCap::Error, "The specified gateway '#{v}' is not a valid IPv4 address." unless Network::Validator.is_ip?(v)
     end
 
+    opts.on( '--gateway6 ADDRESS', 'Manually specify the IPv6 gateway address, if not specified the current gateway will be retrieved and used. ' ) do |v|
+      @gateway = v
+      raise BetterCap::Error, "The specified gateway '#{v}' is not a valid IPv6 address." unless Network::Validator.is_ipv6?(v)
+    end
+
     opts.on( '-T', '--target ADDRESS1,ADDRESS2', 'Target IP addresses, if not specified the whole subnet will be targeted.' ) do |v|
       self.targets = v
+    end
+
+    opts.on( '-t', '--target6 ADDRESS1,ADDRESS2', 'Target IPv6 addresses.' ) do |v|
+        @use_ipv6 = true
+        self.targets = v
     end
 
     opts.on( '--ignore ADDRESS1,ADDRESS2', 'Ignore these addresses if found while searching for targets.' ) do |v|
@@ -158,7 +171,7 @@ class CoreOptions
     @targets = []
 
     value.split(",").each do |t|
-      if Network::Validator.is_ip?(t) or Network::Validator.is_mac?(t)
+      if Network::Validator.is_ip?(t) or Network::Validator.is_mac?(t) or Network::Validator.is_ipv6?(t)
         @targets << Network::Target.new(t)
 
       elsif Network::Validator.is_range?(t)
@@ -172,7 +185,7 @@ class CoreOptions
         end
 
       else
-        raise BetterCap::Error, "Invalid target specified '#{t}', valid formats are IP addresses, "\
+        raise BetterCap::Error, "Invalid target specified '#{t}', valid formats are IP/IPv6 addresses, "\
                                 "MAC addresses, IP ranges ( 192.168.1.1-30 ) or netmasks ( 192.168.1.1/24 ) ."
       end
     end

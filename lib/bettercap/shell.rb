@@ -77,6 +77,12 @@ module Shell
     def arp
       self.execute( 'LANG=en && arp -a -n' )
     end
+
+    # Get the NDP table cached on this computer.
+    def ndp
+      self.execute( 'ip -6 neighbor show')
+    end
+
   end
 end
 end
