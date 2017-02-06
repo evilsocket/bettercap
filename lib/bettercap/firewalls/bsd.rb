@@ -47,7 +47,7 @@ class BSD < Base
   end
 
   # Apply the +r+ BetterCap::Firewalls::Redirection port redirection object.
-  def add_port_redirection( r )
+  def add_port_redirection( r, use_ipv6 )
     # create the pf config file
     File.open( @filename, 'a+t' ) do |f|
       f.write "#{gen_rule(r)}\n"
@@ -59,7 +59,7 @@ class BSD < Base
   end
 
   # Remove the +r+ BetterCap::Firewalls::Redirection port redirection object.
-  def del_port_redirection( r )
+  def del_port_redirection( r, use_ipv6 )
     # remove the redirection rule from the existing file
     rule = gen_rule(r)
     rules = File.readlines(@filename).collect(&:strip).reject(&:empty?)

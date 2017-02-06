@@ -81,13 +81,13 @@ class Base
 
   # Apply the +r+ BetterCap::Firewalls::Redirection port redirection object.
   # Raise NotImplementedError
-  def add_port_redirection( r )
+  def add_port_redirection( r, use_ipv6 )
     not_implemented_method!
   end
 
   # Remove the +r+ BetterCap::Firewalls::Redirection port redirection object.
   # Raise NotImplementedError
-  def del_port_redirection( r )
+  def del_port_redirection( r, use_ipv6 )
     not_implemented_method!
   end
 
