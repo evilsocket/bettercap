@@ -207,4 +207,222 @@ module PacketFu
     end
 
   end
+
+  class NDPHeader < Struct.new(:ndp_type, :ndp_code, :ndp_sum,
+                                :ndp_reserved, :ndp_tgt, :ndp_opt_type,
+                                :ndp_opt_len, :ndp_lla, :body)
+    include StructFu
+ 
+    PROTOCOL_NUMBER = 58
+ 
+    def initialize(args={})
+      super(
+        Int8.new(args[:ndp_type]),
+        Int8.new(args[:ndp_code]),
+        Int16.new(args[:ndp_sum]),
+        Int32.new(args[:ndp_reserved]),
+        AddrIpv6.new.read(args[:ndp_tgt] || ("\x00" * 16)),
+        Int8.new(args[:ndp_opt_type]),
+        Int8.new(args[:ndp_opt_len]),
+        EthMac.new.read(args[:ndp_lla])
+      )
+    end
+ 
+    # Returns the object in string form.
+    def to_s
+      self.to_a.map {|x| x.to_s}.join
+    end
+ 
+    # Reads a string to populate the object.
+    def read(str)
+      force_binary(str)
+      return self if str.nil?
+      self[:ndp_type].read(str[0,1])
+      self[:ndp_code].read(str[1,1])
+      self[:ndp_sum].read(str[2,2])
+      self[:ndp_reserved].read(str[4,4])
+      self[:ndp_tgt].read(str[8,16])
+      self[:ndp_opt_type].read(str[24,1])
+      self[:ndp_opt_len].read(str[25,1])
+      self[:ndp_lla].read(str[26,2])
+      self
+    end
+
+    # Setter for the type.
+    def ndp_type=(i); typecast i; end
+    # Getter for the type.
+    def ndp_type; self[:ndp_type].to_i; end
+    # Setter for the code.
+    def ndp_code=(i); typecast i; end
+    # Getter for the code.
+    def ndp_code; self[:ndp_code].to_i; end
+    # Setter for the checksum. Note, this is calculated automatically with
+    # ndp_calc_sum.
+    def ndp_sum=(i); typecast i; end
+    # Getter for the checksum.
+    def ndp_sum; self[:ndp_sum].to_i; end
+    # Setter for the reserved.
+    def ndp_reserved=(i); typecast i; end
+    # Getter for the reserved.
+    def ndp_reserved; self[:ndp_reserved].to_i; end
+    # Setter for the target address.
+    def ndp_tgt=(i); typecast i; end
+    # Getter for the target address.
+    def ndp_tgt; self[:ndp_tgt].to_i; end
+    # Setter for the options type field.
+    def ndp_opt_type=(i); typecast i; end
+    # Getter for the options type field.
+    def ndp_opt_type; self[:ndp_opt_type].to_i; end
+    # Setter for the options length.
+    def ndp_opt_len=(i); typecast i; end
+    # Getter for the options length.
+    def ndp_opt_len; self[:ndp_opt_len].to_i; end
+    # Setter for the link local address.
+    def ndp_lla=(i); typecast i; end
+    # Getter for the link local address.
+    def ndp_lla; self[:ndp_lla].to_s; end
+
+    # Get target address in a more readable form.
+    def ndp_taddr
+        self[:ndp_tgt].to_x
+    end
+
+    # Set the target address in a more readable form.
+    def ndp_taddr=(str)
+        self[:ndp_tgt].read_x(str)
+    end
+
+     # Sets the link local address in a more readable way.
+    def ndp_lladdr=(mac)
+        mac = EthHeader.mac2str(mac)
+        self[:ndp_lla].read mac
+        self[:ndp_lla]
+    end
+
+    # Gets the link local address in a more readable way.
+    def ndp_lladdr
+        EthHeader.str2mac(self[:ndp_lla].to_s)
+    end
+
+    def ndp_sum_readable
+      "0x%04x" % ndp_sum
+    end
+
+    # Set flag bits (First three are flag bits, the rest are reserved).
+    def ndp_set_flags=(bits)
+        case bits
+        when "000"
+            self.ndp_reserved = 0x00000000
+        when "001"
+            self.ndp_reserved = 0x20000000
+        when "010"
+            self.ndp_reserved = 0x40000000
+        when "011"
+            self.ndp_reserved = 0x60000000
+        when "100"
+            self.ndp_reserved = 0x80000000
+        when "101"
+            self.ndp_reserved = 0xa0000000
+        when "110"
+            self.ndp_reserved = 0xc0000000
+        when "111"
+            self.ndp_reserved = 0xe0000000
+        end
+    end
+ 
+    alias :ndp_tgt_readable :ndp_taddr
+    alias :ndp_lla_readable :ndp_lladdr
+ 
+  end
+
+  module NDPHeaderMixin
+    def ndp_type=(v); self.ndp_header.ndp_type= v; end
+    def ndp_type; self.ndp_header.ndp_type; end
+    def ndp_code=(v); self.ndp_header.ndp_code= v; end
+    def ndp_code; self.ndp_header.ndp_code; end
+    def ndp_sum=(v); self.ndp_header.ndp_sum= v; end
+    def ndp_sum; self.ndp_header.ndp_sum; end
+    def ndp_sum_readable; self.ndp_header.ndp_sum_readable; end
+    def ndp_reserved=(v); self.ndp_header.ndp_reserved= v; end
+    def ndp_reserved; self.ndp_header.ndp_reserved; end
+    def ndp_tgt=(v); self.ndp_header.ndp_tgt= v; end
+    def ndp_tgt; self.ndp_header.ndp_tgt; end
+    def ndp_taddr=(v); self.ndp_header.ndp_taddr= v; end
+    def ndp_taddr; self.ndp_header.ndp_taddr; end
+    def ndp_tgt_readable; self.ndp_header.ndp_tgt_readable; end
+    def ndp_opt_type=(v); self.ndp_header.ndp_opt_type= v; end
+    def ndp_opt_type; self.ndp_header.ndp_opt_type; end
+    def ndp_opt_len=(v); self.ndp_header.ndp_opt_len=v; end
+    def ndp_opt_len;self.ndp_header.ndp_opt_len; end
+    def ndp_lla=(v); self.ndp_header.ndp_lla=v; end
+    def ndp_lla;self.ndp_header.ndp_lla; end
+    def ndp_laddr=(v); self.ndp_header.ndp_laddr= v; end
+    def ndp_laddr; self.ndp_header.ndp_laddr; end
+    def ndp_lla_readable; self.ndp_header.ndp_lla_readable; end
+    def ndp_set_flags=(v); self.ndp_header.ndp_set_flags= v; end
+  end
+
+
+  class NDPPacket < Packet
+    include ::PacketFu::EthHeaderMixin
+    include ::PacketFu::IPv6HeaderMixin
+    include PacketFu::NDPHeaderMixin
+
+    attr_accessor :eth_header, :ipv6_header, :ndp_header
+
+    def initialize(args={})
+      @eth_header = EthHeader.new(args).read(args[:eth])
+      @ipv6_header = IPv6Header.new(args).read(args[:ipv6])
+      @ipv6_header.ipv6_next = PacketFu::NDPHeader::PROTOCOL_NUMBER
+      @ndp_header = NDPHeader.new(args).read(args[:ndp])
+
+      @ipv6_header.body = @ndp_header
+      @eth_header.body = @ipv6_header
+
+      @headers = [@eth_header, @ipv6_header, @ndp_header]
+      super
+      ndp_calc_sum
+    end
+
+    # Calculates the checksum for the object.
+    def ndp_calc_sum
+      checksum = 0
+
+      # Compute sum on pseudo-header
+      [ipv6_src, ipv6_dst].each do |iaddr|
+        8.times { |i| checksum += (iaddr >> (i*16)) & 0xffff }
+      end
+      checksum += PacketFu::NDPHeader::PROTOCOL_NUMBER
+      checksum += ipv6_len
+      # Continue with entire ICMPv6 message.
+      checksum += (ndp_type.to_i << 8) + ndp_code.to_i
+      checksum += ndp_reserved.to_i >> 16
+      checksum += ndp_reserved.to_i & 0xffff
+      8.times { |i| checksum += (ndp_tgt.to_i >> (i*16)) & 0xffff }
+      checksum += (ndp_opt_type.to_i << 8) + ndp_opt_len.to_i
+
+      mac2int = ndp_lla.to_s.unpack('H*').first.to_i(16)
+      3.times { |i| checksum += (mac2int >> (i*16)) & 0xffff }
+
+      checksum = checksum % 0xffff
+      checksum = 0xffff - checksum
+      checksum == 0 ? 0xffff : checksum
+
+    end
+
+    # Recalculates the calculatable fields for NDP.
+    def ndp_recalc(arg=:all)
+      arg = arg.intern if arg.respond_to? :intern
+      case arg
+      when :ndp_sum
+        self.ndp_sum = ndp_calc_sum
+      when :all
+        self.ndp_sum = ndp_calc_sum
+      else
+        raise ArgumentError, "No such field `#{arg}'"
+      end
+    end
+
+  end
+
 end
