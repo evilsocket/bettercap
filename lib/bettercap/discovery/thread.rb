@@ -119,7 +119,7 @@ class Thread
 
       prev = @ctx.targets
 
-      sleep(1) if @ctx.options.core.discovery?
+      sleep(1)
     end
   end
 end
