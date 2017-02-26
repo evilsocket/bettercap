@@ -64,7 +64,7 @@ class Response
     end
 
     r << "Connection: close"
-    r << "\n\n"
+    r << "\r\n\r\n"
 
     r
   end
@@ -225,7 +225,13 @@ class Response
         s << "#{name}: #{value}\n"
       end
     end
-    s << "\n" + ( @body.nil?? "\n" : @body )
+    s << "\r\n"
+    
+    if @body.nil?
+      s << "\r\n"
+    else
+      s << @body
+    end
     s
   end
 end
