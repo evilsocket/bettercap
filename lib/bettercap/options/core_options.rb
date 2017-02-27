@@ -81,21 +81,11 @@ class CoreOptions
 
     opts.on( '-G', '--gateway ADDRESS', 'Manually specify the gateway address, if not specified the current gateway will be retrieved and used. ' ) do |v|
       @gateway = v
-      raise BetterCap::Error, "The specified gateway '#{v}' is not a valid IPv4 address." unless Network::Validator.is_ip?(v)
-    end
-
-    opts.on( '--gateway6 ADDRESS', 'Manually specify the IPv6 gateway address, if not specified the current gateway will be retrieved and used. ' ) do |v|
-      @gateway = v
-      raise BetterCap::Error, "The specified gateway '#{v}' is not a valid IPv6 address." unless Network::Validator.is_ipv6?(v)
+      check_ip!( v, "The specified gateway '#{v}' is not a valid IPv4 or IPv6 address." )
     end
 
     opts.on( '-T', '--target ADDRESS1,ADDRESS2', 'Target IP addresses, if not specified the whole subnet will be targeted.' ) do |v|
       self.targets = v
-    end
-
-    opts.on( '-t', '--target6 ADDRESS1,ADDRESS2', 'Target IPv6 addresses.' ) do |v|
-        @use_ipv6 = true
-        self.targets = v
     end
 
     opts.on( '--ignore ADDRESS1,ADDRESS2', 'Ignore these addresses if found while searching for targets.' ) do |v|
@@ -160,6 +150,16 @@ class CoreOptions
     raise BetterCap::Error, 'No default interface found, please specify one with the -I argument.' if @iface.nil?
   end
 
+  def check_ip!(v,error)
+    if Network::Validator.is_ip?(v)
+      @use_ipv6 = false
+    elsif Network::Validator.is_ipv6?(v)
+      @use_ipv6 = true
+    else
+      raise BetterCap::Error, error
+    end
+  end
+
   # Return true if active host discovery is enabled, otherwise false.
   def discovery?
     ( @discovery and @targets.nil? )
@@ -171,8 +171,12 @@ class CoreOptions
     @targets = []
 
     value.split(",").each do |t|
-      if Network::Validator.is_ip?(t) or Network::Validator.is_mac?(t) or Network::Validator.is_ipv6?(t)
+      if Network::Validator.is_ip?(t) or Network::Validator.is_mac?(t)
         @targets << Network::Target.new(t)
+
+      elsif Network::Validator.is_ipv6?(t)
+        @targets << Network::Target.new(t)
+        @use_ipv6 = true
 
       elsif Network::Validator.is_range?(t)
         Network::Validator.each_in_range( t ) do |address|
@@ -195,13 +199,19 @@ class CoreOptions
   # or more invalid IP addresses are specified.
   def ignore=(value)
     @ignore = value.split(",")
-    valid   = @ignore.select { |target| Network::Validator.is_ip?(target) }
+    valid   = @ignore.select { |target| ( Network::Validator.is_ip?(target) or Network::Validator.is_ipv6?(target) ) }
 
     raise BetterCap::Error, "Invalid ignore addresses specified." if valid.empty?
 
     invalid = @ignore - valid
     invalid.each do |target|
       Logger.warn "Not a valid address: #{target}"
+    end
+
+    valid.each do |target|
+      if Network::Validator.is_ipv6?(target)
+        @use_ipv6 = true
+      end
     end
 
     @ignore = valid

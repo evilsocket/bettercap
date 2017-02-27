@@ -33,7 +33,7 @@ class SpoofOptions
     opts.separator "SPOOFING:".bold
     opts.separator ""
 
-    opts.on( '-S', '--spoofer NAME', "Spoofer module to use, available: #{Spoofers::Base.available.map{|x| x.yellow }.join(', ')} - default: #{@spoofer.yellow}." ) do |v|
+    opts.on( '-S', '--spoofer NAME', "Spoofer module to use, available: #{Spoofers::Base.available.map{|x| x.yellow }.join(', ')} - default: #{@spoofer.yellow} for IPv4 and #{'NDP'.yellow} for IPv6." ) do |v|
       @spoofer = v
     end
 
