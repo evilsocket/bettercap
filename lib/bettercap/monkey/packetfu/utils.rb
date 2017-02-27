@@ -130,7 +130,7 @@ module PacketFu
             ret[:ip_src] = [IPAddr.new($1).to_i].pack('N')
             ret[:ip4_obj] = IPAddr.new($1)
             ret[:ip4_obj] = ret[:ip4_obj].mask($3) if $3
-          when /(fe80[^\/]*)/
+          when /(fe80[^\/\s]*)/
             begin
               ret[:ip6_saddr] = $1
               ret[:ip6_obj] = IPAddr.new($1)

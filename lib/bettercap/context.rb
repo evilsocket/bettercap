@@ -80,6 +80,34 @@ class Context
 
   # Update the Context state parsing network related informations.
   def update!
+    unless @options.core.use_mac.nil?
+      cfg = PacketFu::Utils.ifconfig @options.core.iface
+      raise BetterCap::Error, "Could not determine IPv4 address of '#{@options.core.iface}', make sure this interface "\
+                              'is active and connected.' if cfg[:ip4_obj].nil?
+
+      @original_mac = Network::Target.normalized_mac(cfg[:eth_saddr])
+
+      Logger.info "Changing interface MAC address to #{@options.core.use_mac}"
+
+      Shell.change_mac( @options.core.iface, @options.core.use_mac )
+    end
+
+    cfg = PacketFu::Utils.ifconfig @options.core.iface
+    raise BetterCap::Error, "Could not determine IPv4 address of '#{@options.core.iface}', make sure this interface "\
+                            'is active and connected.' if ( cfg[:ip4_obj].nil? and cfg[:ip6_saddr].nil? )
+
+    # check if we're on an IPv6 interface
+    if cfg[:ip_saddr].nil? 
+      @iface = Network::Target.new( cfg[:ip6_saddr], cfg[:eth_saddr], cfg[:ip6_obj], cfg[:iface] )
+      @options.core.use_ipv6 = true
+    else
+      @iface = Network::Target.new( cfg[:ip_saddr], cfg[:eth_saddr], cfg[:ip4_obj], cfg[:iface] )
+      @options.core.use_ipv6 = false
+    end
+
+    raise BetterCap::Error, "Could not determine MAC address of '#{@options.core.iface}', make sure this interface "\
+                            'is active and connected.' unless Network::Validator::is_mac?(@iface.mac)
+
     if @options.core.use_ipv6
       gw = @options.core.gateway || Network.get_ipv6_gateway
       raise BetterCap::Error, "Could not detect the gateway address for interface #{@options.core.iface}, "\
@@ -95,34 +123,7 @@ class Context
                               'is launched from a virtual environment.' unless Network::Validator.is_ip?(gw)
     end
 
-    unless @options.core.use_mac.nil?
-      cfg = PacketFu::Utils.ifconfig @options.core.iface
-      raise BetterCap::Error, "Could not determine IPv4 address of '#{@options.core.iface}', make sure this interface "\
-                              'is active and connected.' if cfg[:ip4_obj].nil?
-
-      @original_mac = Network::Target.normalized_mac(cfg[:eth_saddr])
-
-      Logger.info "Changing interface MAC address to #{@options.core.use_mac}"
-
-      Shell.change_mac( @options.core.iface, @options.core.use_mac )
-    end
-
-    cfg = PacketFu::Utils.ifconfig @options.core.iface
-    raise BetterCap::Error, "Could not determine IPv4 address of '#{@options.core.iface}', make sure this interface "\
-                            'is active and connected.' if cfg[:ip4_obj].nil?
-
     @gateway = Network::Target.new gw
-    @targets = @options.core.targets unless @options.core.targets.nil?
-
-    if @options.core.use_ipv6
-      @iface   = Network::Target.new( cfg[:ip6_saddr], cfg[:eth_saddr], cfg[:ip6_obj], cfg[:iface] )
-    else
-      @iface   = Network::Target.new( cfg[:ip_saddr], cfg[:eth_saddr], cfg[:ip4_obj], cfg[:iface] )
-    end
-
-    raise BetterCap::Error, "Could not determine MAC address of '#{@options.core.iface}', make sure this interface "\
-                            'is active and connected.' unless Network::Validator::is_mac?(@iface.mac)
-
     Logger.info "[#{@iface.name.green}] #{@iface.to_s(false)}"
 
     Logger.debug '----- NETWORK INFORMATIONS -----'
@@ -131,6 +132,7 @@ class Context
     Logger.debug "  local_ip = #{@iface.ip}"
     Logger.debug "--------------------------------\n"
 
+    @targets = @options.core.targets unless @options.core.targets.nil?
     @packets = Network::PacketQueue.new( @iface.name, @options.core.packet_throttle, 4 )
     # Spoofers need the context network data to be initialized.
     @spoofer = @options.spoof.parse_spoofers(self)
