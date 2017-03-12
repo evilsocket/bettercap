@@ -97,12 +97,10 @@ class Context
                             'is active and connected.' if ( cfg[:ip4_obj].nil? and cfg[:ip6_saddr].nil? )
 
     # check if we're on an IPv6 interface
-    if cfg[:ip_saddr].nil? 
+    if @options.core.use_ipv6 
       @iface = Network::Target.new( cfg[:ip6_saddr], cfg[:eth_saddr], cfg[:ip6_obj], cfg[:iface] )
-      @options.core.use_ipv6 = true
     else
       @iface = Network::Target.new( cfg[:ip_saddr], cfg[:eth_saddr], cfg[:ip4_obj], cfg[:iface] )
-      @options.core.use_ipv6 = false
     end
 
     raise BetterCap::Error, "Could not determine MAC address of '#{@options.core.iface}', make sure this interface "\
