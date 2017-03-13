@@ -93,6 +93,17 @@ Kali Linux has bettercap packaged and added to the **kali-rolling** repositories
     apt-get update
     apt-get dist-upgrade
     apt-get install bettercap
+    
+
+**Installation on macOS**
+
+On macOS you must install RVM (Ruby Version Manager) to update Ruby and run bettercap. Then you can install from source:
+
+    \curl -sSL https://get.rvm.io | bash
+    git clone https://github.com/evilsocket/bettercap
+    cd bettercap
+    gem build bettercap.gemspec
+    sudo gem install bettercap*.gem
 
 Documentation and Examples
 ============
