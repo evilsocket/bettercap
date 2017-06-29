@@ -46,16 +46,8 @@ Before submitting issues, please read the relevant [section](https://www.betterc
         <td><a href="https://twitter.com/bettercap">@bettercap</a></td>
     </tr>
     <tr>
-        <th>Chat</th>
-        <td>
-          <a href="https://gitter.im/evilsocket/bettercap" target="_blank">
-            <img src="https://badges.gitter.im/evilsocket/bettercap.svg"/>
-          </a>
-        </td>
-    </tr>
-    <tr>
-        <th>Copyright</th>
-        <td>2015-2016 Simone Margaritelli</td>
+        <th>Copyleft</th>
+        <td>Simone Margaritelli</td>
     </tr>
     <tr>
         <th>License</th>
