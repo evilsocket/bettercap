@@ -12,7 +12,7 @@ This project is released under the GPL 3 license.
 =end
 module BetterCap
   # Current version of bettercap.
-  VERSION = '1.6.1'
+  VERSION = '1.6.2b'
   # Program banner.
   BANNER = File.read( File.dirname(__FILE__) + '/banner' ).gsub( '#VERSION#', "v#{VERSION}")
 end
