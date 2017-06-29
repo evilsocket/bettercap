@@ -70,17 +70,17 @@ module Shell
 
     # Get the +iface+ network interface configuration ( using iproute2 ).
     def ip(iface = '')
-      self.execute( "LANG=en && ip addr show #{iface}" )
+      self.execute( "LANG=en && LANGUAGE=en_EN.UTF-8 && ip addr show #{iface}" )
     end
 
     # Get the ARP table cached on this computer.
     def arp
-      self.execute( 'LANG=en && arp -a -n' )
+      self.execute( 'LANG=en && LANGUAGE=en_EN.UTF-8 && arp -a -n' )
     end
 
     # Get the NDP table cached on this computer.
     def ndp
-      self.execute( 'ip -6 neighbor show')
+      self.execute( 'LANG=en && LANGUAGE=en_EN.UTF-8 && ip -6 neighbor show')
     end
 
   end
