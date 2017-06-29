@@ -114,7 +114,7 @@ class Streamer
             r = mod.on_pre_request request
             # the handler returned a response, do not execute
             # the request
-            response = r unless r.nil?
+            response = r if r.instance_of?(BetterCap::Proxy::HTTP::Response)
           else
             mod.on_request request, response
           end
