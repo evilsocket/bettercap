@@ -146,12 +146,7 @@ class Proxy
     request = Request.new @upstream_port
 
     begin
-      Logger.debug 'Reading request ...'
-
       request.read(client)
-
-      Logger.debug 'Request parsed.'
-
       # stripped request
       if @streamer.was_stripped?( request, client )
         @streamer.handle( request, client )
@@ -163,11 +158,8 @@ class Proxy
         @streamer.handle( request, client )
       end
 
-      Logger.debug "#{@type} client served."
-
     rescue SocketError => se
       Logger.debug "Socket error while serving client: #{se.message}"
-      # Logger.exception se
     rescue Errno::EPIPE => ep
       Logger.debug "Connection closed while serving client."
     rescue EOFError => eof
