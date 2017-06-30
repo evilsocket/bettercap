@@ -44,6 +44,8 @@ class Proxy
       @local_ips = Network.get_local_ips
     end
 
+    puts @local_ips.inspect
+
     BasicSocket.do_not_reverse_lookup = true
 
     tmin = System.cpu_count
@@ -136,7 +138,7 @@ class Proxy
   # ip addresses.
   def is_self_request?(request)
     begin
-      return @local_ips.include? IPSocket.getaddress(request.host)
+      return @local_ips.include? request.host
     rescue; end
     false
   end
