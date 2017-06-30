@@ -13,6 +13,53 @@ This project is released under the GPL 3 license.
 module BetterCap
 # Class responsible for console and file logging.
 module Logger
+  L_RAW = 0
+  L_DBG = 1
+  L_INF = 2
+  L_WRN = 3
+  L_ERR = 4
+
+  class Entry
+    def initialize( ts, level, message )
+      @timestamp = ts
+      @level = level
+      @message = message
+    end
+
+    def create
+      case @level
+        when Logger::L_RAW
+          formatted_message( @message, nil )
+        when Logger::L_DBG
+          formatted_message( @message, 'D' ).light_black
+        when Logger::L_INF
+          formatted_message( @message, 'I' )
+        when Logger::L_WRN
+          formatted_message( @message, 'W' ).yellow
+        when Logger::L_ERR
+          formatted_message( @message, 'E' ).red
+      end
+    end
+
+    private
+
+    # Format +message+ for the given +message_type+.
+    def formatted_message(message, message_type)
+      # raw message?
+      if message_type.nil?
+        if @timestamp and !message.strip.empty?
+          "[#{Time.now}] #{message}"
+        else
+          message
+        end
+      elsif @timestamp
+        "[#{Time.now}] [#{message_type}] #{message}"
+      else
+        "[#{message_type}] #{message}"
+      end
+    end
+  end
+
   class << self
     @@ctx       = nil
     @@queue     = Queue.new
@@ -39,47 +86,42 @@ module Logger
             "Message   : #{e.message}\n" +
             "Backtrace :\n\n    #{e.backtrace.join("\n    ")}\n"
 
-      if BetterCap::VERSION.end_with?('b')
-        self.warn(msg)
-      else
-        self.debug(msg)
-      end
+      self.debug(msg)
     end
 
     # Log an error +message+.
     def error(message)
-      @@queue.push formatted_message(message, 'E').red
+      @@queue.push Logger::Entry.new( @@timestamp, Logger::L_ERR, message )
     end
 
     # Log an information +message+.
     def info(message)
-      @@queue.push( formatted_message(message, 'I') ) unless @@silent
+      @@queue.push( Logger::Entry.new( @@timestamp, Logger::L_INF, message ) ) unless @silent
     end
 
     # Log a warning +message+.
     def warn(message)
-      @@queue.push formatted_message(message, 'W').yellow
+      @@queue.push Logger::Entry.new( @@timestamp, Logger::L_WRN, message )
     end
 
     # Log a debug +message+.
     def debug(message)
       if @@debug and not @@silent
-        @@queue.push formatted_message(message, 'D').light_black
+        @@queue.push Logger::Entry.new( @@timestamp, Logger::L_DBG, message )
       end
     end
 
     # Log a +message+ as it is.
     def raw(message)
-      @@queue.push( formatted_message( message, nil ) ) unless @@silent
+      @@queue.push( Logger::Entry.new( @@timestamp, Logger::L_RAW, message ) ) unless @silent
     end
 
     # Wait for the messages queue to be empty.
     def wait!
       while not @@queue.empty?
-        if @@thread.nil?
-          emit @@queue.pop
-        else
-          sleep 0.3
+        msg = @@queue.pop(true) rescue nil
+        if msg
+          emit msg.create
         end
       end
     end
@@ -89,12 +131,11 @@ module Logger
     # Main logger logic.
     def worker
       loop do
-        message = @@queue.pop
-        if @@ctx.nil? or @@ctx.running
+        msg = @@queue.pop(true) rescue nil
+        if msg and ( @@ctx.nil? or @@ctx.running )
           begin
-            emit message
+            emit msg.create
           rescue Exception => e
-            Logger.warn "Logger error: #{e.message}"
             Logger.exception e
           end
         end
@@ -108,22 +149,6 @@ module Logger
         f = File.open( @@logfile, 'a+t' )
         f.puts( message.gsub( /\e\[(\d+)(;\d+)*m/, '') + "\n")
         f.close
-      end
-    end
-
-    # Format +message+ for the given +message_type+.
-    def formatted_message(message, message_type)
-      # raw message?
-      if message_type.nil?
-        if @@timestamp and !message.strip.empty?
-          "[#{Time.now}] #{message}"
-        else
-          message
-        end
-      elsif @@timestamp
-        "[#{Time.now}] [#{message_type}] #{message}"
-      else
-        "[#{message_type}] #{message}"
       end
     end
   end
