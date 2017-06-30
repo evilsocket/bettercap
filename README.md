@@ -61,7 +61,13 @@ Installation
 **Dependencies**
 
 All dependencies will be automatically installed through the GEM system but in some case you might need to install some system
-dependency in order to make everything work:
+dependency in order to make everything work.
+
+On OSX ( install brew and xcode tools first ):
+
+    brew install libpcap
+
+On Linux:
 
     sudo apt-get install build-essential ruby-dev libpcap-dev
 
