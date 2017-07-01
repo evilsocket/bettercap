@@ -44,8 +44,6 @@ class Proxy
       @local_ips = Network.get_local_ips
     end
 
-    puts @local_ips.inspect
-
     BasicSocket.do_not_reverse_lookup = true
 
     tmin = System.cpu_count
