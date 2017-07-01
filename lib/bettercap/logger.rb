@@ -123,6 +123,8 @@ module Logger
         if msg
           emit msg.create
         end
+
+        sleep(0.3) if msg.nil?
       end
     end
 
@@ -139,6 +141,8 @@ module Logger
             Logger.exception e
           end
         end
+
+        sleep(0.3) if msg.nil?
       end
     end
 
