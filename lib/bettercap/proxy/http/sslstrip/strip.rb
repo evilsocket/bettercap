@@ -195,7 +195,7 @@ class Strip
     response = nil
     # check for cookies.
     unless @cookies.is_clean?(request)
-      Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Sending expired cookies for '#{request.host}'."
+      Logger.debug "[#{'SSLSTRIP'.green} #{request.client}] Sending expired cookies for '#{request.host}'."
       expired = @cookies.get_expired_headers!(request)
       response = Response.redirect( request.to_url(nil), expired )
     end
@@ -222,14 +222,14 @@ class Strip
       end
       request.port = 443
 
-      Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Found stripped HTTPS link '#{url}', proxying via SSL ( #{request.to_url} )."
+      Logger.debug "[#{'SSLSTRIP'.green} #{request.client}] Found stripped HTTPS link '#{url}', proxying via SSL ( #{request.to_url} )."
     end
   end
 
   # If +request+ is the favicon of a stripped host, send our spoofed lock icon.
   def spoof_favicon!(request)
     if was_stripped?(request) and is_favicon?(request)
-      Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Sending spoofed favicon '#{request.to_url }'."
+      Logger.debug "[#{'SSLSTRIP'.green} #{request.client}] Sending spoofed favicon '#{request.to_url }'."
       return @favicon
     end
     nil
@@ -254,14 +254,14 @@ class Strip
 
       # no cookies set, just a normal http -> https redirect
       if response['Set-Cookie'].empty?
-        Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Found redirect to HTTPS '#{original}' -> '#{stripped}'."
+        Logger.debug "[#{'SSLSTRIP'.green} #{request.client}] Found redirect to HTTPS '#{original}' -> '#{stripped}'."
         # The request will be retried on port 443 if MAX_REDIRECTS is not reached.
         request.port = 443
         # retry the request if possible
         return true
       # cookies set, this is probably a redirect after a login.
       else
-        Logger.info "[#{'SSLSTRIP'.green} #{request.client}] Found redirect to HTTPS ( with cookies ) '#{original}' -> '#{stripped}'."
+        Logger.debug "[#{'SSLSTRIP'.green} #{request.client}] Found redirect to HTTPS ( with cookies ) '#{original}' -> '#{stripped}'."
         # we know this session, do not kill it!
         @cookies.add!( request )
         # remove the 'secure' flag from every cookie.
