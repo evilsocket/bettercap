@@ -13,7 +13,7 @@
 
   
   
-    <link rel="shortcut icon" href="_static/favicon.png"/>
+    <link rel="shortcut icon" href="/_static/favicon.png"/>
   
   
   
@@ -28,7 +28,7 @@
 
   
   
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="/_static/css/theme.css" type="text/css" />
   
 
   
@@ -40,7 +40,7 @@
     <link rel="top" title="None" href="index.html#document-index"/> 
 
   
-  <script src="_static/js/modernizr.min.js"></script>
+  <script src="/_static/js/modernizr.min.js"></script>
 
 </head>
 
@@ -62,7 +62,7 @@
 
           
             
-            <img src="_static/logo.png" class="logo" />
+            <img src="/_static/logo.png" class="logo" />
           
           </a>
 
@@ -309,7 +309,7 @@
 </div>
 <p>This is quite a generic description, mostly because ( if we're talking about network MITM attacks ), the logic and details heavily rely on the technique being used ( more in the spoofing section ).</p>
 <p>Nevertheless we can simplify the concept with an example. When you connect to some network ( your home network, some public WiFi, StarBucks, etc ), the router/switch is responsible for forwarding all of your packets to the correct destination, during a MITM attack we &quot;force&quot; the network to consider our device as the router ( we &quot;spoof&quot; the original router/switch address in some way ):</p>
-<p><img alt="network mitm" src="_static/img/mitm.jpg" /></p>
+<p><img alt="network mitm" src="/_static/img/mitm.jpg" /></p>
 <p>Once this happens, all of the network traffic goes through your computer instead of the legit router/switch and at that point you can do pretty much everything you want, from just sniffing for specific data ( emails, passwords, cookies, etc of other people on your network ) to actively intercepting and proxying all the requests of some specific protocol in order to modify them on the fly ( you can, for instance, replace all images of all websites being visited by everyone, kill connections, etc ).</p>
 <p>BetterCap is responsible for giving the security researcher everything he needs in <strong>one single tool</strong> which simply works, on GNU/Linux, Mac OS X and OpenBSD systems.</p>
 </div>
@@ -656,7 +656,7 @@ all the latest and <strong>experimental</strong> features, but remember that you
 <span id="document-proxying"></span><div class="section" id="about-proxying">
 <span id="about-proxying"></span><h2>About Proxying<a class="headerlink" href="#about-proxying" title="Permalink to this headline">¶</a></h2>
 <p>Bettercap is shipped with a HTTP/HTTPS ( with <strong>SSL Stripping</strong> and <strong>HSTS Bypass</strong> ) and raw TCP transparent proxies that you can use to manipulate HTTP/HTTPS or low level TCP traffic at runtime, for instance you could use the HTTP/HTTPS proxy to inject javascripts into the targets visited pages ( <a class="reference external" href="http://beefproject.com/">BeEF</a> would be a great choice :D ), replace all the images, etc or use the TCP one for other protocols ( downgrade encryption with STARTTLS, dump custom protocols and so forth.</p>
-<p><img alt="proxy" src="_static/img/proxy.png" /></p>
+<p><img alt="proxy" src="/_static/img/proxy.png" /></p>
 <p>Once one or more proxies are enabled, bettercap will take care of the spoofing and the firewall rules needed in order to redirect your targets' traffic to the proxy itself.</p>
 <p>By default the builtin proxies won't do anything but logging all the requests, additionally you can specify a &quot;module&quot; to use and you will be able to load one of the builtin plugins ( or your own ) and manipulate all the traffic as you like.</p>
 </div>
@@ -701,7 +701,7 @@ By default the builtin proxies won't do anything but logging HTTP(S) requests, b
 <p>Moreover HSTS policies have been prebuilt into major browsers meaning that now, even with a SSL stripping attack running, the browser will
 connect to HTTPS anyway, even if the <em>http://</em> schema is specified, making the attack itself useless.</p>
 <p><center>
-<img alt="network mitm" src="_static/img/with-hsts.png" />
+<img alt="network mitm" src="/_static/img/with-hsts.png" />
 <br/>
 <small>Picture credits to <a href="https://scotthelme.co.uk/ssl-does-not-make-site-secure/" target="_blank">Scott Helme</a></small>
 </center></p>
@@ -719,7 +719,7 @@ Since HSTS rules most of the time are applied on a per-hostname basis, the trick
 <p><center><small>Notice that https has been downgraded to http and <strong>www</strong> replaced with <strong>wwww</strong> ).</small></center></p>
 <p>When the &quot;victim&quot; will click on that link, no HSTS rule will be applied ( since there's no rule for such subdomain we just created ) and the MITM software ( BetterCap in our case ^_^ ) will take care of the DNS resolution, allowing us to see and alter the traffic we weren't supposed to see.</p>
 <p><center>
-<img alt="network mitm" src="_static/img/sslstrip2.png" />
+<img alt="network mitm" src="/_static/img/sslstrip2.png" />
 </center></p>
 </div>
 <div class="section" id="demonstration">
@@ -1007,15 +1007,15 @@ For instance <code class="docutils literal"><span class="pre">TCP</span> <span c
             SOURCELINK_SUFFIX: '.txt'
         };
     </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="/_static/jquery.js"></script>
+      <script type="text/javascript" src="/_static/underscore.js"></script>
+      <script type="text/javascript" src="/_static/doctools.js"></script>
 
   
 
   
   
-    <script type="text/javascript" src="_static/js/theme.js"></script>
+    <script type="text/javascript" src="/_static/js/theme.js"></script>
   
 
   
