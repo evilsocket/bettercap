@@ -1,0 +1,320 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>UDP &mdash; BetterCAP stable documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="BetterCAP stable documentation" href="../index.html"/>
+        <link rel="next" title="Third Party Proxies" href="custom.html"/>
+        <link rel="prev" title="TCP" href="tcp.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                stable
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contributing</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Main Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../main.html">General Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../spoofing.html">Spoofing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sniffing.html">Sniffing &amp; Credentials Harvesting</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Proxying &amp; Modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../proxying.html">About Proxying</a></li>
+<li class="toctree-l1"><a class="reference internal" href="http.html">HTTP/HTTPS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tcp.html">TCP</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">UDP</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sample-module">Sample Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#options">Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#udp-proxy"><code class="docutils literal"><span class="pre">--udp-proxy</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#udp-proxy-module-module"><code class="docutils literal"><span class="pre">--udp-proxy-module</span> <span class="pre">MODULE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#udp-proxy-port-port"><code class="docutils literal"><span class="pre">--udp-proxy-port</span> <span class="pre">PORT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#udp-proxy-upstream-address-address"><code class="docutils literal"><span class="pre">--udp-proxy-upstream-address</span> <span class="pre">ADDRESS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#udp-proxy-upstream-port-port"><code class="docutils literal"><span class="pre">--udp-proxy-upstream-port</span> <span class="pre">PORT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#udp-proxy-upstream-address-port"><code class="docutils literal"><span class="pre">--udp-proxy-upstream</span> <span class="pre">ADDRESS:PORT</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="custom.html">Third Party Proxies</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Builtin Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../servers/http.html">HTTP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../servers/dns.html">DNS</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">BetterCAP</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>UDP</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="udp">
+<span id="udp"></span><h1>UDP<a class="headerlink" href="#udp" title="Permalink to this headline">¶</a></h1>
+<p>If you want to actively modify packets of a UDP protocol, you'll need the UDP proxy. This event-based proxy will allow you to intercept anything sent/received to/from a specific host using your own custom module.</p>
+<div class="section" id="sample-module">
+<span id="sample-module"></span><h2>Sample Module<a class="headerlink" href="#sample-module" title="Permalink to this headline">¶</a></h2>
+<p>The following example module won't do anything but dumping the data being transmitted from/to the target, you can access the <a class="reference external" href="http://www.rubydoc.info/gems/bettercap/1.5.0/BetterCap/Proxy/UDP/Event">event</a> object in order to modify the data on the fly.</p>
+<script src="https://gist.github.com/evilsocket/7fbbfc9b12826e7de7a1c97a921b7ce8.js"></script><p>If you want to load such module and dump all the ( let's say ) DNS traffic from/to the <code class="docutils literal"><span class="pre">ns01.example.com</span></code> host you would do:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">bettercap</span> <span class="o">--</span><span class="n">udp</span><span class="o">-</span><span class="n">proxy</span><span class="o">-</span><span class="n">module</span> <span class="n">example</span><span class="o">.</span><span class="n">rb</span> <span class="o">--</span><span class="n">udp</span><span class="o">-</span><span class="n">proxy</span><span class="o">-</span><span class="n">upstream</span> <span class="n">ns01</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="mi">53</span>
+</pre></div>
+</div>
+<p>And you would be ready to go.</p>
+<hr/></div>
+<div class="section" id="options">
+<span id="options"></span><h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="udp-proxy">
+<span id="udp-proxy"></span><h3><code class="docutils literal"><span class="pre">--udp-proxy</span></code><a class="headerlink" href="#udp-proxy" title="Permalink to this headline">¶</a></h3>
+<p>Enable the UDP proxy ( requires other <code class="docutils literal"><span class="pre">--udp-proxy-*</span></code> options to be specified ).</p>
+</div>
+<div class="section" id="udp-proxy-module-module">
+<span id="udp-proxy-module-module"></span><h3><code class="docutils literal"><span class="pre">--udp-proxy-module</span> <span class="pre">MODULE</span></code><a class="headerlink" href="#udp-proxy-module-module" title="Permalink to this headline">¶</a></h3>
+<p>Ruby UDP proxy module to load.</p>
+</div>
+<div class="section" id="udp-proxy-port-port">
+<span id="udp-proxy-port-port"></span><h3><code class="docutils literal"><span class="pre">--udp-proxy-port</span> <span class="pre">PORT</span></code><a class="headerlink" href="#udp-proxy-port-port" title="Permalink to this headline">¶</a></h3>
+<p>Set local UDP proxy port, default to <code class="docutils literal"><span class="pre">2222</span></code>.</p>
+</div>
+<div class="section" id="udp-proxy-upstream-address-address">
+<span id="udp-proxy-upstream-address-address"></span><h3><code class="docutils literal"><span class="pre">--udp-proxy-upstream-address</span> <span class="pre">ADDRESS</span></code><a class="headerlink" href="#udp-proxy-upstream-address-address" title="Permalink to this headline">¶</a></h3>
+<p>Set UDP proxy upstream server address.</p>
+</div>
+<div class="section" id="udp-proxy-upstream-port-port">
+<span id="udp-proxy-upstream-port-port"></span><h3><code class="docutils literal"><span class="pre">--udp-proxy-upstream-port</span> <span class="pre">PORT</span></code><a class="headerlink" href="#udp-proxy-upstream-port-port" title="Permalink to this headline">¶</a></h3>
+<p>Set UDP proxy upstream server port.</p>
+</div>
+<div class="section" id="udp-proxy-upstream-address-port">
+<span id="udp-proxy-upstream-address-port"></span><h3><code class="docutils literal"><span class="pre">--udp-proxy-upstream</span> <span class="pre">ADDRESS:PORT</span></code><a class="headerlink" href="#udp-proxy-upstream-address-port" title="Permalink to this headline">¶</a></h3>
+<p>Set UDP proxy upstream server address and port ( shortcut for <code class="docutils literal"><span class="pre">--udp-proxy-upstream-address</span> <span class="pre">ADDRESS</span></code> and <code class="docutils literal"><span class="pre">--udp-proxy-upstream-port</span> <span class="pre">PORT</span></code> ).</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="custom.html" class="btn btn-neutral float-right" title="Third Party Proxies" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="tcp.html" class="btn btn-neutral" title="TCP" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Simone &#39;evilsocket&#39; Margaritelli.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'stable',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-65617603-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+
+</body>
+</html>
