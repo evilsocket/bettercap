@@ -1,0 +1,320 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Contributing &mdash; BetterCAP stable documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="BetterCAP stable documentation" href="index.html"/>
+        <link rel="next" title="General Options" href="main.html"/>
+        <link rel="prev" title="Installation" href="install.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    
+
+          
+            <a href="index.html">
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                stable
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submitting-issues">Submitting Issues</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#improving-the-documentation">Improving the Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pull-requests">Pull Requests</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Main Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="main.html">General Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spoofing.html">Spoofing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sniffing.html">Sniffing &amp; Credentials Harvesting</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Proxying &amp; Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="proxying.html">About Proxying</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/http.html">HTTP/HTTPS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/tcp.html">TCP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/udp.html">UDP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/custom.html">Third Party Proxies</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Builtin Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="servers/http.html">HTTP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="servers/dns.html">DNS</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">BetterCAP</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Contributing</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="contributing">
+<span id="contributing"></span><h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
+<p>As any other open source projects, there're many ways you can contribute to bettercap depending on your skills as a developer or will to help as a user.</p>
+<div class="section" id="submitting-issues">
+<span id="submitting-issues"></span><h2>Submitting Issues<a class="headerlink" href="#submitting-issues" title="Permalink to this headline">¶</a></h2>
+<p>If you find bugs or inconsistencies while using bettercap, you can create an <strong>Issue</strong> using the <a class="reference external" href="https://github.com/evilsocket/bettercap/issues">GitHub Issue tracker</a>, but before doing that please make sure that:</p>
+<ul class="simple">
+<li>You are using a relatively new Ruby version ( &gt;= 1.9 ) : <code class="docutils literal"><span class="pre">ruby</span> <span class="pre">-v</span></code>.</li>
+<li>Your GEM environment is configured properly and updated : <code class="docutils literal"><span class="pre">sudo</span> <span class="pre">gem</span> <span class="pre">update</span></code>.</li>
+<li>You are using the latest version of bettercap : <code class="docutils literal"><span class="pre">bettercap</span> <span class="pre">--check-updates</span></code>.</li>
+<li>The bug you're reporting is actually related to bettercap and not to one of the other GEMs.</li>
+</ul>
+<p>Once you've gone through this list, open an issue and please give us as much as informations as possible in order for us to fix the bug as soon as possible:</p>
+<ul class="simple">
+<li>Your OS version.</li>
+<li>Ruby version you're using.</li>
+<li>Full output of the error ( exception backtrace, error message, etc ).</li>
+<li>Your network configuration: <code class="docutils literal"><span class="pre">ifconfig</span> <span class="pre">-a</span></code></li>
+</ul>
+<p>Also, you should attach to the issue a debug log that you can generate with:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">bettercap</span> <span class="p">[</span><span class="n">arguments</span> <span class="n">you</span> <span class="n">are</span> <span class="n">using</span> <span class="k">for</span> <span class="n">testing</span><span class="p">]</span> <span class="o">--</span><span class="n">debug</span> <span class="o">--</span><span class="n">log</span><span class="o">=</span><span class="n">debug</span><span class="o">.</span><span class="n">log</span>
+</pre></div>
+</div>
+<p>Wait for the error to happen then close bettercap and paste the <strong>debug.log</strong> file inside the issue.</p>
+</div>
+<div class="section" id="improving-the-documentation">
+<span id="improving-the-documentation"></span><h2>Improving the Documentation<a class="headerlink" href="#improving-the-documentation" title="Permalink to this headline">¶</a></h2>
+<p>If you want to help, you can improve this documentation cloning <a class="reference external" href="https://github.com/evilsocket/bettercap">our code repository</a> and updating the contents of the <code class="docutils literal"><span class="pre">docs</span></code> folder.</p>
+</div>
+<div class="section" id="pull-requests">
+<span id="pull-requests"></span><h2>Pull Requests<a class="headerlink" href="#pull-requests" title="Permalink to this headline">¶</a></h2>
+<p>If you know how to code in Ruby and have ideas to improve bettercap, you're very welcome to send us pull requests, we'll be happy to merge them whenever they comply to the following rules:</p>
+<ul class="simple">
+<li>You have at least manually tested your code, ideally you've created actual tests for it.</li>
+<li>Respect our coding standard, 2 spaces indentation and modular code.</li>
+<li>There're no conflicts with the current dev branch.</li>
+<li>Your commit messages are enough explanatory to us.</li>
+</ul>
+<p>There're plenty of things you can to do improve the software:</p>
+<ul class="simple">
+<li>Implement a new proxy module and push it to the <a class="reference external" href="https://github.com/evilsocket/bettercap-proxy-modules">dedicated repository</a>.</li>
+<li>Implement a new <a class="reference external" href="https://github.com/evilsocket/bettercap/blob/master/lib/bettercap/spoofers/arp.rb">Spoofer module</a>.</li>
+<li>Implement a new <a class="reference external" href="https://github.com/evilsocket/bettercap/blob/master/lib/bettercap/sniffer/parsers/post.rb">Sniffer credentials parser</a>.</li>
+<li>Fix, extend or improve the core.</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="main.html" class="btn btn-neutral float-right" title="General Options" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="install.html" class="btn btn-neutral" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Simone &#39;evilsocket&#39; Margaritelli.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'stable',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-65617603-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+
+</body>
+</html>

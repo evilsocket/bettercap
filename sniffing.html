@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Sniffing &amp; Credentials Harvesting &mdash; BetterCAP stable documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="BetterCAP stable documentation" href="index.html"/>
+        <link rel="next" title="About Proxying" href="proxying.html"/>
+        <link rel="prev" title="Spoofing" href="spoofing.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    
+
+          
+            <a href="index.html">
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                stable
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Main Features</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="main.html">General Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spoofing.html">Spoofing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Sniffing &amp; Credentials Harvesting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#options">Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#x-sniffer"><code class="docutils literal"><span class="pre">-X,</span> <span class="pre">--sniffer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#l-local"><code class="docutils literal"><span class="pre">-L,</span> <span class="pre">--local</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sniffer-source-file"><code class="docutils literal"><span class="pre">--sniffer-source</span> <span class="pre">FILE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sniffer-output-file"><code class="docutils literal"><span class="pre">--sniffer-output</span> <span class="pre">FILE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sniffer-filter-expression"><code class="docutils literal"><span class="pre">--sniffer-filter</span> <span class="pre">EXPRESSION</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#p-parsers-parsers"><code class="docutils literal"><span class="pre">-P,</span> <span class="pre">--parsers</span> <span class="pre">PARSERS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#custom-parser-expression"><code class="docutils literal"><span class="pre">--custom-parser</span> <span class="pre">EXPRESSION</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Proxying &amp; Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="proxying.html">About Proxying</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/http.html">HTTP/HTTPS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/tcp.html">TCP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/udp.html">UDP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/custom.html">Third Party Proxies</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Builtin Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="servers/http.html">HTTP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="servers/dns.html">DNS</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">BetterCAP</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Sniffing &amp; Credentials Harvesting</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="sniffing-credentials-harvesting">
+<span id="sniffing-credentials-harvesting"></span><h1>Sniffing &amp; Credentials Harvesting<a class="headerlink" href="#sniffing-credentials-harvesting" title="Permalink to this headline">¶</a></h1>
+<p>The builtin sniffer is currently able to dissect and print from the network ( or from a previously captured PCAP file ) the following informations:</p>
+<ul class="simple">
+<li>URLs being visited.</li>
+<li>HTTPS hosts being visited.</li>
+<li>HTTP POSTed data.</li>
+<li>HTTP Basic and Digest authentications.</li>
+<li>HTTP Cookies.</li>
+<li>FTP credentials.</li>
+<li>IRC credentials.</li>
+<li>POP, IMAP and SMTP credentials.</li>
+<li>NTLMv1/v2 ( HTTP, SMB, LDAP, etc ) credentials.</li>
+<li>DICT Protocol credentials.</li>
+<li>MPD Credentials.</li>
+<li>NNTP Credentials.</li>
+<li>DHCP messages and authentication.</li>
+<li>REDIS login credentials.</li>
+<li>RLOGIN credentials.</li>
+<li>SNPP credentials.</li>
+<li>And more!</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New parsers are implemented almost on a regular basis for each new release, for a full and updated list check the SNIFFING section in the "bettercap --help" menu.</p>
+</div><div class="section" id="examples">
+<span id="examples"></span><h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Use bettercap as a simple local network sniffer:</p>
+<p><code class="docutils literal"><span class="pre">sudo</span> <span class="pre">bettercap</span> <span class="pre">--local</span></code> or <code class="docutils literal"><span class="pre">sudo</span> <span class="pre">bettercap</span> <span class="pre">-L</span></code></p>
+<p>Use the <em>capture.pcap</em> file in your home directory as a packets source:</p>
+<p><code class="docutils literal"><span class="pre">sudo</span> <span class="pre">bettercap</span> <span class="pre">--sniffer-source</span> <span class="pre">~/capture.pcap</span></code></p>
+<p>Spoof the whole network and save every packet to the <em>capture.pcap</em> file in your home directory:</p>
+<p><code class="docutils literal"><span class="pre">sudo</span> <span class="pre">bettercap</span> <span class="pre">--sniffer-output</span> <span class="pre">~/capture.pcap</span></code></p>
+<p>Spoof the whole network but only sniff HTTP traffic:</p>
+<p><code class="docutils literal"><span class="pre">sudo</span> <span class="pre">bettercap</span> <span class="pre">--sniffer-filter</span> <span class="pre">&quot;tcp</span> <span class="pre">port</span> <span class="pre">http&quot;</span></code></p>
+<p>Spoof the whole network and extract data from packets containing the &quot;password&quot; word:</p>
+<p><code class="docutils literal"><span class="pre">sudo</span> <span class="pre">bettercap</span> <span class="pre">--custom-parser</span> <span class="pre">&quot;.*password.*&quot;</span></code></p>
+</div>
+<div class="section" id="options">
+<span id="options"></span><h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="x-sniffer">
+<span id="x-sniffer"></span><h3><code class="docutils literal"><span class="pre">-X,</span> <span class="pre">--sniffer</span></code><a class="headerlink" href="#x-sniffer" title="Permalink to this headline">¶</a></h3>
+<p>Enable sniffer.</p>
+</div>
+<div class="section" id="l-local">
+<span id="l-local"></span><h3><code class="docutils literal"><span class="pre">-L,</span> <span class="pre">--local</span></code><a class="headerlink" href="#l-local" title="Permalink to this headline">¶</a></h3>
+<p>By default bettercap will only parse packets coming from/to other addresses on the network, if you also want to process packets being sent or received from your own computer you can use this option ( NOTE: will enable the sniffer ).</p>
+</div>
+<div class="section" id="sniffer-source-file">
+<span id="sniffer-source-file"></span><h3><code class="docutils literal"><span class="pre">--sniffer-source</span> <span class="pre">FILE</span></code><a class="headerlink" href="#sniffer-source-file" title="Permalink to this headline">¶</a></h3>
+<p>Load packets from the specified PCAP file instead of the network interface ( NOTE: will enable the sniffer ).</p>
+</div>
+<div class="section" id="sniffer-output-file">
+<span id="sniffer-output-file"></span><h3><code class="docutils literal"><span class="pre">--sniffer-output</span> <span class="pre">FILE</span></code><a class="headerlink" href="#sniffer-output-file" title="Permalink to this headline">¶</a></h3>
+<p>Save all packets to the specified PCAP file ( NOTE: will enable the sniffer ).</p>
+</div>
+<div class="section" id="sniffer-filter-expression">
+<span id="sniffer-filter-expression"></span><h3><code class="docutils literal"><span class="pre">--sniffer-filter</span> <span class="pre">EXPRESSION</span></code><a class="headerlink" href="#sniffer-filter-expression" title="Permalink to this headline">¶</a></h3>
+<p>Configure the sniffer to use this <a class="reference external" href="http://biot.com/capstats/bpf.html">BPF filter</a> ( NOTE: will enable the sniffer ).</p>
+</div>
+<div class="section" id="p-parsers-parsers">
+<span id="p-parsers-parsers"></span><h3><code class="docutils literal"><span class="pre">-P,</span> <span class="pre">--parsers</span> <span class="pre">PARSERS</span></code><a class="headerlink" href="#p-parsers-parsers" title="Permalink to this headline">¶</a></h3>
+<p>Comma separated list of packet parsers to enable, <code class="docutils literal"><span class="pre">*</span></code> for all ( NOTE: will enable the sniffer ), available: <code class="docutils literal"><span class="pre">COOKIE</span></code>, <code class="docutils literal"><span class="pre">CREDITCARD</span></code>, <code class="docutils literal"><span class="pre">DHCP</span></code>, <code class="docutils literal"><span class="pre">DICT</span></code>, <code class="docutils literal"><span class="pre">FTP</span></code>, <code class="docutils literal"><span class="pre">HTTPAUTH</span></code>, <code class="docutils literal"><span class="pre">HTTPS</span></code>, <code class="docutils literal"><span class="pre">IRC</span></code>, <code class="docutils literal"><span class="pre">MAIL</span></code>, <code class="docutils literal"><span class="pre">MPD</span></code>, <code class="docutils literal"><span class="pre">MYSQL</span></code>, <code class="docutils literal"><span class="pre">NNTP</span></code>, <code class="docutils literal"><span class="pre">NTLMSS</span></code>, <code class="docutils literal"><span class="pre">PGSQL</span></code>, <code class="docutils literal"><span class="pre">POST</span></code>, <code class="docutils literal"><span class="pre">REDIS</span></code>, <code class="docutils literal"><span class="pre">RLOGIN</span></code>, <code class="docutils literal"><span class="pre">SNMP</span></code>, <code class="docutils literal"><span class="pre">SNPP</span></code>, <code class="docutils literal"><span class="pre">URL</span></code>, <code class="docutils literal"><span class="pre">WHATSAPP</span></code>, default to <code class="docutils literal"><span class="pre">*</span></code>.</p>
+</div>
+<div class="section" id="custom-parser-expression">
+<span id="custom-parser-expression"></span><h3><code class="docutils literal"><span class="pre">--custom-parser</span> <span class="pre">EXPRESSION</span></code><a class="headerlink" href="#custom-parser-expression" title="Permalink to this headline">¶</a></h3>
+<p>Use a custom regular expression in order to capture and show sniffed data ( NOTE: will enable the sniffer ).</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="proxying.html" class="btn btn-neutral float-right" title="About Proxying" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="spoofing.html" class="btn btn-neutral" title="Spoofing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Simone &#39;evilsocket&#39; Margaritelli.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'stable',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-65617603-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+
+</body>
+</html>

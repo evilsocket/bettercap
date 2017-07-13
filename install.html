@@ -1,0 +1,333 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Installation &mdash; BetterCAP stable documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="BetterCAP stable documentation" href="index.html"/>
+        <link rel="next" title="Contributing" href="contribute.html"/>
+        <link rel="prev" title="Introduction" href="intro.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    
+
+          
+            <a href="index.html">
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                stable
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-on-kali-linux">Installing on Kali Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stable-release-gem">Stable Release ( GEM )</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#development-release">Development Release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#quick-start">Quick Start</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Main Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="main.html">General Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spoofing.html">Spoofing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sniffing.html">Sniffing &amp; Credentials Harvesting</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Proxying &amp; Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="proxying.html">About Proxying</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/http.html">HTTP/HTTPS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/tcp.html">TCP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/udp.html">UDP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/custom.html">Third Party Proxies</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Builtin Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="servers/http.html">HTTP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="servers/dns.html">DNS</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">BetterCAP</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Installation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="installation">
+<span id="installation"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>BetterCap comes packaged as a <strong>Ruby</strong> gem, meaning you will need a Ruby interpreter ( &gt;= 1.9 ) and a RubyGems environment installed. Moreover, it is <strong>fully compatible with GNU/Linux, Mac OS X and OpenBSD platforms</strong>.</p>
+<div class="section" id="dependencies">
+<span id="dependencies"></span><h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>All Ruby dependencies will be automatically installed through the GEM system, however some of the GEMS need native libraries in order to compile:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">build</span><span class="o">-</span><span class="n">essential</span> <span class="n">ruby</span><span class="o">-</span><span class="n">dev</span> <span class="n">libpcap</span><span class="o">-</span><span class="n">dev</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="installing-on-kali-linux">
+<span id="installing-on-kali-linux"></span><h2>Installing on Kali Linux<a class="headerlink" href="#installing-on-kali-linux" title="Permalink to this headline">¶</a></h2>
+<p>Kali Linux has bettercap packaged and added to the <strong>kali-rolling</strong> repositories. To install bettercap and all dependencies in one fell swoop on the latest version of Kali Linux:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
+<span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">bettercap</span>    
+</pre></div>
+</div>
+</div>
+<div class="section" id="stable-release-gem">
+<span id="stable-release-gem"></span><h2>Stable Release ( GEM )<a class="headerlink" href="#stable-release-gem" title="Permalink to this headline">¶</a></h2>
+<p>You can easily install bettercap using the <code class="docutils literal"><span class="pre">gem</span> <span class="pre">install</span> <span class="pre">GEMNAME</span></code> command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">gem</span> <span class="n">install</span> <span class="n">bettercap</span>
+</pre></div>
+</div>
+<p>To update to a newer release:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">gem</span> <span class="n">update</span> <span class="n">bettercap</span>
+</pre></div>
+</div>
+<p>If you have trouble installing bettercap read the following sections about dependencies.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you installed bettercap using a RVM installation, you will need to execute it using <strong>rvmsudo</strong>:<br/>
+  <code>rvmsudo bettercap ...</code><br/>
+Otherwise, if you installed it globally ( <code>sudo gem install bettercap</code> ) you can use <strong>sudo</strong>:<br/>
+  <code>sudo bettercap ...</code>
+</p>
+</div></div>
+<div class="section" id="development-release">
+<span id="development-release"></span><h2>Development Release<a class="headerlink" href="#development-release" title="Permalink to this headline">¶</a></h2>
+<p>Instead of the stable release, you can also clone the source code from the github repository, this will give you
+all the latest and <strong>experimental</strong> features, but remember that you're using a potentially unstable release:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">evilsocket</span><span class="o">/</span><span class="n">bettercap</span>
+<span class="n">cd</span> <span class="n">bettercap</span>
+<span class="n">bundle</span> <span class="n">install</span>
+<span class="n">gem</span> <span class="n">build</span> <span class="n">bettercap</span><span class="o">.</span><span class="n">gemspec</span>
+<span class="n">sudo</span> <span class="n">gem</span> <span class="n">install</span> <span class="n">bettercap</span><span class="o">*.</span><span class="n">gem</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="quick-start">
+<span id="quick-start"></span><h2>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
+<p>Once you've installed bettercap, quickly get started with:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">bettercap</span> <span class="o">--</span><span class="n">help</span>
+</pre></div>
+</div>
+<p>The help menu will show you every available command line option and a few examples.</p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="contribute.html" class="btn btn-neutral float-right" title="Contributing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="intro.html" class="btn btn-neutral" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Simone &#39;evilsocket&#39; Margaritelli.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'stable',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-65617603-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+
+</body>
+</html>

@@ -1,0 +1,349 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>General Options &mdash; BetterCAP stable documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="BetterCAP stable documentation" href="index.html"/>
+        <link rel="next" title="Logging" href="logging.html"/>
+        <link rel="prev" title="Contributing" href="contribute.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    
+
+          
+            <a href="index.html">
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                stable
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Main Features</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">General Options</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#options">Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#i-interface-iface"><code class="docutils literal"><span class="pre">-I,</span> <span class="pre">--interface</span> <span class="pre">IFACE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-mac-address"><code class="docutils literal"><span class="pre">--use-mac</span> <span class="pre">ADDRESS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#random-mac"><code class="docutils literal"><span class="pre">--random-mac</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#g-gateway-address"><code class="docutils literal"><span class="pre">-G,</span> <span class="pre">--gateway</span> <span class="pre">ADDRESS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#t-target-address1-address2"><code class="docutils literal"><span class="pre">-T,</span> <span class="pre">--target</span> <span class="pre">ADDRESS1,ADDRESS2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ignore-address1-address2"><code class="docutils literal"><span class="pre">--ignore</span> <span class="pre">ADDRESS1,ADDRESS2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#no-discovery"><code class="docutils literal"><span class="pre">--no-discovery</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#no-target-nbns"><code class="docutils literal"><span class="pre">--no-target-nbns</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#packet-throttle-number"><code class="docutils literal"><span class="pre">--packet-throttle</span> <span class="pre">NUMBER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#check-updates"><code class="docutils literal"><span class="pre">--check-updates</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#h-help"><code class="docutils literal"><span class="pre">-h,</span> <span class="pre">--help</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spoofing.html">Spoofing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sniffing.html">Sniffing &amp; Credentials Harvesting</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Proxying &amp; Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="proxying.html">About Proxying</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/http.html">HTTP/HTTPS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/tcp.html">TCP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/udp.html">UDP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/custom.html">Third Party Proxies</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Builtin Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="servers/http.html">HTTP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="servers/dns.html">DNS</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">BetterCAP</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>General Options</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="general-options">
+<span id="general-options"></span><h1>General Options<a class="headerlink" href="#general-options" title="Permalink to this headline">¶</a></h1>
+<p>The following are the main options that determine the general behaviour of BetterCap, <strong>these options are not mandatory</strong>, in fact bettercap will automatically detect everything it needs in order to work, you just might need to use one or more of the following options to specify some custom behaviour in specific cases.</p>
+<div class="section" id="examples">
+<span id="examples"></span><h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Attack specific targets:</p>
+<p><code class="docutils literal"><span class="pre">sudo</span> <span class="pre">bettercap</span> <span class="pre">-T</span> <span class="pre">192.168.1.10,192.168.1.11</span></code></p>
+<p>Attack a specific target by its MAC address:</p>
+<p><code class="docutils literal"><span class="pre">sudo</span> <span class="pre">bettercap</span> <span class="pre">-T</span> <span class="pre">01:23:45:67:89:10</span></code></p>
+<p>Attack a range of IP addresses:</p>
+<p><code class="docutils literal"><span class="pre">sudo</span> <span class="pre">bettercap</span> <span class="pre">-T</span> <span class="pre">192.168.1.1-30</span></code></p>
+<p>Attack a specific subnet:</p>
+<p><code class="docutils literal"><span class="pre">sudo</span> <span class="pre">bettercap</span> <span class="pre">-T</span> <span class="pre">192.168.1.1/24</span></code></p>
+<p>Randomize the interface MAC address during the attack:</p>
+<p><code class="docutils literal"><span class="pre">sudo</span> <span class="pre">bettercap</span> <span class="pre">--random-mac</span></code></p>
+</div>
+<div class="section" id="options">
+<span id="options"></span><h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="i-interface-iface">
+<span id="i-interface-iface"></span><h3><code class="docutils literal"><span class="pre">-I,</span> <span class="pre">--interface</span> <span class="pre">IFACE</span></code><a class="headerlink" href="#i-interface-iface" title="Permalink to this headline">¶</a></h3>
+<p>BetterCAP will automatically detect your default network interface and use it, if you want to make it use another interface ( when you have more than one, let's say <code class="docutils literal"><span class="pre">eth0</span></code> and <code class="docutils literal"><span class="pre">wlan0</span></code> ) you can use this option.</p>
+</div>
+<div class="section" id="use-mac-address">
+<span id="use-mac-address"></span><h3><code class="docutils literal"><span class="pre">--use-mac</span> <span class="pre">ADDRESS</span></code><a class="headerlink" href="#use-mac-address" title="Permalink to this headline">¶</a></h3>
+<p>Change the interface MAC address to this value before performing the attack.</p>
+</div>
+<div class="section" id="random-mac">
+<span id="random-mac"></span><h3><code class="docutils literal"><span class="pre">--random-mac</span></code><a class="headerlink" href="#random-mac" title="Permalink to this headline">¶</a></h3>
+<p>Change the interface MAC address to a random one before performing the attack.</p>
+</div>
+<div class="section" id="g-gateway-address">
+<span id="g-gateway-address"></span><h3><code class="docutils literal"><span class="pre">-G,</span> <span class="pre">--gateway</span> <span class="pre">ADDRESS</span></code><a class="headerlink" href="#g-gateway-address" title="Permalink to this headline">¶</a></h3>
+<p>The same goes for the gateway, either let bettercap automatically detect it or manually specify its address.</p>
+</div>
+<div class="section" id="t-target-address1-address2">
+<span id="t-target-address1-address2"></span><h3><code class="docutils literal"><span class="pre">-T,</span> <span class="pre">--target</span> <span class="pre">ADDRESS1,ADDRESS2</span></code><a class="headerlink" href="#t-target-address1-address2" title="Permalink to this headline">¶</a></h3>
+<p>If no specific target is given on the command line, bettercap will spoof every single address on the network. There are cases when you already know the IP or MAC address of your target(s), in such cases you can use this option.</p>
+</div>
+<div class="section" id="ignore-address1-address2">
+<span id="ignore-address1-address2"></span><h3><code class="docutils literal"><span class="pre">--ignore</span> <span class="pre">ADDRESS1,ADDRESS2</span></code><a class="headerlink" href="#ignore-address1-address2" title="Permalink to this headline">¶</a></h3>
+<p>Ignore these IP addresses if found while searching for targets.</p>
+</div>
+<div class="section" id="no-discovery">
+<span id="no-discovery"></span><h3><code class="docutils literal"><span class="pre">--no-discovery</span></code><a class="headerlink" href="#no-discovery" title="Permalink to this headline">¶</a></h3>
+<p>Do not actively search for hosts, just use the current ARP cache, default to <code class="docutils literal"><span class="pre">false</span></code>.</p>
+</div>
+<div class="section" id="no-target-nbns">
+<span id="no-target-nbns"></span><h3><code class="docutils literal"><span class="pre">--no-target-nbns</span></code><a class="headerlink" href="#no-target-nbns" title="Permalink to this headline">¶</a></h3>
+<p>Disable target NBNS hostname resolution.</p>
+</div>
+<div class="section" id="packet-throttle-number">
+<span id="packet-throttle-number"></span><h3><code class="docutils literal"><span class="pre">--packet-throttle</span> <span class="pre">NUMBER</span></code><a class="headerlink" href="#packet-throttle-number" title="Permalink to this headline">¶</a></h3>
+<p>Number of seconds ( can be a decimal number ) to wait between each packet to be sent.</p>
+</div>
+<div class="section" id="check-updates">
+<span id="check-updates"></span><h3><code class="docutils literal"><span class="pre">--check-updates</span></code><a class="headerlink" href="#check-updates" title="Permalink to this headline">¶</a></h3>
+<p>Will check if any update is available and then exit.</p>
+</div>
+<div class="section" id="h-help">
+<span id="h-help"></span><h3><code class="docutils literal"><span class="pre">-h,</span> <span class="pre">--help</span></code><a class="headerlink" href="#h-help" title="Permalink to this headline">¶</a></h3>
+<p>Display the available options.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="logging.html" class="btn btn-neutral float-right" title="Logging" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="contribute.html" class="btn btn-neutral" title="Contributing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Simone &#39;evilsocket&#39; Margaritelli.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'stable',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-65617603-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+
+</body>
+</html>

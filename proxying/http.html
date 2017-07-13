@@ -1,0 +1,457 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>HTTP/HTTPS &mdash; BetterCAP stable documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="BetterCAP stable documentation" href="../index.html"/>
+        <link rel="next" title="TCP" href="tcp.html"/>
+        <link rel="prev" title="About Proxying" href="../proxying.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                stable
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contributing</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Main Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../main.html">General Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../spoofing.html">Spoofing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../sniffing.html">Sniffing &amp; Credentials Harvesting</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Proxying &amp; Modules</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../proxying.html">About Proxying</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">HTTP/HTTPS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sample-module">Sample Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#http">HTTP</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ssl-stripping">SSL Stripping</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hsts-bypass">HSTS Bypass</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#demonstration">Demonstration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#https">HTTPS</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#server-name-indication">Server Name Indication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#installing-certification-authority">Installing Certification Authority</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#options">Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#proxy-upstream-address-address"><code class="docutils literal"><span class="pre">--proxy-upstream-address</span> <span class="pre">ADDRESS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#allow-local-connections"><code class="docutils literal"><span class="pre">--allow-local-connections</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#proxy"><code class="docutils literal"><span class="pre">--proxy</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#proxy-port-port"><code class="docutils literal"><span class="pre">--proxy-port</span> <span class="pre">PORT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#no-sslstrip"><code class="docutils literal"><span class="pre">--no-sslstrip</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#log-http-response"><code class="docutils literal"><span class="pre">--log-http-response</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#proxy-module-module"><code class="docutils literal"><span class="pre">--proxy-module</span> <span class="pre">MODULE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#http-ports-port1-port2"><code class="docutils literal"><span class="pre">--http-ports</span> <span class="pre">PORT1,PORT2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#proxy-https"><code class="docutils literal"><span class="pre">--proxy-https</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#proxy-https-port-port"><code class="docutils literal"><span class="pre">--proxy-https-port</span> <span class="pre">PORT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#proxy-pem-file"><code class="docutils literal"><span class="pre">--proxy-pem</span> <span class="pre">FILE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#https-ports-port1-port2"><code class="docutils literal"><span class="pre">--https-ports</span> <span class="pre">PORT1,PORT2</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tcp.html">TCP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="udp.html">UDP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom.html">Third Party Proxies</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Builtin Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../servers/http.html">HTTP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../servers/dns.html">DNS</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">BetterCAP</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>HTTP/HTTPS</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="http-https">
+<span id="http-https"></span><h1>HTTP/HTTPS<a class="headerlink" href="#http-https" title="Permalink to this headline">¶</a></h1>
+<p>Bettercap is shipped with both a HTTP and a HTTPS transparent proxies that you can use to manipulate HTTP and HTTPS traffic at runtime ( inject javascripts into the targets visited pages, replace the images, etc ).
+By default the builtin proxies won't do anything but logging HTTP(S) requests, but if you specify a <code class="docutils literal"><span class="pre">--proxy-module</span></code> argument you will be able to load one of the builtin modules ( or your own ) and manipulate HTTP traffic as you like.</p>
+<p>Builtin modules are:</p>
+<ul class="simple">
+<li>InjectJS ( <code class="docutils literal"><span class="pre">--proxy-module</span> <span class="pre">injectjs</span></code> ) : Used to inject javascript code/files inside HTML pages.</li>
+<li>InjectCSS ( <code class="docutils literal"><span class="pre">--proxy-module</span> <span class="pre">injectcss</span></code> ) : Used to inject CSS code/files inside HTML pages.</li>
+<li>InjectHTML ( <code class="docutils literal"><span class="pre">--proxy-module</span> <span class="pre">injecthtml</span></code> ) : Used to inject HTML code inside HTML pages.</li>
+</ul>
+<p>HTTP/HTTPS proxy modules might want additional command line arguments, it's always a good idea to look at their specific help menus:</p>
+<p><code class="docutils literal"><span class="pre">bettercap</span> <span class="pre">--proxy-module</span> <span class="pre">NAME</span> <span class="pre">-h</span></code></p>
+<div class="section" id="sample-module">
+<span id="sample-module"></span><h2>Sample Module<a class="headerlink" href="#sample-module" title="Permalink to this headline">¶</a></h2>
+<p>You can easily implement a module to inject data into pages or just inspect the requests/responses creating a ruby file and passing it to bettercap with the <code class="docutils literal"><span class="pre">--proxy-module</span></code> argument, the following is a sample module that injects some contents into the title tag of each html page, you can find other examples modules in the <a class="reference external" href="https://github.com/evilsocket/bettercap-proxy-modules">proxy modules dedicated repository</a>.</p>
+<script src="https://gist.github.com/evilsocket/bfdb1af7e6bf9d9d0bfe.js"></script></div>
+<div class="section" id="http">
+<span id="http"></span><h2>HTTP<a class="headerlink" href="#http" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ssl-stripping">
+<span id="ssl-stripping"></span><h3>SSL Stripping<a class="headerlink" href="#ssl-stripping" title="Permalink to this headline">¶</a></h3>
+<p>SSL stripping is a technique introduced by <a class="reference external" href="http://www.thoughtcrime.org/software/sslstrip/">Moxie Marlinspike</a> during BlackHat DC 2009, the website description of this technique goes like:</p>
+<blockquote>
+<div>It will transparently hijack HTTP traffic on a network, watch for HTTPS links and redirects, then map those links into either look-alike HTTP links or homograph-similar HTTPS links.</div></blockquote>
+<p>Long story short, this technique will replace every <strong>https</strong> link in webpages the target is browsing with <strong>http</strong> ones so, if a page would normally look like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">...</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;https://www.facebook.com/&quot;</span><span class="o">&gt;</span><span class="n">Login</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>During a SSL stripping attack its HTML code will be modified as:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">...</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;http://www.facebook.com/&quot;</span><span class="o">&gt;</span><span class="n">Login</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>Being the <strong>man in the middle</strong>, this allow us to sniff and modify pages that normally we wouldn't be able to even see.</p>
+</div>
+<div class="section" id="hsts-bypass">
+<span id="hsts-bypass"></span><h3>HSTS Bypass<a class="headerlink" href="#hsts-bypass" title="Permalink to this headline">¶</a></h3>
+<p>SSL stripping worked quite well until 2010, when the <strong>HSTS</strong> specification was introduced, Wikipedia says:</p>
+<blockquote>
+<div><strong>HTTP Strict Transport Security</strong> (HSTS) is a web security policy mechanism which helps to protect websites against protocol downgrade attacks and cookie hijacking. It allows web servers to declare that web browsers (or other complying user agents) should only interact with it using secure HTTPS connections, and never via the insecure HTTP protocol. HSTS is an IETF standards track protocol and is specified in RFC 6797.</div></blockquote>
+<p>Moreover HSTS policies have been prebuilt into major browsers meaning that now, even with a SSL stripping attack running, the browser will
+connect to HTTPS anyway, even if the <em>http://</em> schema is specified, making the attack itself useless.</p>
+<p><center>
+<img alt="network mitm" src="../_images/with-hsts.png" />
+<br/>
+<small>Picture credits to <a href="https://scotthelme.co.uk/ssl-does-not-make-site-secure/" target="_blank">Scott Helme</a></small>
+</center></p>
+<p>For this reason, <a class="reference external" href="http://www.slideshare.net/Fatuo__/offensive-exploiting-dns-servers-changes-blackhat-asia-2014">Leonardo Nve Egea</a> presented <strong>sslstrip+</strong> ( or sslstrip2 ) during BlackHat Asia 2014.
+This tool was an improvement over the original Moxie's version, specifically created to bypass HSTS policies.
+Since HSTS rules most of the time are applied on a per-hostname basis, the trick is to downgrade HTTPS links to HTTP <strong>and</strong> to prepend some custom sub domain name to them. Every resulting link won't be valid for any DNS server, but since we're MITMing we can resolve these hostnames anyway.</p>
+<p>Let's take the previous example page:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">...</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;https://www.facebook.com/&quot;</span><span class="o">&gt;</span><span class="n">Login</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>A HSTS bypass attack will change it to something like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">...</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;http://wwww.facebook.com/&quot;</span><span class="o">&gt;</span><span class="n">Login</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p><center><small>Notice that https has been downgraded to http and <strong>www</strong> replaced with <strong>wwww</strong> ).</small></center></p>
+<p>When the &quot;victim&quot; will click on that link, no HSTS rule will be applied ( since there's no rule for such subdomain we just created ) and the MITM software ( BetterCap in our case ^_^ ) will take care of the DNS resolution, allowing us to see and alter the traffic we weren't supposed to see.</p>
+<p><center>
+<img alt="network mitm" src="../_images/sslstrip2.png" />
+</center></p>
+</div>
+<div class="section" id="demonstration">
+<span id="demonstration"></span><h3>Demonstration<a class="headerlink" href="#demonstration" title="Permalink to this headline">¶</a></h3>
+<p>The following video demonstrates how to perform SSL Stripping and HSTS Bypass attacks in order to capture the Facebook login credentials of a specific target.</p>
+<iframe width="100%" height="400" src="https://www.youtube.com/embed/BfvoONHXuQA" frameborder="0" allowfullscreen></iframe></div>
+</div>
+<div class="section" id="https">
+<span id="https"></span><h2>HTTPS<a class="headerlink" href="#https" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="server-name-indication">
+<span id="server-name-indication"></span><h3>Server Name Indication<a class="headerlink" href="#server-name-indication" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>Server Name Indication (SNI) is an extension to the TLS computer networking protocol by which a client indicates which hostname it is attempting to connect to at the start of the handshaking process. This allows a server to present multiple certificates on the same IP address and TCP port number and hence allows multiple secure (HTTPS) websites (or any other Service over TLS) to be served off the same IP address without requiring all those sites to use the same certificate.</div></blockquote>
+<p>Using the <strong>SNI</strong> callback, BetterCAP's HTTPS proxy is able to detect the upstream server host using the following logic:</p>
+<ol class="simple">
+<li>Client connects to a HTTPS server while being transparently proxied by us.</li>
+<li>We catch the upstream server hostname in the <strong>SNI</strong> callback.</li>
+<li>We pause the callback, connect to the upstream server and fetch its certificate.</li>
+<li>We resign that certificate with our own CA and use it to serve the client.</li>
+</ol>
+<p>This way, as long as you have BetterCap's certification authority PEM file installed on the target device, you won't see any warnings or errors since correct certificate will be spoofed in realtime.</p>
+<p>There're a couple of caveats of course:</p>
+<ol class="simple">
+<li>If you don't install either bettercap's CA or your custom CA on the target device, you'll see warnings and errors anyway (duh!).</li>
+<li>Every application using <a class="reference external" href="https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning">certificate/public Key pinning</a> will detect the attack even with the CA installed.</li>
+</ol>
+</div>
+<div class="section" id="installing-certification-authority">
+<span id="installing-certification-authority"></span><h3>Installing Certification Authority<a class="headerlink" href="#installing-certification-authority" title="Permalink to this headline">¶</a></h3>
+<p>Since version 1.4.4 BetterCAP comes with a pre made certification authority file which is extracted in your home directory the first time you'll launch the HTTPS proxy, you'll find the file as:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">~/.</span><span class="n">bettercap</span><span class="o">/</span><span class="n">bettercap</span><span class="o">-</span><span class="n">ca</span><span class="o">.</span><span class="n">pem</span>
+</pre></div>
+</div>
+<p>You'll need to install this file on the device you want to transparently proxy HTTPS connection for, the procedure is OS specific as mentioned in a previous blog post:</p>
+<ul class="simple">
+<li><strong>iOS</strong> - http://kb.mit.edu/confluence/pages/viewpage.action?pageId=152600377</li>
+<li><strong>iOS Simulator</strong> - https://github.com/ADVTOOLS/ADVTrustStore#how-to-use-advtruststore</li>
+<li><strong>Java</strong> - http://docs.oracle.com/cd/E19906-01/820-4916/geygn/index.html</li>
+<li><strong>Android/Android Simulator</strong> - http://wiki.cacert.org/FAQ/ImportRootCert#Android_Phones_.26_Tablets</li>
+<li><strong>Windows</strong> - http://windows.microsoft.com/en-ca/windows/import-export-certificates-private-keys#1TC=windows-7</li>
+<li><strong>Mac OS X</strong> - https://support.apple.com/kb/PH7297?locale=en_US</li>
+<li><strong>Ubuntu/Debian</strong> - http://askubuntu.com/questions/73287/how-do-i-install-a-root-certificate/94861#94861</li>
+<li><strong>Mozilla Firefox</strong> - https://wiki.mozilla.org/MozillaRootCertificate#Mozilla_Firefox</li>
+<li><strong>Chrome on Linux</strong> - https://code.google.com/p/chromium/wiki/LinuxCertManagement</li>
+</ul>
+<p>Once you've done, just use the <code class="docutils literal"><span class="pre">--proxy-https</span></code> bettercap command line argument to enable the HTTPS proxy and you're ready to go.</p>
+<hr/></div>
+</div>
+<div class="section" id="options">
+<span id="options"></span><h2>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="proxy-upstream-address-address">
+<span id="proxy-upstream-address-address"></span><h3><code class="docutils literal"><span class="pre">--proxy-upstream-address</span> <span class="pre">ADDRESS</span></code><a class="headerlink" href="#proxy-upstream-address-address" title="Permalink to this headline">¶</a></h3>
+<p>If set, only requests coming from this server address will be redirected to the HTTP/HTTPS proxies.</p>
+</div>
+<div class="section" id="allow-local-connections">
+<span id="allow-local-connections"></span><h3><code class="docutils literal"><span class="pre">--allow-local-connections</span></code><a class="headerlink" href="#allow-local-connections" title="Permalink to this headline">¶</a></h3>
+<p>Allow direct connections to the proxy instance, default to <code class="docutils literal"><span class="pre">false</span></code>.</p>
+</div>
+<div class="section" id="proxy">
+<span id="proxy"></span><h3><code class="docutils literal"><span class="pre">--proxy</span></code><a class="headerlink" href="#proxy" title="Permalink to this headline">¶</a></h3>
+<p>Enable HTTP proxy and redirects all HTTP requests to it, default to <code class="docutils literal"><span class="pre">false</span></code>.</p>
+</div>
+<div class="section" id="proxy-port-port">
+<span id="proxy-port-port"></span><h3><code class="docutils literal"><span class="pre">--proxy-port</span> <span class="pre">PORT</span></code><a class="headerlink" href="#proxy-port-port" title="Permalink to this headline">¶</a></h3>
+<p>Set HTTP proxy port, default to <code class="docutils literal"><span class="pre">8080</span></code>.</p>
+</div>
+<div class="section" id="no-sslstrip">
+<span id="no-sslstrip"></span><h3><code class="docutils literal"><span class="pre">--no-sslstrip</span></code><a class="headerlink" href="#no-sslstrip" title="Permalink to this headline">¶</a></h3>
+<p>Disable SSL stripping and HSTS bypass.</p>
+</div>
+<div class="section" id="log-http-response">
+<span id="log-http-response"></span><h3><code class="docutils literal"><span class="pre">--log-http-response</span></code><a class="headerlink" href="#log-http-response" title="Permalink to this headline">¶</a></h3>
+<p>Log HTTP responses.</p>
+</div>
+<div class="section" id="proxy-module-module">
+<span id="proxy-module-module"></span><h3><code class="docutils literal"><span class="pre">--proxy-module</span> <span class="pre">MODULE</span></code><a class="headerlink" href="#proxy-module-module" title="Permalink to this headline">¶</a></h3>
+<p>Ruby proxy module to load, either a custom file or one of the following: <code class="docutils literal"><span class="pre">injectcss</span></code>, <code class="docutils literal"><span class="pre">injecthtml</span></code>, <code class="docutils literal"><span class="pre">injectjs</span></code>.</p>
+</div>
+<div class="section" id="http-ports-port1-port2">
+<span id="http-ports-port1-port2"></span><h3><code class="docutils literal"><span class="pre">--http-ports</span> <span class="pre">PORT1,PORT2</span></code><a class="headerlink" href="#http-ports-port1-port2" title="Permalink to this headline">¶</a></h3>
+<p>Comma separated list of HTTP ports to redirect to the proxy, default to <code class="docutils literal"><span class="pre">80</span></code>.</p>
+</div>
+<div class="section" id="proxy-https">
+<span id="proxy-https"></span><h3><code class="docutils literal"><span class="pre">--proxy-https</span></code><a class="headerlink" href="#proxy-https" title="Permalink to this headline">¶</a></h3>
+<p>Enable HTTPS proxy and redirects all HTTPS requests to it, default to <code class="docutils literal"><span class="pre">false</span></code>.</p>
+</div>
+<div class="section" id="proxy-https-port-port">
+<span id="proxy-https-port-port"></span><h3><code class="docutils literal"><span class="pre">--proxy-https-port</span> <span class="pre">PORT</span></code><a class="headerlink" href="#proxy-https-port-port" title="Permalink to this headline">¶</a></h3>
+<p>Set HTTPS proxy port, default to <code class="docutils literal"><span class="pre">8083</span></code>.</p>
+</div>
+<div class="section" id="proxy-pem-file">
+<span id="proxy-pem-file"></span><h3><code class="docutils literal"><span class="pre">--proxy-pem</span> <span class="pre">FILE</span></code><a class="headerlink" href="#proxy-pem-file" title="Permalink to this headline">¶</a></h3>
+<p>Use a custom PEM CA certificate file for the HTTPS proxy, default to <code class="docutils literal"><span class="pre">~/.bettercap/bettercap-ca.pem</span></code>.</p>
+</div>
+<div class="section" id="https-ports-port1-port2">
+<span id="https-ports-port1-port2"></span><h3><code class="docutils literal"><span class="pre">--https-ports</span> <span class="pre">PORT1,PORT2</span></code><a class="headerlink" href="#https-ports-port1-port2" title="Permalink to this headline">¶</a></h3>
+<p>Comma separated list of HTTPS ports to redirect to the proxy, default to <code class="docutils literal"><span class="pre">443</span></code>.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tcp.html" class="btn btn-neutral float-right" title="TCP" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../proxying.html" class="btn btn-neutral" title="About Proxying" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Simone &#39;evilsocket&#39; Margaritelli.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'stable',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-65617603-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+
+</body>
+</html>

@@ -1,0 +1,320 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction &mdash; BetterCAP stable documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="BetterCAP stable documentation" href="index.html"/>
+        <link rel="next" title="Installation" href="install.html"/>
+        <link rel="prev" title="Documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    
+
+          
+            <a href="index.html">
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                stable
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#you-are-the-man-in-the-middle">You Are the Man in the Middle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#use-cases">Use Cases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#why-another-mitm-tool">Why another MITM tool?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Main Features</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="main.html">General Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spoofing.html">Spoofing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sniffing.html">Sniffing &amp; Credentials Harvesting</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Proxying &amp; Modules</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="proxying.html">About Proxying</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/http.html">HTTP/HTTPS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/tcp.html">TCP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/udp.html">UDP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="proxying/custom.html">Third Party Proxies</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Builtin Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="servers/http.html">HTTP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="servers/dns.html">DNS</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">BetterCAP</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Introduction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="introduction">
+<span id="introduction"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>BetterCAP is a powerful, flexible and portable tool created to perform various types of <strong>MITM</strong> attacks against a network, manipulate <strong>HTTP</strong>, <strong>HTTPS</strong> and <strong>TCP</strong> traffic in realtime, sniff for credentials and much more.</p>
+<div class="section" id="you-are-the-man-in-the-middle">
+<span id="you-are-the-man-in-the-middle"></span><h2>You Are the Man in the Middle<a class="headerlink" href="#you-are-the-man-in-the-middle" title="Permalink to this headline">¶</a></h2>
+<p>What is a <strong>MITM</strong> ( <em>Man In The Middle</em> ) attack? Let's ask <a class="reference external" href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack">Wikipedia</a>!</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="n">cryptography</span> <span class="ow">and</span> <span class="n">computer</span> <span class="n">security</span><span class="p">,</span> <span class="n">a</span> <span class="n">man</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">the</span><span class="o">-</span><span class="n">middle</span> <span class="n">attack</span> <span class="p">(</span><span class="n">often</span> <span class="n">abbreviated</span> <span class="n">to</span> <span class="n">MITM</span><span class="p">,</span> <span class="n">MitM</span><span class="p">,</span> <span class="n">MIM</span><span class="p">,</span> <span class="n">MiM</span> <span class="n">attack</span> <span class="ow">or</span> <span class="n">MITMA</span><span class="p">)</span> <span class="ow">is</span> <span class="n">an</span> <span class="n">attack</span> <span class="n">where</span> <span class="n">the</span> <span class="n">attacker</span> <span class="n">secretly</span> <span class="n">relays</span> <span class="ow">and</span> <span class="n">possibly</span> <span class="n">alters</span> <span class="n">the</span> <span class="n">communication</span> <span class="n">between</span> <span class="n">two</span> <span class="n">parties</span> <span class="n">who</span> <span class="n">believe</span> <span class="n">they</span> <span class="n">are</span> <span class="n">directly</span> <span class="n">communicating</span> <span class="k">with</span> <span class="n">each</span> <span class="n">other</span><span class="o">.</span> <span class="n">Man</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">the</span><span class="o">-</span><span class="n">middle</span> <span class="n">attacks</span> <span class="n">can</span> <span class="n">be</span> <span class="n">thought</span> <span class="n">about</span> <span class="n">through</span> <span class="n">a</span> <span class="n">chess</span> <span class="n">analogy</span><span class="o">.</span>
+<span class="n">Mallory</span><span class="p">,</span> <span class="n">who</span> <span class="n">barely</span> <span class="n">knows</span> <span class="n">how</span> <span class="n">to</span> <span class="n">play</span> <span class="n">chess</span><span class="p">,</span> <span class="n">claims</span> <span class="n">that</span> <span class="n">she</span> <span class="n">can</span> <span class="n">play</span> <span class="n">two</span> <span class="n">grandmasters</span> <span class="n">simultaneously</span> <span class="ow">and</span> <span class="n">either</span> <span class="n">win</span> <span class="n">one</span> <span class="n">game</span> <span class="ow">or</span> <span class="n">draw</span> <span class="n">both</span><span class="o">.</span> <span class="n">She</span> <span class="n">waits</span> <span class="k">for</span> <span class="n">the</span> <span class="n">first</span> <span class="n">grandmaster</span> <span class="n">to</span> <span class="n">make</span> <span class="n">a</span> <span class="n">move</span> <span class="ow">and</span> <span class="n">then</span> <span class="n">makes</span> <span class="n">this</span> <span class="n">same</span> <span class="n">move</span> <span class="n">against</span> <span class="n">the</span> <span class="n">second</span> <span class="n">grandmaster</span><span class="o">.</span> <span class="n">When</span> <span class="n">the</span> <span class="n">second</span> <span class="n">grandmaster</span> <span class="n">responds</span><span class="p">,</span> <span class="n">Mallory</span> <span class="n">makes</span> <span class="n">the</span> <span class="n">same</span> <span class="n">play</span> <span class="n">against</span> <span class="n">the</span> <span class="n">first</span><span class="o">.</span> <span class="n">She</span> <span class="n">plays</span> <span class="n">the</span> <span class="n">entire</span> <span class="n">game</span> <span class="n">this</span> <span class="n">way</span> <span class="ow">and</span> <span class="n">cannot</span> <span class="n">lose</span><span class="o">.</span>
+<span class="n">A</span> <span class="n">man</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">the</span><span class="o">-</span><span class="n">middle</span> <span class="n">attack</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">similar</span> <span class="n">strategy</span> <span class="ow">and</span> <span class="n">can</span> <span class="n">be</span> <span class="n">used</span> <span class="n">against</span> <span class="n">many</span> <span class="n">cryptographic</span> <span class="n">protocols</span><span class="o">.</span> <span class="n">One</span> <span class="n">example</span> <span class="n">of</span> <span class="n">man</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">the</span><span class="o">-</span><span class="n">middle</span> <span class="n">attacks</span> <span class="ow">is</span> <span class="n">active</span> <span class="n">eavesdropping</span><span class="p">,</span> <span class="ow">in</span> <span class="n">which</span> <span class="n">the</span> <span class="n">attacker</span> <span class="n">makes</span> <span class="n">independent</span> <span class="n">connections</span> <span class="k">with</span> <span class="n">the</span> <span class="n">victims</span> <span class="ow">and</span> <span class="n">relays</span> <span class="n">messages</span> <span class="n">between</span> <span class="n">them</span> <span class="n">to</span> <span class="n">make</span> <span class="n">them</span> <span class="n">believe</span> <span class="n">they</span> <span class="n">are</span> <span class="n">talking</span> <span class="n">directly</span> <span class="n">to</span> <span class="n">each</span> <span class="n">other</span> <span class="n">over</span> <span class="n">a</span> <span class="n">private</span> <span class="n">connection</span><span class="p">,</span> <span class="n">when</span> <span class="ow">in</span> <span class="n">fact</span> <span class="n">the</span> <span class="n">entire</span> <span class="n">conversation</span> <span class="ow">is</span> <span class="n">controlled</span> <span class="n">by</span> <span class="n">the</span> <span class="n">attacker</span><span class="o">.</span> <span class="n">The</span> <span class="n">attacker</span> <span class="n">must</span> <span class="n">be</span> <span class="n">able</span> <span class="n">to</span> <span class="n">intercept</span> <span class="nb">all</span> <span class="n">relevant</span> <span class="n">messages</span> <span class="n">passing</span> <span class="n">between</span> <span class="n">the</span> <span class="n">two</span> <span class="n">victims</span> <span class="ow">and</span> <span class="n">inject</span> <span class="n">new</span> <span class="n">ones</span><span class="o">.</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">straightforward</span> <span class="ow">in</span> <span class="n">many</span> <span class="n">circumstances</span><span class="p">;</span> <span class="k">for</span> <span class="n">example</span><span class="p">,</span> <span class="n">an</span> <span class="n">attacker</span> <span class="n">within</span> <span class="n">reception</span> <span class="nb">range</span> <span class="n">of</span> <span class="n">an</span> <span class="n">unencrypted</span> <span class="n">Wi</span><span class="o">-</span><span class="n">Fi</span> <span class="n">wireless</span> <span class="n">access</span> <span class="n">point</span><span class="p">,</span> <span class="n">can</span> <span class="n">insert</span> <span class="n">himself</span> <span class="k">as</span> <span class="n">a</span> <span class="n">man</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">the</span><span class="o">-</span><span class="n">middle</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>This is quite a generic description, mostly because ( if we're talking about network MITM attacks ), the logic and details heavily rely on the technique being used ( more in the spoofing section ).</p>
+<p>Nevertheless we can simplify the concept with an example. When you connect to some network ( your home network, some public WiFi, StarBucks, etc ), the router/switch is responsible for forwarding all of your packets to the correct destination, during a MITM attack we &quot;force&quot; the network to consider our device as the router ( we &quot;spoof&quot; the original router/switch address in some way ):</p>
+<p><img alt="network mitm" src="_images/mitm.jpg" /></p>
+<p>Once this happens, all of the network traffic goes through your computer instead of the legit router/switch and at that point you can do pretty much everything you want, from just sniffing for specific data ( emails, passwords, cookies, etc of other people on your network ) to actively intercepting and proxying all the requests of some specific protocol in order to modify them on the fly ( you can, for instance, replace all images of all websites being visited by everyone, kill connections, etc ).</p>
+<p>BetterCap is responsible for giving the security researcher everything he needs in <strong>one single tool</strong> which simply works, on GNU/Linux, Mac OS X and OpenBSD systems.</p>
+</div>
+<div class="section" id="use-cases">
+<span id="use-cases"></span><h2>Use Cases<a class="headerlink" href="#use-cases" title="Permalink to this headline">¶</a></h2>
+<p>You might think that BetterCAP is just another tool which helps script-kiddies to harm networks ... but it's much more than that, its use cases are many, for instance:</p>
+<ul class="simple">
+<li>Many professional penetration testers find a great companion in bettercap since its very first release.</li>
+<li>Reverse engineers are using it in order to reverse or modify closed network protocols.</li>
+<li>Mobile/IoT security researchers are exploiting bettercap capabilities to test the security of mobile systems.</li>
+</ul>
+</div>
+<div class="section" id="why-another-mitm-tool">
+<span id="why-another-mitm-tool"></span><h2>Why another MITM tool?<a class="headerlink" href="#why-another-mitm-tool" title="Permalink to this headline">¶</a></h2>
+<p>This is exactly what you are thinking right now, isn't it? :D But allow yourself to think about it for 5 more minutes ... what you should be really asking is:</p>
+<blockquote>
+<div>Does a complete, modular, portable and easy to extend MITM tool actually exist?</div></blockquote>
+<p>If your answer is &quot;ettercap&quot;, let me tell you something:</p>
+<ul class="simple">
+<li>Ettercap was a great tool, but it made its time.</li>
+<li>Ettercap filters do not work most of the times, are outdated and hard to implement due to the specific language they're implemented in.</li>
+<li>Ettercap is freaking unstable on big networks ... try to launch the host discovery on a bigger network rather than the usual /24 ;)</li>
+<li>Yeah you can see connections and raw pcap stuff, nice toy, but as a professional researcher I want to see only relevant stuff.</li>
+<li>Unless you're a C/C++ developer, you can't easily extend ettercap or make your own module.</li>
+</ul>
+<p>Moreover:</p>
+<ul class="simple">
+<li>Ettercap's and MITMf's ICMP spoofing is completely useless, <a class="reference external" href="http://www.evilsocket.net/2016/01/10/bettercap-and-the-first-real-icmp-redirect-attack/">ours is not</a>.</li>
+<li>Ettercap does <strong>not</strong> provide a builtin and modular HTTP(S) and TCP transparent proxies, we do.</li>
+<li>Ettercap does <strong>not</strong> provide a smart and fully customizable credentials sniffer, we do.</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="install.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Simone &#39;evilsocket&#39; Margaritelli.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'stable',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-65617603-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+
+</body>
+</html>
