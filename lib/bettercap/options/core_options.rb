@@ -119,7 +119,7 @@ class CoreOptions
 
     opts.on( '-h', '--help', 'Display the available options.') do
       puts opts
-      puts "\nFor examples & docs please visit " + "https://bettercap.org/docs/".bold
+      puts "\nFor examples & docs please visit " + "https://bettercap.org/".bold
       exit
     end
 

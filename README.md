@@ -1,8 +1,6 @@
 **bettercap** is a complete, modular, portable and easily extensible **MITM** tool and framework with every kind of diagnostic
 and offensive feature you could need in order to perform a man in the middle attack.
 
-Before submitting issues, please read the relevant [section](https://www.bettercap.org/docs/contribute/) in the documentation.
-
 <table>
     <tr>
         <th>Version</th>
@@ -17,16 +15,9 @@ Before submitting issues, please read the relevant [section](https://www.betterc
         <td><a href="https://www.bettercap.org/">https://www.bettercap.org/</a></td>
     </tr>
     <tr>
-        <th>Blog</th>
-        <td><a href="https://www.bettercap.org/blog/">https://www.bettercap.org/blog/</a></td>
-    <tr>
         <th>Github</th>
         <td><a href="https://github.com/evilsocket/bettercap">https://github.com/evilsocket/bettercap</a></td>
      <tr/>
-    <tr>
-        <th>Documentation</th>
-        <td><a href="https://www.bettercap.org/docs/">https://www.bettercap.org/docs/</a></td>
-    </tr>
     <tr>
         <th>Code Documentation</th>
         <td>
@@ -95,4 +86,4 @@ Kali Linux has bettercap packaged and added to the **kali-rolling** repositories
 Documentation and Examples
 ============
 
-Please refer to the [official website](https://www.bettercap.org/docs/).
+Please refer to the [official website](https://www.bettercap.org/).
