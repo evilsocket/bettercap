@@ -147,7 +147,7 @@ class Context
         ip = ip.succ
       end
       tend = Time.now
-      Logger.info "[#{'DISCOVERY'.green}] Done in #{(tend - tstart) * 1000.0} ms"
+      Logger.info "[#{'DISCOVERY'.green}] Done in #{'%.01f' % ((tend - tstart) * 1000.0)} ms"
     end
   end
 
