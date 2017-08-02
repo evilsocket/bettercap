@@ -75,8 +75,6 @@ class Linux < Base
       # Ipv6 uses a different ip + port representation
       cal_dst_address = "[#{r.dst_address}]"
     end
-    # post route
-    Shell.execute("#{table} -t nat -I POSTROUTING -s 0/0 -j MASQUERADE")
     # accept all
     Shell.execute("#{table} -P FORWARD ACCEPT")
     # add redirection
@@ -92,8 +90,6 @@ class Linux < Base
       # Ipv6 uses a different ip + port representation
       cal_dst_address = "[#{r.dst_address}]"
     end
-    # remove post route
-    Shell.execute("#{table} -t nat -D POSTROUTING -s 0/0 -j MASQUERADE")
     # remove redirection
     Shell.execute("#{table} -t nat -D PREROUTING -i #{r.interface} -p #{r.protocol} #{r.src_address.nil? ? '' : "-d #{r.src_address}"} --dport #{r.src_port} -j DNAT --to #{cal_dst_address}:#{r.dst_port}")
   end
