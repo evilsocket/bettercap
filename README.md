@@ -60,7 +60,7 @@ dependency in order to make everything work.
 
 **On Linux**:
 
-    sudo apt-get install build-essential ruby-dev libpcap-dev
+    sudo apt-get install build-essential ruby-dev libpcap-dev net-tools
 
 This should solve issues such as [this one](https://github.com/evilsocket/bettercap/issues/22) or [this one](https://github.com/evilsocket/bettercap/issues/100).
 
