@@ -142,7 +142,7 @@ class << self
     if ctx.options.core.use_ipv6
       BetterCap::Loader.load("BetterCap::Discovery::Agents::Ndp").new(ctx, address)
     else
-      [ 'Icmp', 'Udp', 'Arp', 'Mdns', 'Upnp' ].each do |name|
+      [ 'Icmp', 'Udp', 'Arp', 'Mdns', 'Upnp', 'Wsd' ].each do |name|
         BetterCap::Loader.load("BetterCap::Discovery::Agents::#{name}").new(ctx, address)
       end
     end
