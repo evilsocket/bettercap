@@ -19,19 +19,17 @@ class Snpp < Base
     @name = 'SNPP'
   end
   def on_packet( pkt )
-    begin
-      if pkt.tcp_dst == 444
-        lines = pkt.to_s.split(/\r?\n/)
-        lines.each do |line|
-          if line =~ /LOGIn\s+(.+)\s+(.+)$/
-            user = $1
-            pass = $2
-            StreamLogger.log_raw( pkt, @name, "username=#{user} password=#{pass}" )
-          end
+    if pkt.tcp_dst == 444
+      lines = pkt.to_s.split(/\r?\n/)
+      lines.each do |line|
+        if line =~ /LOGIn\s+(.+)\s+(.+)$/
+          user = $1
+          pass = $2
+          StreamLogger.log_raw( pkt, @name, "username=#{user} password=#{pass}" )
         end
       end
-    rescue
     end
+  rescue
   end
 end
 end
