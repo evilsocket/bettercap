@@ -18,22 +18,20 @@ class TeamTalk < Base
     @name = 'TeamTalk'
   end
   def on_packet( pkt )
-    begin
-      if pkt.tcp_dst == 10333 || pkt.udp_dst == 10333
-        lines = pkt.to_s.split(/\r?\n/)
-        lines.each do |line|
-          if line =~ /login\s+/
-            if line =~ /username=/ && line =~ /password=/
-              version = line.scan(/version="?([\d\.]+)"?\s/).flatten.first
-              user = line.scan(/username="?(.*?)"?\s/).flatten.first
-              pass = line.scan(/password="?(.*?)"?\s/).flatten.first
-              StreamLogger.log_raw( pkt, @name, "#{'version'.blue}=#{version} username=#{user} password=#{pass}" )
-            end
+    if pkt.tcp_dst == 10333 || pkt.udp_dst == 10333
+      lines = pkt.to_s.split(/\r?\n/)
+      lines.each do |line|
+        if line =~ /login\s+/
+          if line =~ /username=/ && line =~ /password=/
+            version = line.scan(/version="?([\d\.]+)"?\s/).flatten.first
+            user = line.scan(/username="?(.*?)"?\s/).flatten.first
+            pass = line.scan(/password="?(.*?)"?\s/).flatten.first
+            StreamLogger.log_raw( pkt, @name, "#{'version'.blue}=#{version} username=#{user} password=#{pass}" )
           end
         end
       end
-    rescue
     end
+  rescue
   end
 end
 end
