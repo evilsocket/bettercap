@@ -18,14 +18,13 @@ class Asterisk  < Base
     @name = 'Asterisk'
   end
   def on_packet( pkt )
-    if pkt.tcp_dst == 5038
-      if pkt.to_s =~ /action:\s+login\r?\n/i
-        if pkt.to_s =~ /username:\s+(.+?)\r?\n/i && pkt.to_s =~ /secret:\s+(.+?)\r?\n/i
-          user = pkt.to_s.scan(/username:\s+(.+?)\r?\n/i).flatten.first
-          pass = pkt.to_s.scan(/secret:\s+(.+?)\r?\n/i).flatten.first
-          StreamLogger.log_raw( pkt, @name, "username=#{user} password=#{pass}" )
-        end
-      end
+    return unless pkt.tcp_dst == 5038
+    return unless pkt.to_s =~ /action:\s+login\r?\n/i
+
+    if pkt.to_s =~ /username:\s+(.+?)\r?\n/i && pkt.to_s =~ /secret:\s+(.+?)\r?\n/i
+      user = pkt.to_s.scan(/username:\s+(.+?)\r?\n/i).flatten.first
+      pass = pkt.to_s.scan(/secret:\s+(.+?)\r?\n/i).flatten.first
+      StreamLogger.log_raw( pkt, @name, "username=#{user} password=#{pass}" )
     end
   rescue
   end

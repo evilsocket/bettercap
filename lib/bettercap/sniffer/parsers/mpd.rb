@@ -18,13 +18,13 @@ class Mpd < Base
     @name = 'MPD'
   end
   def on_packet( pkt )
-    if pkt.tcp_dst == 6600
-      lines = pkt.to_s.split(/\r?\n/)
-      lines.each do |line|
-        if line =~ /password\s+(.+)$/
-          pass = $1
-          StreamLogger.log_raw( pkt, @name, "password=#{pass}" )
-        end
+    return unless pkt.tcp_dst == 6600
+
+    lines = pkt.to_s.split(/\r?\n/)
+    lines.each do |line|
+      if line =~ /password\s+(.+)$/
+        pass = $1
+        StreamLogger.log_raw( pkt, @name, "password=#{pass}" )
       end
     end
   rescue

@@ -18,14 +18,14 @@ class Dict < Base
     @name = 'DICT'
   end
   def on_packet( pkt )
-    if pkt.tcp_dst == 2628
-      lines = pkt.to_s.split(/\r?\n/)
-      lines.each do |line|
-        if line =~ /AUTH\s+(.+)\s+(.+)$/
-          user = $1
-          pass = $2
-          StreamLogger.log_raw( pkt, @name, "username=#{user} password=#{pass}" )
-        end
+    return unless pkt.tcp_dst == 2628
+
+    lines = pkt.to_s.split(/\r?\n/)
+    lines.each do |line|
+      if line =~ /AUTH\s+(.+)\s+(.+)$/
+        user = $1
+        pass = $2
+        StreamLogger.log_raw( pkt, @name, "username=#{user} password=#{pass}" )
       end
     end
   rescue
