@@ -22,7 +22,7 @@ class Url < Base
     host = $2
     url = $1
     unless url =~ /.+\.(png|jpg|jpeg|bmp|gif|img|ttf|woff|css|js).*/i
-      StreamLogger.log_raw( pkt, 'GET', "http://#{host}#{url}" )
+      StreamLogger.log_raw( pkt, 'GET', "#{'⚫'.red}http://#{host}#{url}" )
     end
   end
 end
