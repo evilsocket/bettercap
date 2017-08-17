@@ -15,7 +15,7 @@ and offensive feature you could need in order to perform a man in the middle att
         <td><a href="https://www.bettercap.org/">https://www.bettercap.org/</a></td>
     </tr>
     <tr>
-        <th>Github</th>
+        <th>GitHub</th>
         <td><a href="https://github.com/evilsocket/bettercap">https://github.com/evilsocket/bettercap</a></td>
      <tr/>
     <tr>
@@ -51,37 +51,47 @@ Installation
 
 **Dependencies**
 
-All dependencies will be automatically installed through the GEM system but in some case you might need to install some system
+All dependencies will be automatically installed through the RubyGems system but in some cases you might need to install some system
 dependency in order to make everything work.
 
-**On OSX** ( install brew and xcode tools first ):
+**On OSX** (install brew and xcode tools first):
 
-    brew install libpcap
+```shell
+brew install libpcap
+```
 
 **On Linux**:
 
-    sudo apt-get install build-essential ruby-dev libpcap-dev net-tools
+```shell
+sudo apt-get install build-essential ruby-dev libpcap-dev net-tools
+```
 
 This should solve issues such as [this one](https://github.com/evilsocket/bettercap/issues/22) or [this one](https://github.com/evilsocket/bettercap/issues/100).
 
-**Stable Release ( GEM )**
+**Stable Release (RubyGems)**
 
-    gem install bettercap
+```shell
+gem install bettercap
+```
 
 **From Source**
 
-    git clone https://github.com/evilsocket/bettercap
-    cd bettercap
-    gem build bettercap.gemspec
-    sudo gem install bettercap*.gem
+```shell
+git clone https://github.com/evilsocket/bettercap
+cd bettercap
+gem build bettercap.gemspec
+sudo gem install bettercap*.gem
+```
 
 **Installation on Kali Linux**
 
 Kali Linux has bettercap packaged and added to the **kali-rolling** repositories. To install bettercap and all dependencies in one fell swoop on the latest version of Kali Linux:
-    
-    apt-get update
-    apt-get dist-upgrade
-    apt-get install bettercap
+   
+```shell
+apt-get update
+apt-get dist-upgrade
+apt-get install bettercap
+```
 
 Documentation and Examples
 ============
