@@ -19,16 +19,16 @@ class Redis < Base
     @name = 'REDIS'
   end
   def on_packet( pkt )
-    if pkt.tcp_dst == 6379
-      lines = pkt.to_s.split(/\r?\n/)
-      lines.each do |line|
-        if line =~ /config\s+set\s+requirepass\s+(.+)$/i
-          pass = "#{$1}"
-          StreamLogger.log_raw( pkt, @name, "password=#{pass}" )
-        elsif line =~ /AUTH\s+(.+)$/i
-          pass = "#{$1}"
-          StreamLogger.log_raw( pkt, @name, "password=#{pass}" )
-        end
+    return unless pkt.tcp_dst == 6379
+
+    lines = pkt.to_s.split(/\r?\n/)
+    lines.each do |line|
+      if line =~ /config\s+set\s+requirepass\s+(.+)$/i
+        pass = "#{$1}"
+        StreamLogger.log_raw( pkt, @name, "password=#{pass}" )
+      elsif line =~ /AUTH\s+(.+)$/i
+        pass = "#{$1}"
+        StreamLogger.log_raw( pkt, @name, "password=#{pass}" )
       end
     end
   rescue

@@ -17,12 +17,12 @@ module Parsers
 class Url < Base
   def on_packet( pkt )
     s = pkt.to_s
-    if s =~ /GET\s+([^\s]+)\s+HTTP.+Host:\s+([^\s]+).+/m
-      host = $2
-      url = $1
-      unless url =~ /.+\.(png|jpg|jpeg|bmp|gif|img|ttf|woff|css|js).*/i
-        StreamLogger.log_raw( pkt, 'GET', "http://#{host}#{url}" )
-      end
+    return unless s =~ /GET\s+([^\s]+)\s+HTTP.+Host:\s+([^\s]+).+/m
+
+    host = $2
+    url = $1
+    unless url =~ /.+\.(png|jpg|jpeg|bmp|gif|img|ttf|woff|css|js).*/i
+      StreamLogger.log_raw( pkt, 'GET', "http://#{host}#{url}" )
     end
   end
 end

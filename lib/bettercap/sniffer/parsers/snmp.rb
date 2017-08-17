@@ -22,21 +22,21 @@ module Parsers
 # SNMP community string parser.
 class SNMP < Base
   def on_packet( pkt )
-    if pkt.udp_dst == 161
-      packet = Network::Protos::SNMP::Packet.parse( pkt.payload )
+    return unless pkt.udp_dst == 161
 
-      unless packet.nil?
-        if packet.snmp_version_number.to_i == 0
-          snmp_version = 'v1'
-        else
-          snmp_version = 'n/a'
-        end
+    packet = Network::Protos::SNMP::Packet.parse( pkt.payload )
 
-        msg = "[#{'Version:'.green} #{snmp_version}] [#{'Community:'.green} #{packet.snmp_community_string.map { |x| x.chr }.join.yellow}]"
+    return if packet.nil?
 
-        StreamLogger.log_raw( pkt, 'SNMP', msg )
-      end
+    if packet.snmp_version_number.to_i == 0
+      snmp_version = 'v1'
+    else
+      snmp_version = 'n/a'
     end
+
+    msg = "[#{'Version:'.green} #{snmp_version}] [#{'Community:'.green} #{packet.snmp_community_string.map { |x| x.chr }.join.yellow}]"
+
+    StreamLogger.log_raw( pkt, 'SNMP', msg )
   rescue
   end
 end

@@ -17,16 +17,15 @@ module Parsers
 class Post < Base
   def on_packet( pkt )
     s = pkt.to_s
-    if s =~ /POST\s+[^\s]+\s+HTTP.+/
-      begin
-        req = BetterCap::Proxy::HTTP::Request.parse(pkt.payload)
-        # the packet could be incomplete
-        unless req.body.nil? or req.body.empty?
-          StreamLogger.log_raw( pkt, "POST", req.to_url(1000) )
-          StreamLogger.log_post( req )
-        end
-      rescue; end
+    return unless s =~ /POST\s+[^\s]+\s+HTTP.+/
+
+    req = BetterCap::Proxy::HTTP::Request.parse(pkt.payload)
+    # the packet could be incomplete
+    unless req.body.nil? or req.body.empty?
+      StreamLogger.log_raw( pkt, "POST", req.to_url(1000) )
+      StreamLogger.log_post( req )
     end
+  rescue
   end
 end
 end
