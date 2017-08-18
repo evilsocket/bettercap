@@ -67,7 +67,7 @@ class StreamLogger
   # Log a raw packet ( +pkt+ ) data +payload+ using the specified +label+.
   def self.log_raw( pkt, label, payload )
     nl    = label.include?("\n") ? "\n" : " "
-    label = label.strip
+    label = label.strip == 'HTTPS' ? label.strip.green : label.strip.yellow
     from  = self.addr2s( pkt.ip_saddr, pkt.eth2s(:src) )
     to    = self.addr2s( pkt.ip_daddr, pkt.eth2s(:dst) )
 
@@ -77,7 +77,7 @@ class StreamLogger
       to += ':' + self.service( :udp, pkt.udp_dst ).to_s.light_blue
     end
 
-    Logger.raw( "[#{from} > #{to}] [#{label.green}]#{nl}#{payload.strip}" )
+    Logger.raw( "[#{from} > #{to}] [#{label}]#{nl}#{payload.strip}" )
   end
 
   def self.dump_form( request )
