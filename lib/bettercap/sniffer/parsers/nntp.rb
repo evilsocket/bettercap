@@ -7,6 +7,10 @@ Author : Simone 'evilsocket' Margaritelli
 Email  : evilsocket@gmail.com
 Blog   : http://www.evilsocket.net/
 
+NNTP authentication parser:
+  Author : Brendan Coles
+  Email  : bcoles[at]gmail.com
+
 This project is released under the GPL 3 license.
 
 =end

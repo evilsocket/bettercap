@@ -6,6 +6,10 @@ Author : Simone 'evilsocket' Margaritelli
 Email  : evilsocket@gmail.com
 Blog   : https://www.evilsocket.net/
 
+BearWare TeamTalk authentication parser:
+  Author : Brendan Coles
+  Email  : bcoles[at]gmail.com
+
 This project is released under the GPL 3 license.
 
 =end
