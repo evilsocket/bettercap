@@ -190,7 +190,7 @@ class StreamLogger
   # with the +request+ and +response+ most important informations.
   def self.log_http( request, response )
     response_s = ""
-    response_s += " ( #{response.content_type} )" unless response.content_type.nil?
+    response_s += " ( #{response.content_type} )".light_black unless response.content_type.nil?
     request_s  = request.to_url( nil )
     code       = response.code.to_s[0]
 
