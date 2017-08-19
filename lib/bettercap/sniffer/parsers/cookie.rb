@@ -76,7 +76,7 @@ class Cookie < Base
 
     unless hostname.nil? or cookies.empty?
       unless @jar.known_cookie?( pkt.ip_saddr, hostname, cookies )
-        StreamLogger.log_raw( pkt, "COOKIE", "[#{hostname.yellow}] #{cookies.map{|k,v| "#{k.green}=#{v.yellow}"}.join('; ')}" )
+        StreamLogger.log_raw( pkt, 'COOKIE', "[#{hostname.yellow}] #{cookies.map{|k,v| "#{k.green}=#{v.yellow}"}.join('; ')}" )
         @jar.store( pkt.ip_saddr, hostname, cookies )
       end
     end

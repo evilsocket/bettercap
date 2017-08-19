@@ -22,7 +22,7 @@ class Post < Base
     req = BetterCap::Proxy::HTTP::Request.parse(pkt.payload)
     # the packet could be incomplete
     unless req.body.nil? or req.body.empty?
-      StreamLogger.log_raw( pkt, "POST", req.to_url(1000) )
+      StreamLogger.log_raw( pkt, 'POST', req.to_url(1000) )
       StreamLogger.log_post( req )
     end
   rescue
