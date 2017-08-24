@@ -1,7 +1,7 @@
 Spoofing
 ============
 
-As previously described in the introduction section, spoofing is the very hearth of every MITM attack. These options will determine which spoofing technique to use and how to use it.
+As previously described in the introduction section, spoofing is the very heart of every MITM attack. These options will determine which spoofing technique to use and how to use it.
 
 BetterCap already includes an [ARP spoofer](https://en.wikipedia.org/wiki/ARP_spoofing) ( working both in full duplex and half duplex mode which is the default ), a **DNS** spoofer and **the first, fully working and completely automatized [ICMP DoubleDirect spoofer](https://blog.zimperium.com/doubledirect-zimperium-discovers-full-duplex-icmp-redirect-attacks-in-the-wild/) in the world**
 
