@@ -107,7 +107,11 @@ private
   # Get the MAC address of the gateway and update it.
   def update_gateway!
     unless @ctx.gateway.spoofable?
-      hw = Network.get_hw_address( @ctx, @ctx.gateway.ip )
+      if @ctx.gateway.ip == @ctx.iface.ip
+        hw = @ctx.iface.mac
+      else
+        hw = Network.get_hw_address( @ctx, @ctx.gateway.ip )
+      end
       raise BetterCap::Error, "Couldn't determine router MAC" if ( @ctx.options.need_gateway? and hw.nil? )
       @ctx.gateway.mac = hw unless hw.nil?
     end

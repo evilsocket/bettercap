@@ -24,7 +24,7 @@ class << self
 
     nstat.split(/\n/).select {|n| n =~ /UG.+#{iface}/ }.each do |line|
       Network::Validator.each_ip(line) do |address|
-        return address
+        return address unless address.end_with?('.0')
       end
     end
     nil
