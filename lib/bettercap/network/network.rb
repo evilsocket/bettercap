@@ -22,7 +22,7 @@ class << self
 
     Logger.debug "NETSTAT:\n#{nstat}"
 
-    nstat.split(/\n/).select {|n| n =~ /UG/ }.each do |line|
+    nstat.split(/\n/).select {|n| n =~ /UG.+#{iface}/ }.each do |line|
       Network::Validator.each_ip(line) do |address|
         return address
       end
