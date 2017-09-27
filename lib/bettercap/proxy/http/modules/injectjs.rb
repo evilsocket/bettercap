@@ -25,6 +25,10 @@ class InjectJS < BetterCap::Proxy::HTTP::Module
   @@jsdata = nil
   # JS file URL to be injected.
   @@jsurl  = nil
+  # Maximum number of times to inject.
+  @@max = 1000000
+  # Counter for the number of injections.
+  @@cnt = 0
 
   # Add custom command line arguments to the +opts+ OptionParser instance.
   def self.on_options(opts)
@@ -51,6 +55,10 @@ class InjectJS < BetterCap::Proxy::HTTP::Module
     opts.on( '--js-url URL', 'URL the javascript file to be injected.' ) do |v|
       @@jsurl = v
     end
+
+    opts.on( '--js-max NUM', 'Maximum number of times to inject.' ) do |v|
+      @@max = v.to_i
+    end
   end
 
   # Create an instance of this module and raise a BetterCap::Error if command
@@ -63,7 +71,8 @@ class InjectJS < BetterCap::Proxy::HTTP::Module
   # +response+.
   def on_request( request, response )
     # is it a html page?
-    if response.content_type =~ /^text\/html.*/
+    if response.content_type =~ /^text\/html.*/ and ( @@cnt < @@max )
+      @@cnt += 1
       BetterCap::Logger.info "[#{'INJECTJS'.green}] Injecting javascript #{@@jsdata.nil?? "URL" : "file"} into #{request.to_url}"
       # inject URL
       if @@jsdata.nil?
