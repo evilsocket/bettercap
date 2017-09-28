@@ -25,6 +25,10 @@ class InjectCSS < BetterCap::Proxy::HTTP::Module
   @@cssdata = nil
   # CSS file URL to be injected.
   @@cssurl  = nil
+  # Maximum number of times to inject.
+  @@max = 1000000
+  # Counter for the number of injections.
+  @@cnt = 0
 
   # Add custom command line arguments to the +opts+ OptionParser instance.
   def self.on_options(opts)
@@ -51,6 +55,10 @@ class InjectCSS < BetterCap::Proxy::HTTP::Module
     opts.on( '--css-url URL', 'URL the CSS file to be injected.' ) do |v|
       @@cssurl = v
     end
+
+    opts.on( '--css-max NUM', 'Maximum number of times to inject.' ) do |v|
+      @@max = v.to_i
+    end
   end
 
   # Create an instance of this module and raise a BetterCap::Error if command
@@ -63,7 +71,8 @@ class InjectCSS < BetterCap::Proxy::HTTP::Module
   # +response+.
   def on_request( request, response )
     # is it a html page?
-    if response.content_type =~ /^text\/html.*/
+    if response.content_type =~ /^text\/html.*/ and ( @@cnt < @@max )
+      @@cnt += 1
       BetterCap::Logger.info "[#{'INJECTCSS'.green}] Injecting CSS #{@@cssdata.nil?? "URL" : "file"} into #{request.to_url}"
       # inject URL
       if @@cssdata.nil?

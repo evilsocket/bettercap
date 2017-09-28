@@ -27,6 +27,10 @@ class InjectHTML < BetterCap::Proxy::HTTP::Module
   @@data = nil
   # Position of the injection, 0 = just after <body>, 1 = before </body>
   @@position = 0
+  # Maximum number of times to inject.
+  @@max = 1000000
+  # Counter for the number of injections.
+  @@cnt = 0
 
   # Add custom command line arguments to the +opts+ OptionParser instance.
   def self.on_options(opts)
@@ -57,6 +61,10 @@ class InjectHTML < BetterCap::Proxy::HTTP::Module
         raise BetterCap::Error, "#{v} invalid position, only START or END values are accepted."
       end
     end
+
+    opts.on( '--html-max NUM', 'Maximum number of times to inject.' ) do |v|
+      @@max = v.to_i
+    end
   end
 
   # Create an instance of this module and raise a BetterCap::Error if command
@@ -69,7 +77,8 @@ class InjectHTML < BetterCap::Proxy::HTTP::Module
   # +response+.
   def on_request( request, response )
     # is it a html page?
-    if response.content_type =~ /^text\/html.*/
+    if response.content_type =~ /^text\/html.*/ and ( @@cnt < @@max )
+      @@cnt += 1
       BetterCap::Logger.info "[#{'INJECTHTML'.green}] Injecting HTML code into #{request.to_url}"
 
       if @@data.nil?
