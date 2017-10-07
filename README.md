@@ -93,6 +93,16 @@ apt-get dist-upgrade
 apt-get install bettercap
 ```
 
+**Installation on Parrot Security OS**
+
+Parrot Security has bettercap packaged and added to the **ParrotSec** repositories. To install bettercap and all dependencies in one fell swoop on the latest version of Parrot Security:
+   
+```shell
+apt-get update
+apt-get dist-upgrade
+apt-get install bettercap
+```
+
 Documentation and Examples
 ============
 
